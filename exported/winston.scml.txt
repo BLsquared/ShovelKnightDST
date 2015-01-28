@@ -1,0 +1,2 @@
+Building 'F:\Steam\SteamApps\common\Don't Starve Together Beta\mods\Winston\exported\winston.scml'.
+ERROR: Could not open 'F:\Steam\SteamApps\common\Don't Starve Together Beta\mods\Winston\exported\winston.scml'!
