@@ -11,17 +11,28 @@ local assets =
 }
 prefabs = {
 }
-
 local function onattack(inst, owner, target)
     --if owner.components.health and not target:HasTag("wall") then
         --owner.components.sanity:DoDelta(-1)
     --end
 end
 
+local function onpreload(inst, data)
+    if data ~= nil and data.playEquippedSound ~= nil then
+        inst.playEquippedSound = data.playEquippedSound
+    end
+end
+
+local function onsave(inst, data)
+	data.playEquippedSound = inst.playEquippedSound > 0 and inst.playEquippedSound or nil
+end
+
 local function fn(Sim)
 
 	local function onequip(inst, owner)
 	
+		inst.owner = owner
+		
 		--Sets how strong this weapon is
 		local shovelbladeDamageWinston = 30
 		local shovelbladeDamageGeneric = 5
@@ -33,8 +44,16 @@ local function fn(Sim)
 		--Makes the shovelblade strong only for Shovel Knight
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
+			
+			--Plays special shovelblade EquippedSound
+			inst.playEquippedSound = inst.playEquippedSound +1
 			owner.components.talker:Say("Lets get shoveling!")
-			owner.SoundEmitter:PlaySound("dontstarve/wilson/equip_item_gold")   
+			if inst.playEquippedSound == 1 then
+				owner.SoundEmitter:PlaySound("winston/characters/winston/shovelbladeequipped")
+			end
+			if inst.playEquippedSound > 1 then --Stops the sound from player at load in
+				inst.playEquippedSound = 0
+			end
 		end
 		
 		--Makes the shovelblade weak for other characters
@@ -44,6 +63,9 @@ local function fn(Sim)
 	end
 
 	local function onunequip(inst, owner)
+		inst.owner = nil
+		inst.playEquippedSound = 0
+		
 		--Sets how strong this weapon is
 		local shovelbladeDamageGeneric = 5
 	
@@ -88,6 +110,10 @@ local function fn(Sim)
     --Makes this a Weapon
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(5)
+	inst.playEquippedSound = 0
+	
+	inst.OnSave = onsave
+	inst.OnPreLoad = onpreload
 	
 	--Special when attacking
 	inst.components.weapon.onattack = onattack

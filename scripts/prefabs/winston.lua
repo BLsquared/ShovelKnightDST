@@ -36,9 +36,6 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	--"shovelblade",
-	--"skitemmealticket",
-	--"skitemmanapotion",
 	"skweaponshovelbladebasic",
 }
 
@@ -92,45 +89,45 @@ local function oneat(inst, food)
 	end
 end
 
-local function onupdate(inst, dt)
-	inst.charge_time = inst.charge_time - dt
-	if inst.charge_time <= 0 then
-		inst.charge_time = 0
-		if inst.charged_task ~= nil then
-			inst.charged_task:Cancel()
-			inst.charged_task = nil
-		end
-		inst.SoundEmitter:KillSound("overcharge_sound")
-		inst.Light:Enable(false)
-		inst.AnimState:SetBloomEffectHandle("")
-		inst.components.talker:Say("Charge Handle Dismiss")
-	else
-    	local rad = 3
+--local function onupdate(inst, dt)
+	--inst.charge_time = inst.charge_time - dt
+	--if inst.charge_time <= 0 then
+		--inst.charge_time = 0
+		--if inst.charged_task ~= nil then
+			--inst.charged_task:Cancel()
+			--inst.charged_task = nil
+		--end
+		--inst.SoundEmitter:KillSound("overcharge_sound")
+		--inst.Light:Enable(false)
+		--inst.AnimState:SetBloomEffectHandle("")
+		--inst.components.talker:Say("Charge Handle Dismiss")
+	--else
+    	--local rad = 3
 
-    	inst.Light:Enable(true)
-    	inst.Light:SetRadius(rad)
-	end
-end
+    	--inst.Light:Enable(true)
+    	--inst.Light:SetRadius(rad)
+	--end
+--end
 
-local function startovercharge(inst, duration)
-    inst.charge_time = duration
+--local function startovercharge(inst, duration)
+    --inst.charge_time = duration
 
     --inst.SoundEmitter:KillSound("overcharge_sound")
-    inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/charged", "overcharge_sound")
-    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+    --inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/charged", "overcharge_sound")
+    --inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
-    if inst.charged_task == nil then
-        inst.charged_task = inst:DoPeriodicTask(1, onupdate, nil, 1)
-        onupdate(inst, 0)
-    end
-end
+    --if inst.charged_task == nil then
+        --inst.charged_task = inst:DoPeriodicTask(1, onupdate, nil, 1)
+        --onupdate(inst, 0)
+    --end
+--end
 
-local function onlongupdate(inst, dt)
-    inst.charge_time = math.max(0, inst.charge_time - dt)
-end
+--local function onlongupdate(inst, dt)
+    --inst.charge_time = math.max(0, inst.charge_time - dt)
+--end
 
 local function onpreload(inst, data)
-    if data ~= nil then --and data.level ~= nil and data.manaPotion ~= nil then
+    if data ~= nil then
 		if data.level ~= nil then
 			inst.level = data.level
 			--applyupgrades(inst)
@@ -157,11 +154,11 @@ local function onpreload(inst, data)
     end
 end
 
-local function onload(inst, data)
-    if data ~= nil and data.charge_time ~= nil then
-        startovercharge(inst, data.charge_time)
-    end
-end
+--local function onload(inst, data)
+    --if data ~= nil and data.charge_time ~= nil then
+        --startovercharge(inst, data.charge_time)
+    --end
+--end
 
 local function onsave(inst, data)
 	data.level = inst.level > 0 and inst.level or nil
@@ -226,9 +223,9 @@ local master_postinit = function(inst)
 	inst.components.sanity.night_drain_mult = 1
 	inst.components.eater:SetOnEatFn(oneat)
 	
-	inst.OnLongUpdate = onlongupdate
+	--inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
-	inst.OnLoad = onload
+	--inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
 	inst:ListenForEvent("death", ondeath)
 	

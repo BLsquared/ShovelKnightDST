@@ -12,48 +12,52 @@ local assets =
 prefabs = {
 }
 
-
-
-
-	
-
-
 local function onupdate(inst, dt)
 	if inst.owner ~= nil then
-		inst.chargeTime = inst.chargeTime - dt
-		if inst.chargeTime <= 0 then
-			inst.chargeTime = 0
-			if inst.charged_task ~= nil then
-				inst.charged_task:Cancel()
-				inst.charged_task = nil
+		inst.chargeHandleComboTime = inst.chargeHandleComboTime - dt
+		inst.chargeHandleBuffTime = inst.chargeHandleBuffTime - dt
+		
+		if inst.chargeHandleComboBuilder > 0 and inst.chargeHandleComboTime <=0 and inst.chargeHandleBuffTime <= 0 then
+			inst.chargeHandleComboBuilder = 0
+			inst.chargeHandleComboTime = 0
+			inst.chargeHandleBuffTime = 0
+			if inst.chargeHandleClock_Task ~= nil then
+				inst.chargeHandleClock_Task:Cancel()
+				inst.chargeHandleClock_Task = nil
 			end
-			--inst.owner.SoundEmitter:KillSound("overcharge_sound")
-			--inst.owner.Light:Enable(false)
-			--inst.owner.AnimState:SetBloomEffectHandle("")
-			inst.owner.components.talker:Say("Charge Handle Dismiss")
-		else
-			--local rad = 3
-
-			--inst.owner.Light:Enable(true)
-			--inst.owner.Light:SetRadius(rad)
+			--inst.owner.components.talker:Say("Combo Lost")
+			
+		elseif inst.chargeHandleComboBuilder == 0 and inst.chargeHandleComboTime <=0 and inst.chargeHandleBuffTime <= 0 then
+			inst.chargeHandleComboTime = 0
+			inst.chargeHandleBuffTime = 0
+			if inst.chargeHandleClock_Task ~= nil then
+				inst.chargeHandleClock_Task:Cancel()
+				inst.chargeHandleClock_Task = nil
+			end
+			inst.owner.AnimState:SetHaunted(false)
+			--inst.owner.components.talker:Say("Charge Handle Dismiss")
+		--else
 		end
 	end
 end
 
 local function onlongupdate(inst, dt)
-    inst.chargeTime = math.max(0, inst.chargeTime - dt)
+    inst.chargeHandleComboTime = math.max(0, inst.chargeHandleComboTime - dt)
+	inst.chargeHandleBuffTime = math.max(0, inst.chargeHandleBuffTime - dt)
 end
 
 local function startovercharge(inst, duration, attacker)
-    inst.chargeTime = duration
-
-    --inst.SoundEmitter:KillSound("overcharge_sound")
-    --inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/charged", "overcharge_sound")
-    --attacker.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-	attacker.components.talker:Say("Charge Handle Enguaged")
-
-    if inst.charged_task == nil then
-        inst.charged_task = inst:DoPeriodicTask(1, onupdate, nil, 1)
+	if duration == 5 then
+		inst.chargeHandleBuffTime = duration
+		attacker.AnimState:SetHaunted(true)
+		--attacker.components.talker:Say("Charge Handle Enguaged")
+	elseif duration == 7 then
+		inst.chargeHandleComboTime = duration
+		--attacker.components.talker:Say("Combo Enguaged")
+	end
+	
+	if inst.chargeHandleClock_Task == nil then
+        inst.chargeHandleClock_Task = inst:DoPeriodicTask(1, onupdate, nil, 1)
         onupdate(inst, 0)
     end
 end
@@ -62,53 +66,60 @@ local function onattack(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
 		
 		--Does the special attack
-		if inst.chargeTime > 0 then
-			--Turn off ChargeHandle Buff
-			inst.chargeHandleUpgrade = 0
-			inst.chargeTime = 0
-			inst.charged_task:Cancel()
-			inst.charged_task = nil
-			target.components.burnable:Ignite(nil, attacker)
+		if inst.chargeHandleBuffTime > 0 then --Apply ChargeHandle Attack
+			inst.chargeHandleComboBuilder = 0
+			inst.chargeHandleComboTime = 0
+			inst.chargeHandleBuffTime = 0
+			inst.chargeHandleClock_Task:Cancel()
+			inst.chargeHandleClock_Task = nil
+			attacker.AnimState:SetHaunted(false)
+			target.components.combat:GetAttacked(attacker, 15, inst)
+			--target.components.burnable:Ignite(nil, attacker)
 				
-		elseif inst.chargeTime == 0 then
-				inst.chargeHandleUpgrade = inst.chargeHandleUpgrade +1
-			
-				--Enables special attack
-			if inst.chargeHandleUpgrade >= 2 then
-				inst.chargeHandleUpgrade = 0
-				startovercharge(inst, 5, attacker) --How long the effect lasts
-				--target.components.burnable:Ignite(nil, attacker)
+		elseif inst.chargeHandleBuffTime <= 0 then
+			if inst.chargeHandleComboBuilder == 0 then
+				inst.chargeHandleComboBuilder = inst.chargeHandleComboBuilder +1
+				startovercharge(inst, 7, attacker)
+			else
+				inst.chargeHandleComboBuilder = inst.chargeHandleComboBuilder +1
+				inst.chargeHandleComboTime = 7
+				if inst.chargeHandleComboBuilder >= 2 then
+					inst.chargeHandleComboBuilder = 0
+					inst.chargeHandleComboTime = 0
+					startovercharge(inst, 5, attacker)	
+				end
 			end
 		end
 	end
 end
 
-local function onload(inst, data)
-    if data ~= nil and data.charge_time ~= nil then
-        startovercharge(inst, data.charge_time)
+local function onpreload(inst, data)
+    if data ~= nil and data.playEquippedSound ~= nil then
+        inst.playEquippedSound = data.playEquippedSound
     end
 end
 
---local function resetshovelblade(inst)
-	--Resets all the Charge Handle stats
-	--inst.chargeHandleUpgrade = 0
-	--inst.chargeTime = 0
-	--inst.charged_task:Cancel()
-	--inst.charged_task = nil
---end
+local function onload(inst, data)
+	if data ~= nil and data.chargeHandleComboTime ~= nil then
+        startovercharge(inst, data.chargeHandleComboTime)
+    end
+    if data ~= nil and data.chargeHandleBuffTime ~= nil then
+        startovercharge(inst, data.chargeHandleBuffTime)
+    end
+end
+
+local function onsave(inst, data)
+	data.playEquippedSound = inst.playEquippedSound > 0 and inst.playEquippedSound or nil
+end
 
 local function fn(Sim)
 
 	local function onequip(inst, owner)
 	
 		inst.owner = owner
-		--inst.chargeHandleUpgrade = 0
-		--inst.chargeTime = 0
-		--inst.charged_task:Cancel()
-		--inst.charged_task = nil
 		
 		--Sets how strong this weapon is
-		local shovelbladeDamageWinston = 35 --+5 damage upgrade
+		local shovelbladeDamageWinston = 30 --+15 damage with Charge Handle
 		local shovelbladeDamageGeneric = 5
 		
 		owner.AnimState:OverrideSymbol("swap_object", "swap_skweaponshovelbladechargehandle", "swap_shovel")
@@ -118,8 +129,16 @@ local function fn(Sim)
 		--Makes the shovelblade strong only for Shovel Knight
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
+			
+			--Plays special shovelblade EquippedSound
+			inst.playEquippedSound = inst.playEquippedSound +1
 			owner.components.talker:Say("Lets get shoveling!")
-			owner.SoundEmitter:PlaySound("dontstarve/wilson/equip_item_gold")   
+			if inst.playEquippedSound == 1 then
+				owner.SoundEmitter:PlaySound("winston/characters/winston/shovelbladeequipped")
+			end
+			if inst.playEquippedSound > 1 then --Stops the sound from player at load in
+				inst.playEquippedSound = 0
+			end
 		end
 		
 		--Makes the shovelblade weak for other characters
@@ -130,10 +149,7 @@ local function fn(Sim)
 
 	local function onunequip(inst, owner)
 		inst.owner = nil
-		--inst.chargeHandleUpgrade = 0
-		--inst.chargeTime = 0
-		--inst.charged_task:Cancel()
-		--inst.charged_task = nil
+		inst.playEquippedSound = 0
 		
 		--Sets how strong this weapon is
 		local shovelbladeDamageGeneric = 5
@@ -178,14 +194,20 @@ local function fn(Sim)
     --Makes this a Weapon
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(5)
+	inst.playEquippedSound = 0
 	
-	--Special when attacking
+	--ChargeHandle Combo and timer
 	inst.owner = nil
-	inst.chargeHandleUpgrade = 0
-	inst.chargeTime = 0
-	inst.charged_task = nil
-	inst.OnLoad = onload
+	inst.chargeHandleComboBuilder = 0
+	inst.chargeHandleComboTime = 0
+	inst.chargeHandleBuffTime = 0
+	inst.chargeHandleClock_Task = nil
+	
 	inst.OnLongUpdate = onlongupdate
+	inst.OnSave = onsave
+	inst.OnLoad = onload
+	inst.OnPreLoad = onpreload
+	
 	inst.components.weapon:SetAttackCallback(onattack)
 
 	--Makes this a Shovel

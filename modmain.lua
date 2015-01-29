@@ -24,6 +24,9 @@ Assets = {
 	
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
+	
+	Asset( "SOUNDPACKAGE", "sound/winston.fev" ),
+    Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
 	Asset( "ATLAS", "images/map_icons/skweaponshovelbladebasic.xml" ),
@@ -37,6 +40,8 @@ Assets = {
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladedropspark.tex" ),
 	Asset( "ATLAS", "images/map_icons/skweaponshovelbladedropspark.xml" ),
 }
+
+RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
 
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
