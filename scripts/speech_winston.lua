@@ -43,16 +43,16 @@ return {
 		{
 			GENERIC = "It shall hold no more.",
 			NOTALLOWED = "I do not believe that belongs in there.",
-			INUSE = "One must wait for their own turn.",
+			INUSE = "One must wait for thy own turn.", --Finished
 		},
 		RUMMAGE =
 		{	
 			GENERIC = "I can't do that.",
-			INUSE = "I should wait my turn.",	
+			INUSE = "I shall wait my turn.", --Finished
 		},
 	},
 	ACTIONFAIL_GENERIC = "No can do.",
-	ANNOUNCE_ADVENTUREFAIL = "I have failed...",
+	ANNOUNCE_ADVENTUREFAIL = "I have failed... Shield Knight forgive me.", --Finished
 	ANNOUNCE_BEES = "That horrible buzzing noise!",
 	ANNOUNCE_BOOMERANG = "A silly mistake, not receiving it...",
 	ANNOUNCE_CHARLIE = "What was that?!",
@@ -98,9 +98,9 @@ return {
 	ANNOUNCE_ACCOMPLISHMENT = "The waves of accomplishment are upon me!",
 	ANNOUNCE_ACCOMPLISHMENT_DONE = "Huzzah!",	
 	ANNOUNCE_BECOMEGHOST = "ooOOoooOOOoOooo!!",
-	ANNOUNCE_GHOSTDRAIN = "Shall my soul leave this world?",
+	ANNOUNCE_GHOSTDRAIN = "Have I met the same fate as Specter Knight?", --Finished
 
-	DESCRIBE_SAMECHARACTER = "No, it cannot be...Dark Knight!?",
+	DESCRIBE_SAMECHARACTER = "No, it cannot be...Dark Knight!?", --Finished
 	
 	BATTLECRY =
 	{
@@ -615,15 +615,15 @@ return {
 			SLEEPING = "Aww, look at him sleep!",
 		},
 		FROGGLEBUNWICH = "I cooked it myself!",
-		FROGLEGS = "I've heard it's a delicacy.",
+		FROGLEGS = "Croaker can no longer leap from pun to pun", --Finished
 		FROGLEGS_COOKED = "Tastes like chicken.",
 		FRUITMEDLEY = "I cooked it myself!",
-		GEARS = "A pile of mechanical parts.",
-		GHOST = "That offends me as a Scientist.",
+		GEARS = "Spare mechanical parts left behind by Tinker Knight.", --Finished
+		GHOST = "A minion of Specter Knight no doubt!", --Finished
 		GOLDENAXE = "That's one fancy axe.",
 		GOLDENPICKAXE = "Hey, isn't gold really soft?",
 		GOLDENPITCHFORK = "Why did I even make a pitchfork this fancy?",
-		GOLDENSHOVEL = "I can't wait to dig holes.",
+		GOLDENSHOVEL = "A quite heavy digging tool.", --Finished
 		GOLDNUGGET = "I can't eat it, but it sure is shiny.",
 		GRASS =
 		{
@@ -744,7 +744,7 @@ return {
 		MONKEY = "Curious little guy.",
 		MONKEYBARREL = "Did that just move?",
 		MONSTERLASAGNA = "I cooked it myself!",
-		MONSTERMEAT = "Ugh. I don't think I should eat that.",
+		MONSTERMEAT = "Ugh. I don't think the Goatician would even eat that.", --Finished
 		MONSTERMEAT_DRIED = "Strange-smelling jerky.",
 		MOSQUITO =
 		{
@@ -892,7 +892,7 @@ return {
 		SEEDS = "Each one is a tiny mystery.",
 		SEEDS_COOKED = "I cooked all the life out of 'em!",
 		SEWING_KIT = "Darn it! Darn it all to heck!",
-		SHOVEL = "There's a lot going on underground.",
+		SHOVEL = "A flimsy tool compared to my Shovelblade!", --Finished
 		SILK = "It comes from a spider's butt.",
 		SKELETON = "Better him than me.",
 		SKULLCHEST = "I'm not sure if I want to open it.",

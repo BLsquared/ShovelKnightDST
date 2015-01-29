@@ -36,9 +36,10 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"shovelblade",
+	--"shovelblade",
 	--"skitemmealticket",
 	--"skitemmanapotion",
+	"skweaponshovelbladebasic",
 }
 
 -- Upgrades!
@@ -91,6 +92,43 @@ local function oneat(inst, food)
 	end
 end
 
+local function onupdate(inst, dt)
+	inst.charge_time = inst.charge_time - dt
+	if inst.charge_time <= 0 then
+		inst.charge_time = 0
+		if inst.charged_task ~= nil then
+			inst.charged_task:Cancel()
+			inst.charged_task = nil
+		end
+		inst.SoundEmitter:KillSound("overcharge_sound")
+		inst.Light:Enable(false)
+		inst.AnimState:SetBloomEffectHandle("")
+		inst.components.talker:Say("Charge Handle Dismiss")
+	else
+    	local rad = 3
+
+    	inst.Light:Enable(true)
+    	inst.Light:SetRadius(rad)
+	end
+end
+
+local function startovercharge(inst, duration)
+    inst.charge_time = duration
+
+    --inst.SoundEmitter:KillSound("overcharge_sound")
+    inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/charged", "overcharge_sound")
+    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+
+    if inst.charged_task == nil then
+        inst.charged_task = inst:DoPeriodicTask(1, onupdate, nil, 1)
+        onupdate(inst, 0)
+    end
+end
+
+local function onlongupdate(inst, dt)
+    inst.charge_time = math.max(0, inst.charge_time - dt)
+end
+
 local function onpreload(inst, data)
     if data ~= nil then --and data.level ~= nil and data.manaPotion ~= nil then
 		if data.level ~= nil then
@@ -119,13 +157,22 @@ local function onpreload(inst, data)
     end
 end
 
+local function onload(inst, data)
+    if data ~= nil and data.charge_time ~= nil then
+        startovercharge(inst, data.charge_time)
+    end
+end
+
 local function onsave(inst, data)
 	data.level = inst.level > 0 and inst.level or nil
 	data.mealTicket = inst.mealTicket > 0 and inst.mealTicket or nil
 	data.manaPotion = inst.manaPotion > 0 and inst.manaPotion or nil
+	
+	data.charge_time = inst.charge_time > 0 and inst.charge_time or nil
 end
 
 local function ondeath(inst)
+	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
     --if inst.level > 0 then
         --inst.level = 0
@@ -144,10 +191,14 @@ end
 
 -- This initializes for the host only
 local master_postinit = function(inst)
+
 	--Personal Recipes
 	inst:AddTag("skitemtemplate_skbuilder")
 	inst:AddTag("skitemmealticket_skbuilder")
 	inst:AddTag("skitemmanapotion_skbuilder")
+	inst:AddTag("skweaponshovelbladechargehandle_skbuilder")
+	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
+	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
@@ -163,6 +214,10 @@ local master_postinit = function(inst)
 	local mealTicketMAX = 9
 	local manaPotionMAX = 9
 	
+	--Special Shovelblade Abilities
+	inst.charge_time = 0
+	inst.charged_task = nil
+	
 	inst.components.health:SetMaxHealth(80)
 	inst.components.hunger:SetMax(150)
 	inst.components.sanity:SetMax(120)
@@ -170,10 +225,12 @@ local master_postinit = function(inst)
 	inst.components.combat.damagemultiplier = 1
 	inst.components.sanity.night_drain_mult = 1
 	inst.components.eater:SetOnEatFn(oneat)
+	
+	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
+	inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
 	inst:ListenForEvent("death", ondeath)
-	
 	
 	local function IsChestArmor(item)
         if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
@@ -182,6 +239,12 @@ local master_postinit = function(inst)
             return false
         end
     end 
+	
+	--local old_DoAttack = inst.components.combat.DoAttack 
+		--inst.components.combat.DoAttack = function(self, target_override, weapon, projectile)
+		--startovercharge(inst, inst.charge_time + 10)
+		--return old_DoAttack(self, target_override, weapon, projectile)
+	--end
 	
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
