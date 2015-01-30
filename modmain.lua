@@ -42,6 +42,10 @@ Assets = {
 }
 
 RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
+RemapSoundEvent( "dontstarve/characters/winston/chargehandlecharged", "winston/characters/winston/chargehandlecharged" )
+RemapSoundEvent( "dontstarve/characters/winston/chargehandlerelease", "winston/characters/winston/chargehandlerelease" )
+RemapSoundEvent( "dontstarve/characters/winston/dropspark", "winston/characters/winston/dropspark" )
+RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winston/jump" )
 
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS

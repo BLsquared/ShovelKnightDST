@@ -3,13 +3,14 @@
 <guid>{7976909c-6d85-4ea9-9025-b97f4d14571e}</guid>
 <version>4</version>
 <eventgroup_nextid>0</eventgroup_nextid>
-<soundbank_nextid>0</soundbank_nextid>
+<soundbank_nextid>1</soundbank_nextid>
 <sounddef_nextid>0</sounddef_nextid>
 <build_project>1</build_project>
 <build_headerfile>0</build_headerfile>
 <build_banklists>0</build_banklists>
 <build_programmerreport>0</build_programmerreport>
 <build_applytemplate>0</build_applytemplate>
+<currentbank>winston_bank00</currentbank>
 <currentlanguage>default</currentlanguage>
 <primarylanguage>default</primarylanguage>
 <language>default</language>
@@ -29,16 +30,53 @@
 <name>master</name>
 <guid>{2d63fd81-01bc-463c-840a-123f80c0024a}</guid>
 <open>0</open>
+<sounddef>
+<name>/winston_shovelbladeequipped</name>
+<guid>{c3b957d1-8835-4d0a-8094-f6c7896d7913}</guid>
+<type>sequential</type>
+<spawntime_min>0</spawntime_min>
+<spawntime_max>0</spawntime_max>
+<spawn_max>1</spawn_max>
+<mode>0</mode>
+<pitch>0</pitch>
+<pitch_randmethod>1</pitch_randmethod>
+<pitch_random_min>0</pitch_random_min>
+<pitch_random_max>0</pitch_random_max>
+<pitch_randomization>0</pitch_randomization>
+<pitch_recalculate>0</pitch_recalculate>
+<volume_db>0</volume_db>
+<volume_randmethod>1</volume_randmethod>
+<volume_random_min>0</volume_random_min>
+<volume_random_max>0</volume_random_max>
+<volume_randomization>0</volume_randomization>
+<position_randomization>0</position_randomization>
+<trigger_delay_min>0</trigger_delay_min>
+<trigger_delay_max>0</trigger_delay_max>
+<notes></notes>
+<waveform>
+<filename>sounds/winston_shovelbladeequipped.mp3</filename>
+<soundbankname>winston_bank00</soundbankname>
+<weight>100</weight>
+<percentagelocked>0</percentagelocked>
+</waveform>
+</sounddef>
 </sounddeffolder>
 <eventgroup>
-<name>untitled</name>
+<name>characters</name>
 <guid>{3ebb38b1-1cac-4bf1-8be9-7c37c88fa094}</guid>
 <eventgroup_nextid>0</eventgroup_nextid>
 <event_nextid>1</event_nextid>
-<open>0</open>
+<open>1</open>
+<notes></notes>
+<eventgroup>
+<name>winston</name>
+<guid>{5cd30e25-9d08-4197-90bb-4b4a7c5debf0}</guid>
+<eventgroup_nextid>0</eventgroup_nextid>
+<event_nextid>0</event_nextid>
+<open>1</open>
 <notes></notes>
 <event>
-<name>event00</name>
+<name>shovelbladeequipped</name>
 <guid>{87b42db5-1c1d-42b2-ab50-75a5366a5456}</guid>
 <parameter_nextid>0</parameter_nextid>
 <layer_nextid>1</layer_nextid>
@@ -51,6 +89,22 @@
 <soundlock>0</soundlock>
 <envlock>0</envlock>
 <priority>-1</priority>
+<sound>
+<name>/winston_shovelbladeequipped</name>
+<x>0</x>
+<width>1</width>
+<startmode>0</startmode>
+<loopmode>1</loopmode>
+<loopcount2>-1</loopcount2>
+<autopitchenabled>0</autopitchenabled>
+<autopitchparameter>0</autopitchparameter>
+<autopitchreference>0</autopitchreference>
+<autopitchatzero>0</autopitchatzero>
+<finetune>0</finetune>
+<volume>1</volume>
+<fadeintype>2</fadeintype>
+<fadeouttype>2</fadeouttype>
+</sound>
 <_PC_enable>1</_PC_enable>
 <_XBOX_enable>1</_XBOX_enable>
 <_XBOX360_enable>1</_XBOX360_enable>
@@ -158,6 +212,7 @@
 <_WII_enabled>1</_WII_enabled>
 </event>
 </eventgroup>
+</eventgroup>
 <default_soundbank_props>
 <name>default_soundbank_props</name>
 <guid>{1335e492-4c63-4d9e-8d75-863aac72c530}</guid>
@@ -216,6 +271,81 @@
 <_WII_forcesoftware>0</_WII_forcesoftware>
 <_WII_maxstreams>10</_WII_maxstreams>
 </default_soundbank_props>
+<soundbank>
+<name>winston_bank00</name>
+<guid>{35f75703-6654-4412-968c-cc1e04c02564}</guid>
+<load_into_rsx>0</load_into_rsx>
+<disable_seeking>0</disable_seeking>
+<enable_syncpoints>1</enable_syncpoints>
+<hasbuiltwithsyncpoints>0</hasbuiltwithsyncpoints>
+<_PC_banktype>DecompressedSample</_PC_banktype>
+<_XBOX_banktype>DecompressedSample</_XBOX_banktype>
+<_XBOX360_banktype>DecompressedSample</_XBOX360_banktype>
+<_GC_banktype>DecompressedSample</_GC_banktype>
+<_PS2_banktype>DecompressedSample</_PS2_banktype>
+<_PSP_banktype>DecompressedSample</_PSP_banktype>
+<_PS3_banktype>DecompressedSample</_PS3_banktype>
+<_WII_banktype>DecompressedSample</_WII_banktype>
+<notes></notes>
+<rebuild>1</rebuild>
+<waveform>
+<filename>sounds/winston_shovelbladeequipped.mp3</filename>
+<guid>{c6b8450a-16b4-49da-8fd1-53c8a6f29ffb}</guid>
+<mindistance>1</mindistance>
+<maxdistance>10000</maxdistance>
+<deffreq>44100</deffreq>
+<defvol>1</defvol>
+<defpan>0</defpan>
+<defpri>128</defpri>
+<xmafiltering>0</xmafiltering>
+<channelmode>0</channelmode>
+<quality_crossplatform>0</quality_crossplatform>
+<quality>-1</quality>
+<optimisedratereduction>100</optimisedratereduction>
+<enableratereduction>1</enableratereduction>
+<notes></notes>
+</waveform>
+<_PC_format>PCM</_PC_format>
+<_PC_quality>50</_PC_quality>
+<_PC_optimisesamplerate>0</_PC_optimisesamplerate>
+<_PC_forcesoftware>1</_PC_forcesoftware>
+<_PC_maxstreams>10</_PC_maxstreams>
+<_XBOX_format>PCM</_XBOX_format>
+<_XBOX_quality>50</_XBOX_quality>
+<_XBOX_optimisesamplerate>0</_XBOX_optimisesamplerate>
+<_XBOX_forcesoftware>0</_XBOX_forcesoftware>
+<_XBOX_maxstreams>10</_XBOX_maxstreams>
+<_XBOX360_format>PCM</_XBOX360_format>
+<_XBOX360_quality>50</_XBOX360_quality>
+<_XBOX360_optimisesamplerate>0</_XBOX360_optimisesamplerate>
+<_XBOX360_forcesoftware>1</_XBOX360_forcesoftware>
+<_XBOX360_maxstreams>10</_XBOX360_maxstreams>
+<_GC_format>PCM</_GC_format>
+<_GC_quality>50</_GC_quality>
+<_GC_optimisesamplerate>0</_GC_optimisesamplerate>
+<_GC_forcesoftware>0</_GC_forcesoftware>
+<_GC_maxstreams>10</_GC_maxstreams>
+<_PS2_format>PCM</_PS2_format>
+<_PS2_quality>50</_PS2_quality>
+<_PS2_optimisesamplerate>0</_PS2_optimisesamplerate>
+<_PS2_forcesoftware>0</_PS2_forcesoftware>
+<_PS2_maxstreams>10</_PS2_maxstreams>
+<_PSP_format>PCM</_PSP_format>
+<_PSP_quality>50</_PSP_quality>
+<_PSP_optimisesamplerate>0</_PSP_optimisesamplerate>
+<_PSP_forcesoftware>0</_PSP_forcesoftware>
+<_PSP_maxstreams>10</_PSP_maxstreams>
+<_PS3_format>PCM</_PS3_format>
+<_PS3_quality>50</_PS3_quality>
+<_PS3_optimisesamplerate>0</_PS3_optimisesamplerate>
+<_PS3_forcesoftware>1</_PS3_forcesoftware>
+<_PS3_maxstreams>10</_PS3_maxstreams>
+<_WII_format>PCM</_WII_format>
+<_WII_quality>50</_WII_quality>
+<_WII_optimisesamplerate>0</_WII_optimisesamplerate>
+<_WII_forcesoftware>0</_WII_forcesoftware>
+<_WII_maxstreams>10</_WII_maxstreams>
+</soundbank>
 <notes></notes>
 <currentplatform>PC</currentplatform>
 <_PC_encryptionkey></_PC_encryptionkey>
@@ -272,7 +402,18 @@
 <neweventlasttemplatename></neweventlasttemplatename>
 
 <Composition>
-    <AuditionConsoleControlRepository/>
+    <AuditionConsoleControlRepository>
+        <AuditionConsoleControl Type="Utility" Xpos="18" Ypos="18">
+            <SimpleRack>
+                <ControlName>Reset</ControlName>
+                <ControlRange>0, 1</ControlRange>
+                <ControlWidget>
+                    <ResetControl/>
+                </ControlWidget>
+                <ControlMapping Type="3" ID="0"/>
+            </SimpleRack>
+        </AuditionConsoleControl>
+    </AuditionConsoleControlRepository>
     <CompositionUI>
         <SceneEditor>
             <SceneEditorItemRepository/>
@@ -300,7 +441,11 @@
         <UID>1</UID>
     </ParameterFactory>
     <ParameterRepository/>
-    <SceneRepository/>
+    <SceneRepository>
+        <Scene ID="1">
+            <CueSheet></CueSheet>
+        </Scene>
+    </SceneRepository>
     <SegmentRepository/>
     <SharedFile/>
     <ThemeFactory>

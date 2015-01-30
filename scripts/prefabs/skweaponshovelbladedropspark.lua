@@ -34,6 +34,7 @@ local function onupdate(inst, dt)
 				inst.chargeHandleClock_Task:Cancel()
 				inst.chargeHandleClock_Task = nil
 			end
+			inst.owner.components.combat:SetAttackPeriod(inst.owner.normalAttackSpeed)
 			inst.owner.AnimState:SetHaunted(false)
 			--inst.owner.components.talker:Say("Charge Handle Dismiss")
 		--else
@@ -49,7 +50,9 @@ end
 local function startovercharge(inst, duration, attacker)
 	if duration == 5 then
 		inst.chargeHandleBuffTime = duration
+		attacker.components.combat:SetAttackPeriod(1)--Slows down the Finisher
 		attacker.AnimState:SetHaunted(true)
+		attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlecharged")
 		--attacker.components.talker:Say("Charge Handle Enguaged")
 	elseif duration == 7 then
 		inst.chargeHandleComboTime = duration
@@ -74,7 +77,9 @@ local function onattack(inst, attacker, target)
 			inst.chargeHandleClock_Task = nil
 			attacker.AnimState:SetHaunted(false)
 			target.components.combat:GetAttacked(attacker, 45, inst)
+			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
 			target.components.freezable:SpawnShatterFX()
+			attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlerelease")
 			--target.components.burnable:Ignite(nil, attacker)
 				
 		elseif inst.chargeHandleBuffTime <= 0 then
@@ -113,10 +118,7 @@ local function onsave(inst, data)
 	data.playEquippedSound = inst.playEquippedSound > 0 and inst.playEquippedSound or nil
 end
 
-local function fn(Sim)
-
-	local function onequip(inst, owner)
-	
+local function onequip(inst, owner)
 		inst.owner = owner
 		
 		--Sets how strong this weapon is
@@ -139,19 +141,33 @@ local function fn(Sim)
 			end
 			if inst.playEquippedSound > 1 then --Stops the sound from player at load in
 				inst.playEquippedSound = 0
-			end  
+			end
 		end
 		
 		--Makes the shovelblade weak for other characters
 		if owner.prefab ~= "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageGeneric)
 		end
-	end
+end
 
-	local function onunequip(inst, owner)
-		inst.owner = nil
+local function onunequip(inst, owner)
 		inst.playEquippedSound = 0
 		
+		if owner.prefab == "winston" then
+			--Take off buffs
+			if inst.chargeHandleBuffTime > 0 then
+			owner.AnimState:SetHaunted(false)
+			end
+			inst.chargeHandleComboBuilder = 0
+			inst.chargeHandleComboTime = 0
+			inst.chargeHandleBuffTime = 0
+			if inst.chargeHandleClock_Task ~= nil then
+				inst.chargeHandleClock_Task:Cancel()
+				inst.chargeHandleClock_Task = nil
+			end
+			owner.components.combat:SetAttackPeriod(owner.normalAttackSpeed)
+		end
+			
 		--Sets how strong this weapon is
 		local shovelbladeDamageGeneric = 5
 	
@@ -160,7 +176,10 @@ local function fn(Sim)
 		
 		--Resets the Shovelblade damage back to normal
 		inst.components.weapon:SetDamage(shovelbladeDamageGeneric)
-	end
+		inst.owner = nil
+end
+
+local function fn(Sim)
 	
 	local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
@@ -203,6 +222,9 @@ local function fn(Sim)
 	inst.chargeHandleComboTime = 0
 	inst.chargeHandleBuffTime = 0
 	inst.chargeHandleClock_Task = nil
+	
+	--Trench Blade Relic Chance
+	inst.trenchBladeRelicFind = 0.02
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave

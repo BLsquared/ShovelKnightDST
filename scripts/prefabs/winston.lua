@@ -39,6 +39,25 @@ local start_inv = {
 	"skweaponshovelbladebasic",
 }
 
+--11 Relics, Might add gems to the list
+local relicList = {
+	"carrot", "rocks", "log", "goldnugget", "livinglog", "turkeydinner",
+	"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
+}
+--Random vaulable loot list
+local lootList = {
+	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", --"goldnugget",
+}
+
+--Finds a relic to make
+local function randomRelicGen()
+	return relicList[math.random(#relicList)]
+end
+
+local function randomLootGen()
+	return lootList[math.random(#lootList)]
+end
+
 --creates the relic in world
 local function createRelic(relicPrefab, target)
 	if relicPrefab then
@@ -61,7 +80,6 @@ local function createRelic(relicPrefab, target)
 				if not (relic.components.inventoryitem and relic.components.inventoryitem:IsHeld()) then
 					if not relic:IsOnValidGround() then
 						SpawnPrefab("splash_ocean").Transform:SetPosition(relic.Transform:GetWorldPosition())
-						--PlayFX(relic:GetPosition(), "splash", "splash_ocean", "idle")
 						if relic:HasTag("irreplaceable") then
 							local x,y,z = FindSafeSpawnLocation(relic.Transform:GetWorldPosition())								
 							relic.Transform:SetPosition(x,y,z)
@@ -125,6 +143,52 @@ local function oneat(inst, food)
 	end
 end
 
+local function onupdate(inst, dt)
+	inst.trenchBladeComboTime = inst.trenchBladeComboTime - dt
+	inst.trenchBladeDebuffTime = inst.trenchBladeDebuffTime - dt
+		
+	if inst.trenchBladeComboBuilder > 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
+		inst.trenchBladeComboBuilder = 0
+		inst.trenchBladeComboTime = 0
+		inst.trenchBladeDebuffTime = 0
+		if inst.trenchBladeClock_Task ~= nil then
+			inst.trenchBladeClock_Task:Cancel()
+			inst.trenchBladeClock_Task = nil
+		end
+		--inst.components.talker:Say("Combo Lost")
+			
+	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
+		inst.trenchBladeComboTime = 0
+		inst.trenchBladeDebuffTime = 0
+		if inst.trenchBladeClock_Task ~= nil then
+			inst.trenchBladeClock_Task:Cancel()
+			inst.trenchBladeClock_Task = nil
+		end
+		--inst.components.talker:Say("Dig Cooldown Dismiss")
+	--else
+	end
+end
+
+local function onlongupdate(inst, dt)
+    inst.trenchBladeComboTime = math.max(0, inst.trenchBladeComboTime - dt)
+	inst.trenchBladeDebuffTime = math.max(0, inst.trenchBladeDebuffTime - dt)
+end
+
+local function startovercharge(inst, duration)
+	if duration == 10 then
+		inst.trenchBladeDebuffTime = duration
+		--inst.components.talker:Say("Dig Cooldown Active")
+	elseif duration == 7 then
+		inst.trenchBladeComboTime = duration
+		--inst.components.talker:Say("Combo Enguaged")
+	end
+	
+	if inst.trenchBladeClock_Task == nil then
+        inst.trenchBladeClock_Task = inst:DoPeriodicTask(1, onupdate, nil, 1)
+        onupdate(inst, 0)
+    end
+end
+
 local function onpreload(inst, data)
     if data ~= nil then
 		if data.level ~= nil then
@@ -153,20 +217,59 @@ local function onpreload(inst, data)
     end
 end
 
+local function onload(inst, data)
+	if data ~= nil and data.trenchBladeComboTime ~= nil then
+        startovercharge(inst, data.trenchBladeComboTime)
+    end
+    if data ~= nil and data.trenchBladeDebuffTime ~= nil then
+        startovercharge(inst, data.trenchBladeDebuffTime)
+    end
+end
+
 local function onsave(inst, data)
 	data.level = inst.level > 0 and inst.level or nil
 	data.mealTicket = inst.mealTicket > 0 and inst.mealTicket or nil
 	data.manaPotion = inst.manaPotion > 0 and inst.manaPotion or nil
 	
-	data.charge_time = inst.charge_time > 0 and inst.charge_time or nil
+	data.trenchBladeComboTime = inst.trenchBladeComboTime > 0 and inst.trenchBladeComboTime or nil
+	data.trenchBladeDebuffTime = inst.trenchBladeDebuffTime > 0 and inst.trenchBladeDebuffTime or nil
 end
 
 local function onworked(inst, data)
-	if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
-		local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-		if equipped ~= nil then
-			if equipped.prefab == "skweaponshovelbladetrenchblade" or equipped.prefab == "skweaponshovelbladedropspark" then
-				--createRelic("carrot", data.target) --Creates the Relic
+	if inst.trenchBladeDebuffTime <= 0 then
+		if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
+			local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equipped ~= nil then
+				if equipped.prefab == "skweaponshovelbladetrenchblade" or equipped.prefab == "skweaponshovelbladedropspark" then
+					
+					--Gen trenchBlade Relic and Loot
+					local trenchBladeRelicFinder = equipped.trenchBladeRelicFind
+					if math.random() <= trenchBladeRelicFinder then
+						local relicGen = randomRelicGen() --Finds a random Relic
+						if relicGen ~= nil then
+							--createRelic(relicGen, data.target) --Creates the Relic DISABLED
+						end
+					elseif math.random() <= trenchBladeRelicFinder then
+						local lootGen = randomLootGen() --Finds a random Loot
+						if lootGen ~= nil then
+							createRelic(lootGen, data.target) --Creates the Loot
+						end
+					end
+					
+					--trenchBlade Debuff
+					if inst.trenchBladeComboBuilder == 0 then
+						inst.trenchBladeComboBuilder = inst.trenchBladeComboBuilder +1
+						startovercharge(inst, 7)
+					else
+						inst.trenchBladeComboBuilder = inst.trenchBladeComboBuilder +1
+						inst.trenchBladeComboTime = 7
+						if inst.trenchBladeComboBuilder >= 5 then
+							inst.trenchBladeComboBuilder = 0
+							inst.trenchBladeComboTime = 0
+							startovercharge(inst, 10)	
+						end
+					end
+				end
 			end
 		end
 	end
@@ -204,8 +307,6 @@ local master_postinit = function(inst)
 	--Personal Reading
 	inst:AddComponent("reader")
 	
-	--inst:ListenForEvent("ACTIONS.DIG", function (inst) inst.components.sanity:DoDelta(-TUNING.SANITY_MED) end, inst)
-	
 	-- Stats
 	inst.level = 0
 	inst.mealTicket = 0
@@ -224,12 +325,20 @@ local master_postinit = function(inst)
 	inst.components.sanity:SetMax(120)
 	inst.components.locomotor.runspeed = 5
 	inst.components.combat.damagemultiplier = 1
-	--inst.components.combat:SetAttackPeriod()
+	inst.normalAttackSpeed = inst.components.combat.min_attack_period --for ChargeHandle anim
 	inst.components.sanity.night_drain_mult = 1
 	
 	inst.components.eater:SetOnEatFn(oneat)
 	
+	--TrenchBlade Combo and timer
+	inst.trenchBladeComboBuilder = 0
+	inst.trenchBladeComboTime = 0
+	inst.trenchBladeDebuffTime = 0
+	inst.trenchBladeClock_Task = nil
+	
+	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
+	inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
 	inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
