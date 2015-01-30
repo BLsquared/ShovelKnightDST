@@ -74,6 +74,7 @@ local function onattack(inst, attacker, target)
 			inst.chargeHandleClock_Task = nil
 			attacker.AnimState:SetHaunted(false)
 			target.components.combat:GetAttacked(attacker, 15, inst)
+			target.components.freezable:SpawnShatterFX()
 			--target.components.burnable:Ignite(nil, attacker)
 				
 		elseif inst.chargeHandleBuffTime <= 0 then
@@ -188,7 +189,7 @@ local function fn(Sim)
     --Makes this a Tool with actions
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.DIG)
-	inst.components.tool:SetAction(ACTIONS.MINE)
+	--inst.components.tool:SetAction(ACTIONS.MINE)
 	--inst:AddInherentAction(ACTIONS.TERRAFORM)
 
     --Makes this a Weapon

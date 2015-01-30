@@ -74,6 +74,7 @@ local function onattack(inst, attacker, target)
 			inst.chargeHandleClock_Task = nil
 			attacker.AnimState:SetHaunted(false)
 			target.components.combat:GetAttacked(attacker, 30, inst)
+			target.components.freezable:SpawnShatterFX()
 			--target.components.burnable:Ignite(nil, attacker)
 				
 		elseif inst.chargeHandleBuffTime <= 0 then
