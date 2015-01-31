@@ -77,10 +77,19 @@ end
 		--candropsparkattack(inst, attacker, target)
 --end
 
-local function onattack(inst, attacker, target)
+local function onpreAttack(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
-	
-		--candropsparkattack(inst, attacker, target)
+		if inst.components.weapon.attackrange > (inst.normalRangedRange - inst.normalMeleeRange) and attacker.components.health.currenthealth == attacker.components.health.maxhealth and attacker.dropSparkDebuffTime <= 0 then
+		--if inst.components.weapon.attackrange > (inst.normalRangedRange - inst.normalMeleeRange) and attacker.components.health.currenthealth == attacker.components.health.maxhealth and attacker.dropSparkActive == false then
+			inst.components.weapon:SetDamage(0)
+		else
+			inst.components.weapon:SetDamage(30)
+		end
+	end
+end
+
+local function onattacks(inst, attacker, target)
+	if target ~= nil and attacker.prefab == "winston" then
 		
 		--Does ChargeHandle Abililty
 		if inst.chargeHandleBuffTime > 0 then --Apply ChargeHandle Attack
@@ -117,6 +126,7 @@ local function onpreload(inst, data)
     if data ~= nil and data.playEquippedSound ~= nil then
         inst.playEquippedSound = data.playEquippedSound
     end
+	
 end
 
 local function onload(inst, data)
@@ -126,9 +136,9 @@ local function onload(inst, data)
     if data ~= nil and data.chargeHandleBuffTime ~= nil then
         startovercharge(inst, data.chargeHandleBuffTime)
     end
-	if data ~= nil and data.dropSparkDebuffTime ~= nil then
-        startovercharge(inst, data.dropSparkDebuffTime)
-    end
+	--if data ~= nil and data.dropSparkDebuffTime ~= nil then
+        --startovercharge(inst, data.dropSparkDebuffTime)
+    --end
 end
 
 local function onsave(inst, data)
@@ -176,6 +186,12 @@ local function onequip(inst, owner)
 		--Makes the shovelblade strong only for Shovel Knight
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
+			if owner.components.health.currenthealth == owner.components.health.maxhealth and owner.dropSparkDebuffTime <= 0 then
+			--if owner.components.health.currenthealth == owner.components.health.maxhealth and owner.dropSparkActive == false then
+				inst.components.weapon.attackrange = inst.normalRangedRange
+			else
+				inst.components.weapon.attackrange = inst.normalMeleeRange
+			end
 			
 			--Plays special shovelblade EquippedSound
 			inst.playEquippedSound = inst.playEquippedSound +1
@@ -271,13 +287,14 @@ local function fn(Sim)
 	inst.trenchBladeRelicFind = 0.02
 	
 	--Drop Spark timer
-	inst.dropSparkDebuffTime = 0
+	--inst.dropSparkDebuffTime = 0
 	inst.normalMeleeRange = inst.components.weapon.attackrange
-	inst.normalMeleeHitRange = inst.components.weapon.hitrange
-	--inst.components.weapon:SetRange(8, 10)
+	--inst.normalMeleeHitRange = inst.components.weapon.hitrange
+	inst.normalRangedRange = 12
 	--inst.components.weapon.projectile = nil
 	
-	inst.components.weapon:SetAttackCallback(onattack) --ChargeHandle Check
+	inst.components.weapon:OnAttack(onpreAttack)
+	inst.components.weapon:SetAttackCallback(onattacks) --ChargeHandle Check
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
