@@ -35,8 +35,7 @@ local function onupdate(inst, dt)
 				inst.chargeHandleClock_Task = nil
 			end
 			inst.owner.components.combat:SetAttackPeriod(inst.owner.normalAttackSpeed)
-			--inst.owner.AnimState:SetHaunted(false)
-			attacker.AnimState:SetMultColor(1,1,1,1)
+			inst.owner.AnimState:SetHaunted(false)
 			--inst.owner.components.talker:Say("Charge Handle Dismiss")
 		--else
 		end
@@ -52,8 +51,7 @@ local function startovercharge(inst, duration, attacker)
 	if duration == 5 then
 		inst.chargeHandleBuffTime = duration
 		attacker.components.combat:SetAttackPeriod(1)--Slows down the Finisher
-		--attacker.AnimState:SetHaunted(true)
-		attacker.AnimState:SetMultColor(0,0,256,1)
+		attacker.AnimState:SetHaunted(true)
 		attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlecharged")
 		--attacker.components.talker:Say("Charge Handle Enguaged")
 	elseif duration == 7 then
@@ -77,8 +75,7 @@ local function onattack(inst, attacker, target)
 			inst.chargeHandleBuffTime = 0
 			inst.chargeHandleClock_Task:Cancel()
 			inst.chargeHandleClock_Task = nil
-			--attacker.AnimState:SetHaunted(false)
-			attacker.AnimState:SetMultColor(1,1,1,1)
+			attacker.AnimState:SetHaunted(false)
 			target.components.combat:GetAttacked(attacker, 15, inst)
 			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
 			target.components.freezable:SpawnShatterFX()
@@ -159,7 +156,7 @@ local function onunequip(inst, owner)
 		if owner.prefab == "winston" then
 			--Take off buffs
 			if inst.chargeHandleBuffTime > 0 then
-			--owner.AnimState:SetHaunted(false)
+			owner.AnimState:SetHaunted(false)
 			end
 			inst.chargeHandleComboBuilder = 0
 			inst.chargeHandleComboTime = 0
