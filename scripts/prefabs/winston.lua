@@ -93,6 +93,20 @@ local function createRelic(relicPrefab, target)
 	end
 end
 
+local function createDropSparkProjectile(inst, target, weapon)
+	local proj = SpawnPrefab("bishop_charge")--Name of the projectile
+	if proj then
+		if proj.components.projectile then
+			proj.Transform:SetPosition(inst.Transform:GetWorldPosition() )
+			proj.components.projectile:Throw(weapon, target, inst)
+			
+			proj:DoTaskInTime(1,
+			function() 
+			end)
+		end
+	end
+end
+
 -- Upgrades!
 --local function applyupgrades(inst)
 	--local levelMAX = 9
@@ -275,6 +289,22 @@ local function onworked(inst, data)
 	end
 end
 
+local function onattack(inst, data, weapon, pro)
+	if inst.components.health:IsHurt() == false then
+		--give weapon range
+		--give weapon projectile or just make it character side
+		local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if equipped ~= nil then
+				if equipped.prefab == "skweaponshovelbladedropspark" then
+					--createRelic("goldnugget", inst)
+					--createDropSparkProjectile(inst, data.target, equipped)
+				end
+			end
+	end
+					
+		
+end
+
 local function ondeath(inst)
 	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
@@ -342,6 +372,7 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 	inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
+	inst:ListenForEvent("onattackother", onattack)
 	
 	local function IsChestArmor(item)
         if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then

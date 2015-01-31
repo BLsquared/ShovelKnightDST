@@ -65,10 +65,24 @@ local function startovercharge(inst, duration, attacker)
     end
 end
 
+--local function candropsparkattack(inst, attacker, target)
+	--if inst.dropSparkDebuffTime == 0 then
+		--inst.components.weapon:SetProjectile("bishop_charge")
+	--else
+		--inst.components.weapon.projectile = nil
+	--end
+--end
+
+--local function ondropsparkattack(inst, attacker, target)
+		--candropsparkattack(inst, attacker, target)
+--end
+
 local function onattack(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
+	
+		--candropsparkattack(inst, attacker, target)
 		
-		--Does the special attack
+		--Does ChargeHandle Abililty
 		if inst.chargeHandleBuffTime > 0 then --Apply ChargeHandle Attack
 			inst.chargeHandleComboBuilder = 0
 			inst.chargeHandleComboTime = 0
@@ -112,11 +126,41 @@ local function onload(inst, data)
     if data ~= nil and data.chargeHandleBuffTime ~= nil then
         startovercharge(inst, data.chargeHandleBuffTime)
     end
+	if data ~= nil and data.dropSparkDebuffTime ~= nil then
+        startovercharge(inst, data.dropSparkDebuffTime)
+    end
 end
 
 local function onsave(inst, data)
 	data.playEquippedSound = inst.playEquippedSound > 0 and inst.playEquippedSound or nil
 end
+
+--DropSpark Stuff
+--local function onthrow(weapon, inst)
+	--used to comsume ammo / start a timer / reset back to melee weapon. Need to switch to user
+	--inst.components.weapon.variedmodefn = GetWeaponMode --Switch to melee
+--end
+
+--local function GetWeaponMode(inst)
+	--local owner = inst.weapon.components.inventoryitem.owner
+	--if owner.components.combat.target then --Add the timer here.
+		--return inst.weapon.components.weapon.modes["RANGE"]
+	--else
+		--return inst.weapon.components.weapon.modes["MELEE"]
+	--end
+--end
+
+--local function MakeProjectileWeapon(inst)
+        --inst.weapon.components.weapon.modes =
+        --{
+        	--RANGE = {damage = 0, ranged = true, attackrange = 12, hitrange = 12 + 2},
+        	--MELEE = {damage = 30, ranged = false, attackrange = inst.normalMeleeRange, hitrange = inst.normalMeleeHitRange}
+    	--}
+        --inst.components.weapon.variedmodefn = GetWeaponMode
+        --inst.components.weapon:SetProjectile("bishop_charge")
+        --inst.components.weapon:SetOnProjectileLaunch(onattack)
+        --return inst
+--end
 
 local function onequip(inst, owner)
 		inst.owner = owner
@@ -226,13 +270,20 @@ local function fn(Sim)
 	--Trench Blade Relic Chance
 	inst.trenchBladeRelicFind = 0.02
 	
+	--Drop Spark timer
+	inst.dropSparkDebuffTime = 0
+	inst.normalMeleeRange = inst.components.weapon.attackrange
+	inst.normalMeleeHitRange = inst.components.weapon.hitrange
+	--inst.components.weapon:SetRange(8, 10)
+	--inst.components.weapon.projectile = nil
+	
+	inst.components.weapon:SetAttackCallback(onattack) --ChargeHandle Check
+	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
 	inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
 	
-	inst.components.weapon:SetAttackCallback(onattack)
-
 	--Makes this a Shovel
     inst:AddInherentAction(ACTIONS.DIG)
 	
