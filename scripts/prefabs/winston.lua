@@ -311,7 +311,7 @@ local function ondeath(inst)
     --if inst.level > 0 then
         --inst.level = 0
         --applyupgrades(inst)
-    --end
+    --end	
 end
 
 -- This initializes for both clients and the host
@@ -398,7 +398,8 @@ local master_postinit = function(inst)
 		inst.components.combat.GetAttacked = function(self,attacker, damage, weapon)
 		damage = 10
 		return old_GetAttacked(self,attacker, damage, weapon)
-	end
+	end 
 end
+
 
 return MakePlayerCharacter("winston", prefabs, assets, common_postinit, master_postinit, start_inv)
