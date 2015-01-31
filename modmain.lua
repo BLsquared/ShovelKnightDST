@@ -148,6 +148,26 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 --end
 --AddClassPostConstruct("widgets/itemtile", itemtile_post)
 
+--Fix Health Penalty From Resurrection
+local function HealthPostInit(self)
+	if self.prefab == winston then
+		--print("I'm Shovel Knight! Now fix my Health!")
+		local OldRecalculatePenalty = self.RecalculatePenalty
+		local function RecalculatePenalty(self, forceupdatewidget)
+			local mult = GLOBAL.TUNING.REVIVE_HEALTH_PENALTY_AS_MULTIPLE_OF_EFFIGY
+			mult = mult * GLOBAL.TUNING.EFFIGY_HEALTH_PENALTY
+				local maxrevives = (self.maxhealth - 30)/mult
+				if self.numrevives > maxrevives then
+					self.numrevives = maxrevives
+				end
+				OldRecalculatePenalty(self, forceupdatewidget)
+			end
+			self.RecalculatePenalty = RecalculatePenalty
+		end
+	end
+ 
+AddComponentPostInit('health', HealthPostInit)
+
 AddMinimapAtlas("images/map_icons/winston.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
