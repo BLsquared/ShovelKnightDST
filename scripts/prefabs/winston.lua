@@ -36,7 +36,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "skweaponshovelbladedropspark", "turkeydinner",
+	"skweaponshovelbladebasic",
 }
 
 --11 Relics, Might add gems to the list
@@ -93,16 +93,16 @@ local function createRelic(relicPrefab, target)
 	end
 end
 
---DropSpark Proj
 local function createDropSparkProjectile(inst, target, weapon)
-	local proj = SpawnPrefab("skfxdropspark_wave")--Name of the projectile
+	local proj = SpawnPrefab("bishop_charge")--Name of the projectile
 	if proj then
 		if proj.components.projectile then
-			proj.owner = inst --Saves player to Projectile
-			--proj.projDamageBounus =  --Adds bonus damage from armor bonus
 			proj.Transform:SetPosition(inst.Transform:GetWorldPosition() )
 			proj.components.projectile:Throw(weapon, target, inst)
-			inst.SoundEmitter:PlaySound("winston/characters/winston/dropspark")
+			
+			proj:DoTaskInTime(1,
+			function() 
+			end)
 		end
 	end
 end
@@ -160,26 +160,7 @@ end
 local function onupdate(inst, dt)
 	inst.trenchBladeComboTime = inst.trenchBladeComboTime - dt
 	inst.trenchBladeDebuffTime = inst.trenchBladeDebuffTime - dt
-	inst.dropSparkDebuffTime = inst.dropSparkDebuffTime - dt
-	if inst.dropSparkDebuffTime <= 0 then
-		inst.dropSparkDebuffTime = 0
-		if inst.components.health.currenthealth == inst.components.health.maxhealth then
-			local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if equipped ~= nil then
-				if equipped.prefab == "skweaponshovelbladedropspark" then
-					equipped.components.weapon.attackrange = equipped.normalRangedRange --Make Range
-				end
-			end
-		end
-	else
-		local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-		if equipped ~= nil then
-			if equipped.components.weapon.attackrange ~= equipped.normalMeleeRange then
-				equipped.components.weapon.attackrange = equipped.normalMeleeRange
-			end
-		end
-	end
-	
+		
 	if inst.trenchBladeComboBuilder > 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
 		inst.trenchBladeComboBuilder = 0
 		inst.trenchBladeComboTime = 0
@@ -189,16 +170,15 @@ local function onupdate(inst, dt)
 			inst.trenchBladeClock_Task = nil
 		end
 		--inst.components.talker:Say("Combo Lost")
-		
-	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 and inst.dropSparkDebuffTime <=0 then
-			inst.trenchBladeComboTime = 0
-			inst.trenchBladeDebuffTime = 0
+			
+	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
+		inst.trenchBladeComboTime = 0
+		inst.trenchBladeDebuffTime = 0
 		if inst.trenchBladeClock_Task ~= nil then
 			inst.trenchBladeClock_Task:Cancel()
 			inst.trenchBladeClock_Task = nil
 		end
 		--inst.components.talker:Say("Dig Cooldown Dismiss")
-		
 	--else
 	end
 end
@@ -206,7 +186,6 @@ end
 local function onlongupdate(inst, dt)
     inst.trenchBladeComboTime = math.max(0, inst.trenchBladeComboTime - dt)
 	inst.trenchBladeDebuffTime = math.max(0, inst.trenchBladeDebuffTime - dt)
-	inst.dropSparkDebuffTime = math.max(0, inst.dropSparkDebuffTime - dt)
 end
 
 local function startovercharge(inst, duration)
@@ -216,8 +195,6 @@ local function startovercharge(inst, duration)
 	elseif duration == 7 then
 		inst.trenchBladeComboTime = duration
 		--inst.components.talker:Say("Combo Enguaged")
-	elseif duration == 9 then
-		inst.dropSparkDebuffTime = duration
 	end
 	
 	if inst.trenchBladeClock_Task == nil then
@@ -270,20 +247,6 @@ local function onsave(inst, data)
 	
 	data.trenchBladeComboTime = inst.trenchBladeComboTime > 0 and inst.trenchBladeComboTime or nil
 	data.trenchBladeDebuffTime = inst.trenchBladeDebuffTime > 0 and inst.trenchBladeDebuffTime or nil
-	data.dropSparkDebuffTime = inst.dropSparkDebuffTime > 0 and inst.dropSparkDebuffTime or nil
-end
-
-local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, afflicter)
-	local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-	if equipped ~= nil then
-		if equipped.prefab == "skweaponshovelbladedropspark" then
-			if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkDebuffTime <= 0 then
-				equipped.components.weapon.attackrange = equipped.normalRangedRange --Makes range
-			else
-				equipped.components.weapon.attackrange = equipped.normalMeleeRange --Makes melee
-			end
-		end
-	end
 end
 
 local function onworked(inst, data)
@@ -327,19 +290,19 @@ local function onworked(inst, data)
 end
 
 local function onattack(inst, data, weapon, pro)
-	if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkDebuffTime <= 0 then
-	--if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkActive == false then
-	
+	if inst.components.health:IsHurt() == false then
+		--give weapon range
+		--give weapon projectile or just make it character side
 		local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-		if equipped ~= nil then
-			if equipped.prefab == "skweaponshovelbladedropspark" then
-				--equipped.components.weapon.attackrange = equipped.normalMeleeRange --Make Shovelblade Melee
-				createDropSparkProjectile(inst, data.target, equipped)
-				startovercharge(inst, 9)
-				--inst.dropSparkActive = true
+			if equipped ~= nil then
+				if equipped.prefab == "skweaponshovelbladedropspark" then
+					--createRelic("goldnugget", inst)
+					--createDropSparkProjectile(inst, data.target, equipped)
+				end
 			end
-		end
 	end
+					
+		
 end
 
 local function ondeath(inst)
@@ -348,7 +311,7 @@ local function ondeath(inst)
     --if inst.level > 0 then
         --inst.level = 0
         --applyupgrades(inst)
-    --end
+    --end	
 end
 
 -- This initializes for both clients and the host
@@ -403,21 +366,13 @@ local master_postinit = function(inst)
 	inst.trenchBladeDebuffTime = 0
 	inst.trenchBladeClock_Task = nil
 	
-	--DropSpark Combo
-	inst.dropSparkDebuffTime = 0
-	--inst.dropSparkActive = false
-	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
 	inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
-	
-	inst:ListenForEvent("healthdelta", onhealthupdate)
 	inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
-	--inst:ListenForEvent("onattackother", onattack)
-	inst:ListenForEvent("onhitother", onattack)
-	inst:ListenForEvent("onmissother", onattack)
+	inst:ListenForEvent("onattackother", onattack)
 	
 	local function IsChestArmor(item)
         if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
@@ -443,7 +398,8 @@ local master_postinit = function(inst)
 		inst.components.combat.GetAttacked = function(self,attacker, damage, weapon)
 		damage = 10
 		return old_GetAttacked(self,attacker, damage, weapon)
-	end
+	end 
 end
+
 
 return MakePlayerCharacter("winston", prefabs, assets, common_postinit, master_postinit, start_inv)
