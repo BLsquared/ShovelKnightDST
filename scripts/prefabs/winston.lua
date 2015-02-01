@@ -100,7 +100,7 @@ local function createDropSparkProjectile(inst, target, weapon)
 		if proj.components.projectile then
 			proj.owner = inst --Saves player to Projectile
 			--proj.projDamageBounus =  --Adds bonus damage from armor bonus
-			proj.Transform:SetPosition(inst.Transform:GetWorldPosition() )
+			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			proj.components.projectile:Throw(weapon, target, inst)
 			inst.SoundEmitter:PlaySound("winston/characters/winston/dropspark")
 		end
