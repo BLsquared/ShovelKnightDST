@@ -67,9 +67,9 @@ end
 	--inst:DoTaskInTime(0, inst.Remove)
 --end
 
---local function OnThrown(inst)
-    --inst:ListenForEvent("animover", OnAnimOver)
---end
+local function OnThrown(inst, data)
+    inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
+end
 
 local function fn()
 	local inst = CreateEntity()
@@ -89,9 +89,9 @@ local function fn()
 
     inst.Transform:SetFourFaced()
 
-    inst.AnimState:SetBank("bishop_attack")
+    inst.AnimState:SetBank("skfxdropspark_attack")
     inst.AnimState:SetBuild("skfxdropspark_attack")
-    inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:PlayAnimation("idle", true)
 
     inst:AddTag("projectile")
 	
@@ -104,7 +104,7 @@ local function fn()
     inst.components.projectile:SetOnHitFn(OnHit)
 	inst.components.projectile:SetOnMissFn(OnMiss)
     --inst.components.projectile:SetOnMissFn(inst.Remove)
-    --inst.components.projectile:SetOnThrownFn(OnThrown)
+    inst.components.projectile:SetOnThrownFn(OnThrown)
 	inst.components.projectile.range = 20
 	--inst.components.projectile:SetLaunchOffset()
 	
