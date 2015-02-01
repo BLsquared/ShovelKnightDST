@@ -62,7 +62,7 @@
 </sounddef>
 <sounddef>
 <name>/winston_chargehandlecharged</name>
-<guid>{a67596b7-fa0f-4213-9fdc-9ccd690aae36}</guid>
+<guid>{f312c1c2-4041-4245-9163-df61a38458fa}</guid>
 <type>sequential</type>
 <spawntime_min>0</spawntime_min>
 <spawntime_max>0</spawntime_max>
@@ -92,7 +92,7 @@
 </sounddef>
 <sounddef>
 <name>/winston_chargehandlerelease</name>
-<guid>{dcd08b9c-0009-4901-a627-224af5f53c16}</guid>
+<guid>{97b62edb-9177-4311-9c53-524660d77127}</guid>
 <type>sequential</type>
 <spawntime_min>0</spawntime_min>
 <spawntime_max>0</spawntime_max>
@@ -122,7 +122,7 @@
 </sounddef>
 <sounddef>
 <name>/winston_dropspark</name>
-<guid>{6304d9fc-2deb-46b5-9cc6-3f2aec62d2a0}</guid>
+<guid>{4ab26c13-53eb-4e7e-b79a-17b469cd985e}</guid>
 <type>sequential</type>
 <spawntime_min>0</spawntime_min>
 <spawntime_max>0</spawntime_max>
@@ -152,7 +152,7 @@
 </sounddef>
 <sounddef>
 <name>/winston_jump</name>
-<guid>{e52a73a0-6a1f-4b72-a66c-8f54524cad66}</guid>
+<guid>{5f8e6124-8b55-474f-870c-ce5c5bc12535}</guid>
 <type>sequential</type>
 <spawntime_min>0</spawntime_min>
 <spawntime_max>0</spawntime_max>
@@ -954,7 +954,7 @@
 <rebuild>1</rebuild>
 <waveform>
 <filename>sounds/winston_chargehandlecharged.mp3</filename>
-<guid>{a5b07210-5058-48a6-ad0b-1f60b645db23}</guid>
+<guid>{c2d9cd11-1fe0-4b7d-928a-ac951746d141}</guid>
 <mindistance>1</mindistance>
 <maxdistance>10000</maxdistance>
 <deffreq>44100</deffreq>
@@ -971,7 +971,7 @@
 </waveform>
 <waveform>
 <filename>sounds/winston_chargehandlerelease.mp3</filename>
-<guid>{cebc87e9-1d34-4e8e-b2aa-3198fa8766e7}</guid>
+<guid>{abdb4527-f6c9-4888-8de6-42e1429d49df}</guid>
 <mindistance>1</mindistance>
 <maxdistance>10000</maxdistance>
 <deffreq>44100</deffreq>
@@ -988,7 +988,7 @@
 </waveform>
 <waveform>
 <filename>sounds/winston_dropspark.mp3</filename>
-<guid>{59917f41-5c0b-4b92-af78-b26790d0c81b}</guid>
+<guid>{a01e5693-1e1e-4970-be3f-5da774c41458}</guid>
 <mindistance>1</mindistance>
 <maxdistance>10000</maxdistance>
 <deffreq>44100</deffreq>
@@ -1005,7 +1005,7 @@
 </waveform>
 <waveform>
 <filename>sounds/winston_jump.mp3</filename>
-<guid>{e5a181c3-c8cd-409e-b6a2-a55efa38094e}</guid>
+<guid>{29c17285-2d86-4cda-8415-1cbe255fe8d8}</guid>
 <mindistance>1</mindistance>
 <maxdistance>10000</maxdistance>
 <deffreq>44100</deffreq>

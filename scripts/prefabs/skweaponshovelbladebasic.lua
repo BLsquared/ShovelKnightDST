@@ -140,7 +140,7 @@ local function fn(Sim)
 end
 
 STRINGS.NAMES.SKWEAPONSHOVELBLADEBASIC = "Shovelblade"
---STRINGS.CHARACTERS.DROK.DESCRIBE.REDPAINT = "Drok use to paint!"
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKWEAPONSHOVELBLADEBASIC = "Both a worthy weapon and a digging tool."
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKWEAPONSHOVELBLADEBASIC = "A strange dirt moving tool..."
 
 return Prefab("common/inventory/skweaponshovelbladebasic", fn, assets)
