@@ -54,10 +54,10 @@ local function OnMiss(inst, owner, target)
 	--Reset Shovelblade
 	--shovelbladeRangeReset (inst, owner, target)
 	
-    local pt = Vector3(inst.Transform:GetWorldPosition())
+    --local pt = Vector3(inst.Transform:GetWorldPosition())
 
-    local poop = SpawnPrefab("poop")
-    poop.Transform:SetPosition(pt.x, pt.y, pt.z)
+    --local poop = SpawnPrefab("poop")
+    --poop.Transform:SetPosition(pt.x, pt.y, pt.z)
 
     inst:Remove()
 end
@@ -98,7 +98,7 @@ local function fn()
     inst.persists = false
 
     inst:AddComponent("projectile")
-    inst.components.projectile:SetSpeed(20)
+    inst.components.projectile:SetSpeed(5)
     inst.components.projectile:SetHoming(false)
     inst.components.projectile:SetHitDist(.2)
     inst.components.projectile:SetOnHitFn(OnHit)
