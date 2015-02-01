@@ -68,7 +68,7 @@ end
 --end
 
 local function OnThrown(inst, data)
-    inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
+    --inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
 end
 
 local function fn()
