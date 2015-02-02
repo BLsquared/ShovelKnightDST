@@ -76,7 +76,7 @@ local function onattack(inst, attacker, target)
 			inst.chargeHandleClock_Task:Cancel()
 			inst.chargeHandleClock_Task = nil
 			attacker.AnimState:SetHaunted(false)
-			target.components.combat:GetAttacked(attacker, 15, inst)
+			target.components.combat:GetAttacked(attacker, 15, inst) --Charge Handle damage
 			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
 			target.components.freezable:SpawnShatterFX()
 			attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlerelease")
@@ -208,8 +208,6 @@ local function fn(Sim)
     --Makes this a Tool with actions
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.DIG)
-	--inst.components.tool:SetAction(ACTIONS.MINE)
-	--inst:AddInherentAction(ACTIONS.TERRAFORM)
 
     --Makes this a Weapon
     inst:AddComponent("weapon")
@@ -232,8 +230,6 @@ local function fn(Sim)
 
 	--Makes this a Shovel
     inst:AddInherentAction(ACTIONS.DIG)
-	
-	--inst:AddComponent("terraformer")
 
     inst:AddComponent("inspectable")
 

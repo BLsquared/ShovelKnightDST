@@ -5,6 +5,8 @@ local assets =
 	
 	Asset("ATLAS", "images/inventoryimages/skweaponshovelbladedropspark.xml"),
 	Asset("IMAGE", "images/inventoryimages/skweaponshovelbladedropspark.tex"),
+	Asset("ATLAS", "images/inventoryimages/skweaponshovelbladedropsparkready.xml"),
+	Asset("IMAGE", "images/inventoryimages/skweaponshovelbladedropsparkready.tex"),
 	
 	Asset("ATLAS", "images/map_icons/skweaponshovelbladedropspark.xml"),
 	Asset("IMAGE", "images/map_icons/skweaponshovelbladedropspark.tex"),
@@ -65,22 +67,9 @@ local function startovercharge(inst, duration, attacker)
     end
 end
 
---local function candropsparkattack(inst, attacker, target)
-	--if inst.dropSparkDebuffTime == 0 then
-		--inst.components.weapon:SetProjectile("bishop_charge")
-	--else
-		--inst.components.weapon.projectile = nil
-	--end
---end
-
---local function ondropsparkattack(inst, attacker, target)
-		--candropsparkattack(inst, attacker, target)
---end
-
 local function onpreAttack(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
-		if inst.components.weapon.attackrange > (inst.normalRangedRange - inst.normalMeleeRange) and attacker.components.health.currenthealth == attacker.components.health.maxhealth and attacker.dropSparkDebuffTime <= 0 then
-		--if inst.components.weapon.attackrange > (inst.normalRangedRange - inst.normalMeleeRange) and attacker.components.health.currenthealth == attacker.components.health.maxhealth and attacker.dropSparkActive == false then
+		if inst.components.weapon.attackrange > (inst.normalRangedRange - inst.normalMeleeRange) and attacker..components.health:IsHurt() == false and attacker.dropSparkDebuffTime <= 0 then
 			inst.components.weapon:SetDamage(0)
 		else
 			inst.components.weapon:SetDamage(30)
@@ -99,11 +88,11 @@ local function onattacks(inst, attacker, target)
 			inst.chargeHandleClock_Task:Cancel()
 			inst.chargeHandleClock_Task = nil
 			attacker.AnimState:SetHaunted(false)
-			target.components.combat:GetAttacked(attacker, 45, inst)
+			target.components.combat:GetAttacked(attacker, 45, inst) --Charge Handle Damage
 			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
 			target.components.freezable:SpawnShatterFX()
 			attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlerelease")
-			--target.components.burnable:Ignite(nil, attacker)
+			--target.components.burnable:Ignite(nil, attacker) --Fire for later with flare wand--
 				
 		elseif inst.chargeHandleBuffTime <= 0 then
 			if inst.chargeHandleComboBuilder == 0 then
@@ -126,7 +115,6 @@ local function onpreload(inst, data)
     if data ~= nil and data.playEquippedSound ~= nil then
         inst.playEquippedSound = data.playEquippedSound
     end
-	
 end
 
 local function onload(inst, data)
@@ -136,61 +124,35 @@ local function onload(inst, data)
     if data ~= nil and data.chargeHandleBuffTime ~= nil then
         startovercharge(inst, data.chargeHandleBuffTime)
     end
-	--if data ~= nil and data.dropSparkDebuffTime ~= nil then
-        --startovercharge(inst, data.dropSparkDebuffTime)
-    --end
 end
 
 local function onsave(inst, data)
 	data.playEquippedSound = inst.playEquippedSound > 0 and inst.playEquippedSound or nil
 end
 
---DropSpark Stuff
---local function onthrow(weapon, inst)
-	--used to comsume ammo / start a timer / reset back to melee weapon. Need to switch to user
-	--inst.components.weapon.variedmodefn = GetWeaponMode --Switch to melee
---end
-
---local function GetWeaponMode(inst)
-	--local owner = inst.weapon.components.inventoryitem.owner
-	--if owner.components.combat.target then --Add the timer here.
-		--return inst.weapon.components.weapon.modes["RANGE"]
-	--else
-		--return inst.weapon.components.weapon.modes["MELEE"]
-	--end
---end
-
---local function MakeProjectileWeapon(inst)
-        --inst.weapon.components.weapon.modes =
-        --{
-        	--RANGE = {damage = 0, ranged = true, attackrange = 12, hitrange = 12 + 2},
-        	--MELEE = {damage = 30, ranged = false, attackrange = inst.normalMeleeRange, hitrange = inst.normalMeleeHitRange}
-    	--}
-        --inst.components.weapon.variedmodefn = GetWeaponMode
-        --inst.components.weapon:SetProjectile("bishop_charge")
-        --inst.components.weapon:SetOnProjectileLaunch(onattack)
-        --return inst
---end
-
 local function onequip(inst, owner)
 		inst.owner = owner
 		
 		--Sets how strong this weapon is
 		local shovelbladeDamageWinston = 30 --+45 damage with Charge Handle
-		local shovelbladeDamageGeneric = 5
+		local shovelbladeDamageGeneric = 5 --For Non winston Characters
 		
 		owner.AnimState:OverrideSymbol("swap_object", "swap_skweaponshovelbladedropspark", "swap_shovel")
 		owner.AnimState:Show("ARM_carry") 
 		owner.AnimState:Hide("ARM_normal") 
 		
-		--Makes the shovelblade strong only for Shovel Knight
+		--Makes the shovelblade strong only for winston and DropSpark Range
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
-			if owner.components.health.currenthealth == owner.components.health.maxhealth and owner.dropSparkDebuffTime <= 0 then
-			--if owner.components.health.currenthealth == owner.components.health.maxhealth and owner.dropSparkActive == false then
+			if owner.components.health:IsHurt() == false and owner.dropSparkDebuffTime <= 0 then
 				inst.components.weapon.attackrange = inst.normalRangedRange
+				inst.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropsparkready.xml"
+				inst.components.inventoryitem:ChangeImageName("skweaponshovelbladedropsparkready")
+				
 			else
 				inst.components.weapon.attackrange = inst.normalMeleeRange
+				inst.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropspark.xml"
+				inst.components.inventoryitem:ChangeImageName("skweaponshovelbladedropspark")
 			end
 			
 			--Plays special shovelblade EquippedSound
@@ -212,7 +174,10 @@ end
 
 local function onunequip(inst, owner)
 		inst.playEquippedSound = 0
-		
+		inst.components.weapon.attackrange = inst.normalMeleeRange
+		inst.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropspark.xml"
+		inst.components.inventoryitem:ChangeImageName("skweaponshovelbladedropspark")
+				
 		if owner.prefab == "winston" then
 			--Take off buffs
 			if inst.chargeHandleBuffTime > 0 then
@@ -231,6 +196,7 @@ local function onunequip(inst, owner)
 		--Sets how strong this weapon is
 		local shovelbladeDamageGeneric = 5
 	
+		--Reset Animation
 		owner.AnimState:Hide("ARM_carry") 
 		owner.AnimState:Show("ARM_normal") 
 		
@@ -269,7 +235,6 @@ local function fn(Sim)
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.DIG)
 	inst.components.tool:SetAction(ACTIONS.MINE)
-	--inst:AddInherentAction(ACTIONS.TERRAFORM)
 
     --Makes this a Weapon
     inst:AddComponent("weapon")
@@ -286,14 +251,11 @@ local function fn(Sim)
 	--Trench Blade Relic Chance
 	inst.trenchBladeRelicFind = 0.02
 	
-	--Drop Spark timer
-	--inst.dropSparkDebuffTime = 0
+	--Drop Spark range
 	inst.normalMeleeRange = inst.components.weapon.attackrange
-	--inst.normalMeleeHitRange = inst.components.weapon.hitrange
 	inst.normalRangedRange = 12
-	--inst.components.weapon.projectile = nil
 	
-	inst.components.weapon:OnAttack(onpreAttack)
+	inst.components.weapon:OnAttack(onpreAttack) --DropSpark anti-range damage Check
 	inst.components.weapon:SetAttackCallback(onattacks) --ChargeHandle Check
 	
 	inst.OnLongUpdate = onlongupdate
@@ -303,8 +265,6 @@ local function fn(Sim)
 	
 	--Makes this a Shovel
     inst:AddInherentAction(ACTIONS.DIG)
-	
-	--inst:AddComponent("terraformer")
 
     inst:AddComponent("inspectable")
 

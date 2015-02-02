@@ -4,70 +4,27 @@ local assets =
 	Asset("SOUND", "sound/chess.fsb"),
 }
 
-local function shovelbladeRangeResetAnim(inst, owner)
-	if inst.owner == owner then
-		owner.dropSparkActive = false
-		if owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
-			local equipped = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if equipped ~= nil then
-				if equipped.prefab == "skweaponshovelbladedropspark" then
-					if owner.components.health.currenthealth == owner.components.health.maxhealth then
-						equipped.components.weapon.attackrange = equipped.normalRangedRange
-					else
-						equipped.components.weapon.attackrange = equipped.normalMeleeRange
-					end
-				end
-			end
-		end
-	end
-end
-
-local function shovelbladeRangeReset(inst, owner, target)
-	if inst.owner == owner then
-		owner.dropSparkActive = false
-		if owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) ~= nil then
-			local equipped = owner.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-			if equipped ~= nil then
-				if equipped.prefab == "skweaponshovelbladedropspark" then
-					if owner.components.health.currenthealth == owner.components.health.maxhealth then
-						equipped.components.weapon.attackrange = equipped.normalRangedRange
-					else
-						equipped.components.weapon.attackrange = equipped.normalMeleeRange
-					end
-				end
-			end
-		end
-	end
-end
-
 local function OnHit(inst, owner, target)
-	--Reset Shovelblade
-	--shovelbladeRangeReset (inst, owner, target)
-
+	--Deals the damage
+	target.components.combat:GetAttacked(owner, (inst.projDamage + inst.projDamageBonus), nil)
 	
-	target.components.health:DoDelta(-(inst.projDamage + inst.projDamageBounus))
+	--Create special Animation + hit sound
     SpawnPrefab("skfxdropspark_wave_hit").Transform:SetPosition(inst.Transform:GetWorldPosition())
     inst:Remove()
 end
 
-local function OnMiss(inst, owner, target)
-	--Reset Shovelblade
-	--shovelbladeRangeReset (inst, owner, target)
-	
-    --local pt = Vector3(inst.Transform:GetWorldPosition())
-
-    --local poop = SpawnPrefab("poop")
-    --poop.Transform:SetPosition(pt.x, pt.y, pt.z)
-
-    inst:Remove()
-end
-
---local function OnAnimOver(inst, owner)
-	--inst.owner.dropSparkActive = false
-	--inst:DoTaskInTime(0, inst.Remove)
+--Keep for template for other Projs
+--local function OnMiss(inst, owner, target)
+    --inst:Remove()
 --end
 
 local function OnThrown(inst, data)
+	--Give it light
+	inst.Light:Enable(true)
+    inst.Light:SetIntensity(.75)
+    inst.Light:SetColour(197 / 255, 197 / 255, 50 / 255)
+    inst.Light:SetFalloff(0.5)
+    inst.Light:SetRadius(2)
     --inst.AnimState:SetOrientation( ANIM_ORIENTATION.OnGround )
 end
 
@@ -78,7 +35,8 @@ local function fn()
 	inst.entity:AddAnimState()
 	inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
-
+	inst.entity:AddLight()
+	
 	inst.Transform:SetFourFaced()
     MakeInventoryPhysics(inst)
     RemovePhysicsColliders(inst)
@@ -98,37 +56,35 @@ local function fn()
     inst.persists = false
 
     inst:AddComponent("projectile")
-    inst.components.projectile:SetSpeed(5)
+    inst.components.projectile:SetSpeed(6)
     inst.components.projectile:SetHoming(false)
-    inst.components.projectile:SetHitDist(.2)
+    inst.components.projectile:SetHitDist(.01) --Hitbox
     inst.components.projectile:SetOnHitFn(OnHit)
-	inst.components.projectile:SetOnMissFn(OnMiss)
-    --inst.components.projectile:SetOnMissFn(inst.Remove)
+    inst.components.projectile:SetOnMissFn(inst.Remove)
     inst.components.projectile:SetOnThrownFn(OnThrown)
-	inst.components.projectile.range = 20
-	--inst.components.projectile:SetLaunchOffset()
+	inst.components.projectile.range = 20 --How far it will go if it misses
 	
 	inst.owner = nil
-	inst.projDamage = 5
-	inst.projDamageBounus = 0
+	inst.projDamage = 15 --Half the damage of the Shovelblade
+	inst.projDamageBonus = 0 --Bonus damage from armor perk
 	
     return inst
 end
 
---local function PlayHitSound(proxy)
-    --local inst = CreateEntity()
+local function PlayHitSound(proxy)
+    local inst = CreateEntity()
 
     --[[Non-networked entity]]
 
-    --inst.entity:AddTransform()
-    --inst.entity:AddSoundEmitter()
+    inst.entity:AddTransform()
+    inst.entity:AddSoundEmitter()
 
-    --inst.Transform:SetFromProxy(proxy.GUID)
+    inst.Transform:SetFromProxy(proxy.GUID)
 
-    --inst.SoundEmitter:PlaySound("dontstarve/creatures/bishop/shotexplo")
+    inst.SoundEmitter:PlaySound("dontstarve/creatures/bishop/shotexplo")
 
-    --inst:Remove()
---end
+    inst:Remove()
+end
 
 local function hit_fn()
     local inst = CreateEntity()
@@ -139,7 +95,7 @@ local function hit_fn()
     --Dedicated server does not need to spawn the local fx
     if not TheNet:IsDedicated() then
         --Delay one frame in case we are about to be removed
-        --inst:DoTaskInTime(0, PlayHitSound)
+        inst:DoTaskInTime(0, PlayHitSound)
     end
 
     if not TheWorld.ismastersim then
@@ -150,8 +106,6 @@ local function hit_fn()
     inst.persists = false
     inst:DoTaskInTime(0.5, inst.Remove)
 
-	
-	
     return inst
 end
 

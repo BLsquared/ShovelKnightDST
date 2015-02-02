@@ -103,8 +103,8 @@ end
 
 
 STRINGS.NAMES.SKITEMMANAPOTION = "Mana Potion"
---STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMMANAPOTION = "A great meal awaits!"
-STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKITEMMANAPOTION = "Is this even drinkable?"
+--STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMMANAPOTION = "Is this even drinkable?"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKITEMMANAPOTION = "Strange liquid in a bottle..."
 
 
 return  Prefab("common/inventory/skitemmanapotion", fn, assets, prefabs)

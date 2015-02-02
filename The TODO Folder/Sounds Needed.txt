@@ -1,0 +1,17 @@
+Shovel Knight:
+-Eating Turkey
+-Voice (the beeps will work)
+
+
+Relics:
+-Flare Wand
+-Phase Locket
+-Dust Knuckles (both the punch and Break block sounds)
+-Throwing Anchor
+-Alchemy Coin
+-Mobile Gear (the Activate and then riding sound, which will be looped)
+-War Horn
+-Propeller Dagger
+-Fishing Rod
+-Chaos Sphere
+-Troupple Chalice (Drinking Sound) Red, Blue, Yellow (each if they sound different)

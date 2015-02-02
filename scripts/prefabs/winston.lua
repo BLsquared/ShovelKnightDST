@@ -33,6 +33,7 @@ local assets = {
 
         Asset( "ANIM", "anim/winston.zip" ),
         Asset( "ANIM", "anim/ghost_winston_build.zip" ),
+		
 }
 local prefabs = {}
 local start_inv = {
@@ -99,7 +100,7 @@ local function createDropSparkProjectile(inst, target, weapon)
 	if proj then
 		if proj.components.projectile then
 			proj.owner = inst --Saves player to Projectile
-			--proj.projDamageBounus =  --Adds bonus damage from armor bonus
+			--proj.projDamageBounus =  --Adds bonus damage from armor bonus --Need for Armor--
 			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			proj.components.projectile:Throw(weapon, target, inst)
 			inst.SoundEmitter:PlaySound("winston/characters/winston/dropspark")
@@ -153,7 +154,7 @@ local function oneat(inst, food)
 	
 	if food and food.components.edible and food.prefab == "turkeydinner" then
 		applyTurkeyDinnerUpdate(inst)
-		--inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/levelup")
+		--inst.SoundEmitter:PlaySound("dontstarve/characters/wx78/levelup") --Need the Food sound here--
 	end
 end
 
@@ -163,11 +164,14 @@ local function onupdate(inst, dt)
 	inst.dropSparkDebuffTime = inst.dropSparkDebuffTime - dt
 	if inst.dropSparkDebuffTime <= 0 then
 		inst.dropSparkDebuffTime = 0
-		if inst.components.health.currenthealth == inst.components.health.maxhealth then
+		if inst.components.health:IsHurt() == false then
 			local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 			if equipped ~= nil then
 				if equipped.prefab == "skweaponshovelbladedropspark" then
 					equipped.components.weapon.attackrange = equipped.normalRangedRange --Make Range
+					equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropsparkready.xml"
+					equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropsparkready")
+					
 				end
 			end
 		end
@@ -176,6 +180,8 @@ local function onupdate(inst, dt)
 		if equipped ~= nil then
 			if equipped.components.weapon.attackrange ~= equipped.normalMeleeRange then
 				equipped.components.weapon.attackrange = equipped.normalMeleeRange
+				equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropspark.xml"
+				equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropspark")
 			end
 		end
 	end
@@ -277,10 +283,14 @@ local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, 
 	local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	if equipped ~= nil then
 		if equipped.prefab == "skweaponshovelbladedropspark" then
-			if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkDebuffTime <= 0 then
+			if inst.components.health:IsHurt() == false and inst.dropSparkDebuffTime <= 0 then
 				equipped.components.weapon.attackrange = equipped.normalRangedRange --Makes range
+				equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropsparkready.xml"
+				equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropsparkready")
 			else
 				equipped.components.weapon.attackrange = equipped.normalMeleeRange --Makes melee
+				equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropspark.xml"
+				equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropspark")
 			end
 		end
 	end
@@ -298,7 +308,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							--createRelic(relicGen, data.target) --Creates the Relic DISABLED
+							--createRelic(relicGen, data.target) --Creates the Relic DISABLED ATM--
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
@@ -327,16 +337,12 @@ local function onworked(inst, data)
 end
 
 local function onattack(inst, data, weapon, pro)
-	if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkDebuffTime <= 0 then
-	--if inst.components.health.currenthealth == inst.components.health.maxhealth and inst.dropSparkActive == false then
-	
+	if inst.components.health:IsHurt() == false and inst.dropSparkDebuffTime <= 0 then
 		local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 		if equipped ~= nil then
 			if equipped.prefab == "skweaponshovelbladedropspark" then
-				--equipped.components.weapon.attackrange = equipped.normalMeleeRange --Make Shovelblade Melee
 				createDropSparkProjectile(inst, data.target, equipped)
 				startovercharge(inst, 9)
-				--inst.dropSparkActive = true
 			end
 		end
 	end
@@ -354,7 +360,7 @@ end
 -- This initializes for both clients and the host
 local common_postinit = function(inst) 
 	-- choose which sounds this character will play
-	inst.soundsname = "wolfgang"
+	inst.soundsname = "wolfgang" --Need Shovel Knight Beeps--
 
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "winston.tex" )
@@ -405,7 +411,6 @@ local master_postinit = function(inst)
 	
 	--DropSpark Combo
 	inst.dropSparkDebuffTime = 0
-	--inst.dropSparkActive = false
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
@@ -415,7 +420,6 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("healthdelta", onhealthupdate)
 	inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
-	--inst:ListenForEvent("onattackother", onattack)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
 	
@@ -427,6 +431,7 @@ local master_postinit = function(inst)
         end
     end 
 	
+	--Just keeping for now
 	--local old_DoAttack = inst.components.combat.DoAttack 
 		--inst.components.combat.DoAttack = function(self, target_override, weapon, projectile)
 		--startovercharge(inst, inst.charge_time + 10)

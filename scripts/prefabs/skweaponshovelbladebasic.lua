@@ -103,9 +103,6 @@ local function fn(Sim)
     --Makes this a Tool with actions
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.DIG)
-	--inst.components.tool:SetAction(ACTIONS.MINE)
-	--inst.components.tool:SetAction(ACTIONS.HAMMER)
-	--inst:AddInherentAction(ACTIONS.TERRAFORM)
 
     --Makes this a Weapon
     inst:AddComponent("weapon")
@@ -120,8 +117,6 @@ local function fn(Sim)
 	
 	--Makes this a Shovel
     inst:AddInherentAction(ACTIONS.DIG)
-	
-	--inst:AddComponent("terraformer")
 
     inst:AddComponent("inspectable")
 
