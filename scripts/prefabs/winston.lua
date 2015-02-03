@@ -438,9 +438,62 @@ local master_postinit = function(inst)
 		--return old_DoAttack(self, target_override, weapon, projectile)
 	--end
 	
+	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
-        if IsChestArmor(item) then self.inst.components.talker:Say("My mighty armor is mightier") return false end
+		--Stops Armor from being equipped -OLD Saving just in case
+		--if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
+			--Do Special Armor filter here
+			--self.inst.components.inventory:DropItem(item, true, true)
+			--self.inst.components.talker:Say("My mighty armor is mightier")
+			--return false 
+		--end
+		
+		--Stops Body from being equipped
+		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
+			--Do Special Armor filter here
+			self:RemoveItem(item, true)
+			if self:IsFull() then
+				if not self.activeitem and not TheInput:ControllerAttached() then
+					item.components.inventoryitem:OnPutInInventory(self.inst)
+					self:SetActiveItem(item)
+				else
+					self:DropItem(inst, true, true)
+					self:SetActiveItem(nil)
+				end
+			else
+				self:RemoveItem(item, true)
+				self.silentfull = true
+				self:GiveItem(item)
+				self.silentfull = false
+				self:SetActiveItem(nil)
+			end
+			self.inst.components.talker:Say("My mighty armor is mightier")
+			return false 
+		end
+		
+		--Stops Hats from being equipped -Disabled till Relics come into play
+		--if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
+			---Do Special Relic filter here
+			--self:RemoveItem(item, true)
+			--if self:IsFull() then
+				--if not self.activeitem and not TheInput:ControllerAttached() then
+					--item.components.inventoryitem:OnPutInInventory(self.inst)
+					--self:SetActiveItem(item)
+				--else
+					--self:DropItem(inst, true, true)
+					--self:SetActiveItem(nil)
+				--end
+			--else
+				--self:RemoveItem(item, true)
+				--self.silentfull = true
+				--self:GiveItem(item)
+				--self.silentfull = false
+				--self:SetActiveItem(nil)
+			--end
+			--self.inst.components.talker:Say("This is not a Relic!")
+			--return false
+		--end
         return old_Equip(self, item, old_to_active)
     end
 	

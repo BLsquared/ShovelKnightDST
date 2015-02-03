@@ -1,0 +1,5 @@
+v.components.inventoryitem.keepondeath --keeps this item even on death, be for armor
+
+:DropItem(v, true, true) -- force drop item
+
+Inventory:IsItemEquipped(item) --check slots for armor swaps
