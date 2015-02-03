@@ -8,7 +8,7 @@ local assets=
 prefabs = {
 }
 
-local function usemealticket(inst, reader)
+local function usemanapotion(inst, reader)
 	if reader.manaPotion ~= nil then
 		local manaPotionLVL = reader.manaPotion
 		local manaPotionMAX = 8
@@ -42,6 +42,7 @@ local function usemealticket(inst, reader)
 					elseif manaPotionFound == 8 then
 					reader.components.talker:Say(GetString(reader, "ANNOUNCE_SKITEMMANAPOTIONMAX"))
 				end
+				inst.components.inventoryitem:RemoveFromOwner(true)
 				return true
 			end
 		end
@@ -56,9 +57,6 @@ local function fn()
     local anim = inst.entity:AddAnimState()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
-	
-	--Number of uses
-	local bookuses = 1
 	
 	if not TheWorld.ismastersim then
         return inst
@@ -84,13 +82,7 @@ local function fn()
 	
 	--Makes it a book
 	inst:AddComponent("book")
-    inst.components.book.onread = usemealticket
-	
-	--Use the Book
-	inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(bookuses)
-    inst.components.finiteuses:SetUses(bookuses)
-    inst.components.finiteuses:SetOnFinished(inst.Remove)
+    inst.components.book.onread = usemanapotion
 	
 	--Only Readable by Shovel Knight
 	inst:AddComponent("characterspecific")
