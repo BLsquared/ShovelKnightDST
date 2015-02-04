@@ -42,6 +42,7 @@ local function usemealticket(inst, reader)
 					elseif mealTicketFound == 8 then
 					reader.components.talker:Say(GetString(reader, "ANNOUNCE_SKITEMMEALTICKETMAX"))
 				end
+				inst.components.inventoryitem:RemoveFromOwner(true)
 				return true
 			end
 		end
@@ -56,9 +57,6 @@ local function fn()
     local anim = inst.entity:AddAnimState()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
-	
-	--Number of uses
-	local bookuses = 1
 	
 	if not TheWorld.ismastersim then
         return inst
@@ -86,12 +84,6 @@ local function fn()
 	inst:AddComponent("book")
     inst.components.book.onread = usemealticket
 	
-	--Use the Book
-	inst:AddComponent("finiteuses")
-    inst.components.finiteuses:SetMaxUses(bookuses)
-    inst.components.finiteuses:SetUses(bookuses)
-    inst.components.finiteuses:SetOnFinished(inst.Remove)
-	
 	--Only Readable by Shovel Knight
 	inst:AddComponent("characterspecific")
     inst.components.characterspecific:SetOwner("winston")
@@ -103,7 +95,7 @@ end
 
 
 STRINGS.NAMES.SKITEMMEALTICKET = "Meal Ticket"
---STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMMEALTICKET = "A great meal awaits!"
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMMEALTICKET = "A great meal awaits!"
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKITEMMEALTICKET = "A golden food coupon?"
 
 

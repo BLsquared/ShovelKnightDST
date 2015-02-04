@@ -2,7 +2,10 @@ GLOBAL.STRINGS.NAMES.SHOVELBLADE = "Shovelblade"
 GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.SHOVELBLADE = "Both a worthy weapon and a digging tool."
 
 PrefabFiles = {
-	"winston", "shovelblade", "skitemtemplate", "skitemmealticket", "skitemmanapotion",
+	"winston", "skitemtemplate", "skitemmealticket", "skitemmanapotion",
+	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
+	
+	"skfxdropspark_wave",
 }
 
 Assets = {
@@ -23,8 +26,28 @@ Assets = {
 	
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
+	
+	Asset( "SOUNDPACKAGE", "sound/winston.fev" ),
+    Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
+	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
+	Asset( "ATLAS", "images/map_icons/skweaponshovelbladebasic.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skweaponshovelbladechargehandle.tex" ),
+	Asset( "ATLAS", "images/map_icons/skweaponshovelbladechargehandle.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skweaponshovelbladetrenchblade.tex" ),
+	Asset( "ATLAS", "images/map_icons/skweaponshovelbladetrenchblade.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skweaponshovelbladedropspark.tex" ),
+	Asset( "ATLAS", "images/map_icons/skweaponshovelbladedropspark.xml" ),
 }
+
+RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
+RemapSoundEvent( "dontstarve/characters/winston/chargehandlecharged", "winston/characters/winston/chargehandlecharged" )
+RemapSoundEvent( "dontstarve/characters/winston/chargehandlerelease", "winston/characters/winston/chargehandlerelease" )
+RemapSoundEvent( "dontstarve/characters/winston/dropspark", "winston/characters/winston/dropspark" )
+RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winston/jump" )
 
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
@@ -46,6 +69,9 @@ local recipes =
 	Recipe("skitemtemplate", {Ingredient("berries", 2), Ingredient("carrot", 1)}, RECIPETABS.WAR, TECH.SCIENCE_ONE),
 	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
 	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
+	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
+	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
+	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
 }
 
 for k,v in pairs(recipes) do
@@ -79,6 +105,10 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.WINSTON =
 STRINGS.RECIPE_DESC.SKITEMTEMPLATE = "A skitemtemplate."
 STRINGS.RECIPE_DESC.SKITEMMEALTICKET = "Gastronomer's home cooking!"
 STRINGS.RECIPE_DESC.SKITEMMANAPOTION = "Magicist's bubbling brew!"
+STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADECHARGEHANDLE = "Shovelblade Upgrade: Charge Handle"
+STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADETRENCHBLADE = "Shovelblade Upgrade: Trench Blade"
+STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADEDROPSPARK = "Shovelblade Upgrade: Drop Spark"
+
 
 -- Let the game know character is male, female, or robot
 table.insert(GLOBAL.CHARACTER_GENDERS.MALE, "winston")  
@@ -93,13 +123,56 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 		end
 	end
 	
---Turn of widget HUD on some Items WIP
---local function youritemtilepostconst()
-	--if  GLOBAL.PREFABS.NAME = "skitemmealticket" then
+--Turn off percent on certain Items	
+--local function itemtile_post(self, invitem)
+    -- save old function
+    --self.old_SetPercent = self.SetPercent
+ 
+    -- override with your own function
+    --self.SetPercent = function(self, percent)
 	
+	    -- call old function first
+		--self:old_SetPercent(percent)
+		
+		--print("Checking prefab")
+		--if self.invitem and self.invitem.prefab == "skitemmealticket" then
+            --local oldStr = self.percent:GetString()
+			--print(oldStr)
+			--self.percent:SetString(string.format("%2.0f", oldStr)) -- remove %
+			--self.percent:SetString(string.sub(oldStr,1,-2))
+			--local newStr = string.sub(oldStr,1,-2)
+            --print(newStr)
+			--self.percent:SetString(newStr)
+		--end
+    --end
 --end
---AddClassPostConstruct("widgets/itemtile", youritemtilepostconst)
+--AddClassPostConstruct("widgets/itemtile", itemtile_post)
+
+--Fix Health Penalty From Resurrection
+local function HealthPostInit(self)
+	if self.prefab == winston then
+		--print("I'm Shovel Knight! Now fix my Health!")
+		local OldRecalculatePenalty = self.RecalculatePenalty
+		local function RecalculatePenalty(self, forceupdatewidget)
+			local mult = GLOBAL.TUNING.REVIVE_HEALTH_PENALTY_AS_MULTIPLE_OF_EFFIGY
+			mult = mult * GLOBAL.TUNING.EFFIGY_HEALTH_PENALTY
+				local maxrevives = (self.maxhealth - 30)/mult
+				if self.numrevives > maxrevives then
+					self.numrevives = maxrevives
+				end
+				OldRecalculatePenalty(self, forceupdatewidget)
+			end
+			self.RecalculatePenalty = RecalculatePenalty
+		end
+	end
+ 
+AddComponentPostInit('health', HealthPostInit)
 
 AddMinimapAtlas("images/map_icons/winston.xml")
+AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
+AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
+AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
+AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
+
 AddModCharacter("winston")
 
