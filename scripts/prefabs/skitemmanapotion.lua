@@ -8,6 +8,18 @@ local assets=
 prefabs = {
 }
 
+--Max Sanity Booster
+local function bonusSanityPerk(reader)
+	local bonusSanity = 0
+	if reader.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local item = reader.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if item.prefab == "skarmorconjurerscoat" then
+			bonusSanity = item.armorSanityMaxBooster --Saved on the Shovel Knight Armor
+		end
+	end
+	return bonusSanity
+end
+
 local function usemanapotion(inst, reader)
 	if reader.manaPotion ~= nil then
 		local manaPotionLVL = reader.manaPotion
@@ -19,9 +31,11 @@ local function usemanapotion(inst, reader)
 			local manaPotionMAXM = 9
 			local manaPotionFound = reader.manaPotion
 			
+			local bonusSanityMax = bonusSanityPerk(reader)
+			--Special
 			if reader.manaPotion < manaPotionMAXM then
-				reader.components.sanity:SetMax((reader.manaPotion*10)+120)
-				reader.components.sanity:DoDelta((reader.manaPotion*10)+120)
+				reader.components.sanity:SetMax((reader.manaPotion*10)+120 +bonusSanityMax)
+				reader.components.sanity:DoDelta((reader.manaPotion*10)+120 +bonusSanityMax)
 				inst.bookuses = 0
 				
 				--Shovel Knight Speaks

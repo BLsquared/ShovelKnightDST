@@ -77,6 +77,19 @@ local function onpreAttack(inst, attacker, target)
 	end
 end
 
+--ChangeHandle Damage Booster
+local function bonusDamageChargeHandlePerk(attacker)
+	local bonusDamage = 0
+	if attacker.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local item = attacker.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+			or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+			bonusDamage = item.armorChargeHandleBooster --Saved on the Shovel Knight Armor
+		end
+	end
+	return bonusDamage
+end
+
 local function onattacks(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
 		
@@ -87,8 +100,9 @@ local function onattacks(inst, attacker, target)
 			inst.chargeHandleBuffTime = 0
 			inst.chargeHandleClock_Task:Cancel()
 			inst.chargeHandleClock_Task = nil
+			local chargeHandleDamage = 45 + bonusDamageChargeHandlePerk(attacker) --Charge Handle Damage
 			attacker.AnimState:SetHaunted(false)
-			target.components.combat:GetAttacked(attacker, 45, inst) --Charge Handle Damage
+			target.components.combat:GetAttacked(attacker, chargeHandleDamage, inst) --Deals the damage
 			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
 			target.components.freezable:SpawnShatterFX()
 			attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlerelease")
