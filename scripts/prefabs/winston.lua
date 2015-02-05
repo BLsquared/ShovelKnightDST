@@ -32,6 +32,7 @@ local assets = {
         Asset( "ANIM", "anim/beard.zip" ),
 
         Asset( "ANIM", "anim/winston.zip" ),
+		Asset( "ANIM", "anim/winston_conjurerscoat.zip" ),
         Asset( "ANIM", "anim/ghost_winston_build.zip" ),
 		
 }
@@ -296,6 +297,11 @@ local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, 
 	end
 end
 
+local function BecomeWinston(inst)
+	inst.AnimState:SetBank("wilson")
+	inst.AnimState:SetBuild("winston_conjurerscoat")
+end
+
 local function onworked(inst, data)
 	if inst.trenchBladeDebuffTime <= 0 then
 		if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
@@ -382,7 +388,10 @@ end
 
 -- This initializes for the host only
 local master_postinit = function(inst)
-
+	
+	inst.AnimState:SetBank("wilson")
+	inst.AnimState:SetBuild("winston_conjurerscoat")
+	
 	--Personal Recipes
 	inst:AddTag("skitemtemplate_skbuilder")
 	inst:AddTag("skitemmealticket_skbuilder")
@@ -438,6 +447,7 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
 	
+	--BecomeWoodie(inst)
 --starting item goes here
 		
 	local function IsChestArmor(item)
