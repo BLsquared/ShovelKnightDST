@@ -1,10 +1,7 @@
-GLOBAL.STRINGS.NAMES.SHOVELBLADE = "Shovelblade"
-GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.SHOVELBLADE = "Both a worthy weapon and a digging tool."
-
 PrefabFiles = {
 	"winston", "skitemtemplate", "skitemmealticket", "skitemmanapotion",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
-	
+	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxdropspark_wave",
 }
 
@@ -72,6 +69,7 @@ local recipes =
 	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("heatrock", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
 }
 
 for k,v in pairs(recipes) do
@@ -108,7 +106,8 @@ STRINGS.RECIPE_DESC.SKITEMMANAPOTION = "Magicist's bubbling brew!"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADECHARGEHANDLE = "Shovelblade Upgrade: Charge Handle"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADETRENCHBLADE = "Shovelblade Upgrade: Trench Blade"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADEDROPSPARK = "Shovelblade Upgrade: Drop Spark"
-
+STRINGS.RECIPE_DESC.SKARMORFINALGUARD = "Def:15, Lose half heat during winter"
+STRINGS.RECIPE_DESC.SKARMORCONJURERSCOAT = "Def:20, Gain additional 50 Sanity"
 
 -- Let the game know character is male, female, or robot
 table.insert(GLOBAL.CHARACTER_GENDERS.MALE, "winston")  
@@ -122,31 +121,6 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 			return old_ACTIONPICKUP(act)
 		end
 	end
-	
---Turn off percent on certain Items	
---local function itemtile_post(self, invitem)
-    -- save old function
-    --self.old_SetPercent = self.SetPercent
- 
-    -- override with your own function
-    --self.SetPercent = function(self, percent)
-	
-	    -- call old function first
-		--self:old_SetPercent(percent)
-		
-		--print("Checking prefab")
-		--if self.invitem and self.invitem.prefab == "skitemmealticket" then
-            --local oldStr = self.percent:GetString()
-			--print(oldStr)
-			--self.percent:SetString(string.format("%2.0f", oldStr)) -- remove %
-			--self.percent:SetString(string.sub(oldStr,1,-2))
-			--local newStr = string.sub(oldStr,1,-2)
-            --print(newStr)
-			--self.percent:SetString(newStr)
-		--end
-    --end
---end
---AddClassPostConstruct("widgets/itemtile", itemtile_post)
 
 --Fix Health Penalty From Resurrection
 local function HealthPostInit(self)
@@ -161,10 +135,10 @@ local function HealthPostInit(self)
 					self.numrevives = maxrevives
 				end
 				OldRecalculatePenalty(self, forceupdatewidget)
-			end
-			self.RecalculatePenalty = RecalculatePenalty
 		end
+		self.RecalculatePenalty = RecalculatePenalty
 	end
+end
  
 AddComponentPostInit('health', HealthPostInit)
 

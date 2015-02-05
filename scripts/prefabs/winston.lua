@@ -37,7 +37,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "skweaponshovelbladedropspark", "turkeydinner",
+	"skweaponshovelbladebasic", "turkeydinner", --"skarmorstalwartplate",
 }
 
 --11 Relics, Might add gems to the list
@@ -47,7 +47,7 @@ local relicList = {
 }
 --Random vaulable loot list
 local lootList = {
-	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", --"goldnugget",
+	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget",
 }
 
 --Finds a relic to make
@@ -364,6 +364,20 @@ local common_postinit = function(inst)
 
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "winston.tex" )
+	
+	--Creates Starting Armor for Shovel Knight
+	inst._OnNewSpawn = inst.OnNewSpawn
+    inst.OnNewSpawn = function()
+		if inst.components.inventory ~= nil then
+			inst.components.inventory.ignoresound = true
+			local itemArmor = SpawnPrefab("skarmorstalwartplate")
+			--inst.components.inventory.equipslots[EQUIPSLOTS.BODY] = itemArmor --Old way
+			inst.components.inventory.activeitem = itemArmor
+			inst.components.inventory:EquipActiveItem()
+			inst.components.inventory:SetActiveItem(nil)
+			inst.components.inventory.ignoresound = false
+		end
+	end
 end
 
 -- This initializes for the host only
@@ -376,6 +390,7 @@ local master_postinit = function(inst)
 	inst:AddTag("skweaponshovelbladechargehandle_skbuilder")
 	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
 	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
+	inst:AddTag("skarmorfinalguard_skbuilder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
@@ -423,6 +438,8 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
 	
+--starting item goes here
+		
 	local function IsChestArmor(item)
         if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
             return true
@@ -431,12 +448,22 @@ local master_postinit = function(inst)
         end
     end 
 	
-	--Just keeping for now
-	--local old_DoAttack = inst.components.combat.DoAttack 
-		--inst.components.combat.DoAttack = function(self, target_override, weapon, projectile)
-		--startovercharge(inst, inst.charge_time + 10)
-		--return old_DoAttack(self, target_override, weapon, projectile)
+	--Working on locking the BODY Slot for only Shovel Knight armor to be swapable.
+	--local old_Unequip = inst.components.inventory.Unequip
+	--inst.components.inventory.Unequip = function(self, equipslot)
+		--if self.inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+			--local actItem = self:GetActiveItem()
+			--if actItem.prefab == "skarmorfinalguard" then
+				--return old_Unequip(self, equipslot)
+			--else
+				--return false
+			--end
+		--local item = self.equipslots[equipslot]
+		
+		--end
+		--return old_Unequip(self, equipslot)
 	--end
+	
 	
 	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
@@ -452,6 +479,12 @@ local master_postinit = function(inst)
 		--Stops Body from being equipped
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
 			--Do Special Armor filter here
+			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+				return old_Equip(self, item, old_to_active)
+			else
+			
+			--Stop other BODY Slot Armor
 			self:RemoveItem(item, true)
 			if self:IsFull() then
 				if not self.activeitem and not TheInput:ControllerAttached() then
@@ -469,7 +502,8 @@ local master_postinit = function(inst)
 				self:SetActiveItem(nil)
 			end
 			self.inst.components.talker:Say("My mighty armor is mightier")
-			return false 
+			return false
+			end			
 		end
 		
 		--Stops Hats from being equipped -Disabled till Relics come into play
@@ -499,7 +533,13 @@ local master_postinit = function(inst)
 	
 	local old_GetAttacked = inst.components.combat.GetAttacked 
 		inst.components.combat.GetAttacked = function(self,attacker, damage, weapon)
-		damage = 10
+		damage = 15
+		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+			local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
+			if item.prefab == "skarmorconjurerscoat" then
+				damage = 20
+			end
+		end
 		return old_GetAttacked(self,attacker, damage, weapon)
 	end
 end

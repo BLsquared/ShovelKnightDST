@@ -1,32 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
     <folder id="0" name="skfxdropspark_attack">
-        <file id="0" name="skfxdropspark_attack/B2.png" width="67" height="60" pivot_x="0.5" pivot_y="0"/>
-        <file id="1" name="skfxdropspark_attack/B1.png" width="67" height="60" pivot_x="0.5" pivot_y="0"/>
-        <file id="2" name="skfxdropspark_attack/B3.png" width="67" height="60" pivot_x="0.5" pivot_y="0"/>
+        <file id="0" name="skfxdropspark_attack/2.png" width="64" height="64" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="1" name="skfxdropspark_attack/1.png" width="64" height="64" pivot_x="0.5" pivot_y="0.5"/>
     </folder>
     <entity id="0" name="skfxdropspark_attack">
-        <animation id="0" name="idle" length="1000">
+        <animation id="0" name="idle" length="100">
             <mainline>
                 <key id="0">
-                    <object_ref id="0" name="B1" folder="0" file="1" abs_x="0.5" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                    <object_ref id="0" name="1" folder="0" file="0" abs_x="2" abs_y="29" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
                 </key>
-                <key id="1" time="333">
+                <key id="1" time="16">
                     <object_ref id="0" timeline="0" key="1" z_index="0"/>
                 </key>
-                <key id="2" time="666">
+                <key id="2" time="30">
                     <object_ref id="0" timeline="0" key="2" z_index="0"/>
                 </key>
+                <key id="3" time="45">
+                    <object_ref id="0" timeline="0" key="3" z_index="0"/>
+                </key>
+                <key id="4" time="60">
+                    <object_ref id="0" timeline="0" key="4" z_index="0"/>
+                </key>
+                <key id="5" time="75">
+                    <object_ref id="0" timeline="0" key="5" z_index="0"/>
+                </key>
+                <key id="6" time="99">
+                    <object_ref id="0" timeline="0" key="6" z_index="0"/>
+                </key>
             </mainline>
-            <timeline id="0" name="B1">
+            <timeline id="0" name="1">
                 <key id="0" spin="0">
-                    <object folder="0" file="1" x="0.5" y="0"/>
+                    <object folder="0" file="0" x="2" y="29"/>
                 </key>
-                <key id="1" time="333" spin="0">
-                    <object folder="0" file="0" x="0.5" y="0"/>
+                <key id="1" time="16" spin="0">
+                    <object folder="0" file="0" x="2" y="29" scale_x="1.030769"/>
                 </key>
-                <key id="2" time="666" spin="0">
-                    <object folder="0" file="2" x="0.5" y="0"/>
+                <key id="2" time="30" spin="0">
+                    <object folder="0" file="1" x="2" y="29" scale_x="1.046154"/>
+                </key>
+                <key id="3" time="45" spin="0">
+                    <object folder="0" file="0" x="2" y="29" scale_x="1.261538"/>
+                </key>
+                <key id="4" time="60" spin="0">
+                    <object folder="0" file="1" x="2" y="29" scale_x="1.476923"/>
+                </key>
+                <key id="5" time="75" spin="0">
+                    <object folder="0" file="0" x="2" y="29" scale_x="1.232347"/>
+                </key>
+                <key id="6" time="99" spin="0">
+                    <object folder="0" file="1" x="2" y="29"/>
                 </key>
             </timeline>
         </animation>
