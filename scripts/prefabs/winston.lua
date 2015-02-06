@@ -503,6 +503,7 @@ local master_postinit = function(inst)
 								self.inst.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
 								self.inst:RemoveEventCallback("killed", self.inst._onplayerkillthing, self.inst)
 							end
+<<<<<<< HEAD
 							
 							--Special Armor Perk Removal for OrnatePlate
 							if itemE.prefab == "skarmorornateplate" then
@@ -512,6 +513,8 @@ local master_postinit = function(inst)
 								end
 							end
 							
+=======
+>>>>>>> 6ff9b4f60c1cefbd9de5d01d572e2ccf989e9fc7
 							itemE = SpawnPrefab(itemE.prefab)
 							self.equipslots[EQUIPSLOTS.BODY] = itemE
 						end

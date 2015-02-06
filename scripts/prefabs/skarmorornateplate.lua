@@ -29,10 +29,10 @@ local function onequip(inst, owner)
 		buffarmor(inst, owner)
 		--test
 		if inst.fire == nil then
-        inst.fire = SpawnPrefab("skfxornateplate_glitter")
-        --inst.fire.Transform:SetScale(.125, .125, .125)
-        local follower = inst.fire.entity:AddFollower()
-        follower:FollowSymbol(owner.GUID, "swap_body", 0, -20, 0)
+			inst.fire = SpawnPrefab("skfxornateplate_glitter")
+			--inst.fire.Transform:SetScale(.125, .125, .125)
+			local follower = inst.fire.entity:AddFollower()
+			follower:FollowSymbol(owner.GUID, "swap_body", 0, -20, 0)
 		end
 	
 		inst:RemoveComponent("equippable")
