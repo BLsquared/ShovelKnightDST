@@ -5,6 +5,9 @@ local assets =
 	
 	Asset("ATLAS", "images/inventoryimages/skarmorstalwartplate.xml"),
     Asset("IMAGE", "images/inventoryimages/skarmorstalwartplate.tex"),
+	
+	Asset("ATLAS", "images/map_icons/skarmorstalwartplate.xml"),
+	Asset("IMAGE", "images/map_icons/skarmorstalwartplate.tex"),
 }
 prefabs = {
 }
@@ -28,6 +31,7 @@ local function onequip(inst, owner)
 	owner.AnimState:SetBuild("winston") --Changes winston color
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
+		inst:RemoveComponent("equippable")
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
@@ -53,11 +57,15 @@ local function fn()
         return inst
     end
 	
-	inst:AddTag("irreplaceable")
 	inst.entity:SetPristine()
     MakeHauntableLaunch(inst)
 	
+	local minimap = inst.entity:AddMiniMapEntity()
+    minimap:SetIcon("skarmorstalwartplate.tex")
+	
 	MakeInventoryPhysics(inst)
+	
+	inst:AddTag("irreplaceable")
 		
     anim:SetBank("skarmorstalwartplate")
     anim:SetBuild("skarmorstalwartplate")

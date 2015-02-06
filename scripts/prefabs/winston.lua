@@ -33,6 +33,7 @@ local assets = {
 
         Asset( "ANIM", "anim/winston.zip" ),
 		Asset( "ANIM", "anim/winston_conjurerscoat.zip" ),
+		Asset( "ANIM", "anim/winston_dynamomail.zip" ),
         Asset( "ANIM", "anim/ghost_winston_build.zip" ),
 		
 }
@@ -177,6 +178,7 @@ local function onupdate(inst, dt)
 	inst.trenchBladeComboTime = inst.trenchBladeComboTime - dt
 	inst.trenchBladeDebuffTime = inst.trenchBladeDebuffTime - dt
 	inst.dropSparkDebuffTime = inst.dropSparkDebuffTime - dt
+		
 	if inst.dropSparkDebuffTime <= 0 then
 		inst.dropSparkDebuffTime = 0
 		if inst.components.health:IsHurt() == false then
@@ -450,6 +452,8 @@ local master_postinit = function(inst)
 	
 	--DropSpark Combo
 	inst.dropSparkDebuffTime = 0
+		
+	--inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
@@ -467,53 +471,55 @@ local master_postinit = function(inst)
 		ondeathkill(inst, data.victim)
     end
 	
-	--local function IsChestArmor(item)
-        --if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-            --return true
-        --else
-            --return false
-        --end
-    --end 
-	
-	--Template
-	--local old_SwapEquipWithActiveItem = inst.componest.inventory.SwapEquipWithActiveItem()
-	--inst.components.inventory.SwapEquipWithActiveItem() = function(self)
-		
-	--end
-	
-	--Still not working correctly T_T
 	--Locks the BODY Slot for only Shovel Knight armor to be swapable.
-	--local old_Unequip = inst.components.inventory.Unequip
-	--inst.components.inventory.Unequip = function(self, equipslot)
-		--local item = self.equipslots[equipslot]
-		--if item ~= nil then
-			--if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-				--if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
-					--or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
-					--item.components.inventoryitem.owner.components.talker:Say("No... not going to happen!")
-					--self:SetActiveItem(nil)
-					--item = self.activeitem
-					--return item
-				--end
-			--end
-		--end
-		--return old_Unequip(self, equipslot)
-	--end
+	local old_Unequip = inst.components.inventory.Unequip
+	inst.components.inventory.Unequip = function(self, equipslot)
+		if equipslot == EQUIPSLOTS.BODY then
+			return false
+		end
+		return old_Unequip(self, equipslot)
+	end
 	
 	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
-		--Stops Body from being equipped
+	
+		--Checks to see if special armor is present
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-			--Do Special Armor filter here
 			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
 				
-				--inst:updateWinstonArmorColor(inst, item)
+					--To restore Equippable for all armors
+					local itemE = self.equipslots[EQUIPSLOTS.BODY]
+					if itemE ~= nil then
+						if itemE.prefab == "skarmorstalwartplate" or itemE.prefab == "skarmorfinalguard" or itemE.prefab == "skarmorconjurerscoat"
+							or itemE.prefab == "skarmordynamomail" or itemE.prefab == "skarmormailofmomentum" or itemE.prefab == "skarmorornateplate" then
+							
+							--Special Armor Perk Removal for ConjurersCoat
+							if itemE.prefab == "skarmorconjurerscoat" then
+								local ownerSanity = self.inst.components.sanity.current
+								local ownerSanityMax = (self.inst.manaPotion*10)+120
+								self.inst.components.sanity:SetMax((self.inst.manaPotion*10)+120)
+								self.inst.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
+								self.inst:RemoveEventCallback("killed", self.inst._onplayerkillthing, self.inst)
+							end
+							
+							--Special Armor Perk Removal for OrnatePlate
+							if itemE.prefab == "skarmorornateplate" then
+								if itemE.fire ~= nil then
+									itemE.fire:Remove()
+									itemE.fire = nil
+								end
+							end
+							
+							itemE = SpawnPrefab(itemE.prefab)
+							self.equipslots[EQUIPSLOTS.BODY] = itemE
+						end
+					end
 				return old_Equip(self, item, old_to_active)
 			else
 			
-			--Stop other BODY Slot Armor
+			--Stops other BODY Slot Armor
 			self:RemoveItem(item, true)
 			if self:IsFull() then
 				if not self.activeitem and not TheInput:ControllerAttached() then
@@ -532,7 +538,7 @@ local master_postinit = function(inst)
 			end
 			self.inst.components.talker:Say("My mighty armor is mightier")
 			return false
-			end			
+			end
 		end
 		
 		--Stops Hats from being equipped -Disabled till Relics come into play
@@ -569,7 +575,7 @@ local master_postinit = function(inst)
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
 				damage = item.armorProtection --Saved on the Shovel Knight Armor
 				
-				--Apply Non-Freeze and Non-Sleep Armor Perk
+				--Apply Non-Freeze and Non-Sleep MailofMomentum Armor Perk
 				if item.prefab == "skarmormailofmomentum" then
 					if inst.components.freezable then
 						inst.components.freezable:Reset()
