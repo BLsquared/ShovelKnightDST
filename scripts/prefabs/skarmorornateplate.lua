@@ -27,6 +27,7 @@ local function onequip(inst, owner)
 	--owner.AnimState:SetBuild("winston") --Changes winston color NEEDED
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
+		inst:RemoveComponent("equippable")
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
