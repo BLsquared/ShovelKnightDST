@@ -38,14 +38,15 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "turkeydinner", --"skarmorstalwartplate",
+	"skweaponshovelbladebasic", "turkeydinner",
 }
 
---11 Relics, Might add gems to the list
+--11 Relics
 local relicList = {
 	"carrot", "rocks", "log", "goldnugget", "livinglog", "turkeydinner",
 	"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
 }
+
 --Random vaulable loot list
 local lootList = {
 	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget",
@@ -60,7 +61,7 @@ local function randomLootGen()
 	return lootList[math.random(#lootList)]
 end
 
---creates the relic in world
+--creates the relic and loot in world
 local function createRelic(relicPrefab, target)
 	if relicPrefab then
 		local relic = SpawnPrefab(relicPrefab)
@@ -95,13 +96,26 @@ local function createRelic(relicPrefab, target)
 	end
 end
 
---DropSpark Proj
+--DropSpark Proj Damage Booster
+local function bonusDamageDropSparkPerk(inst)
+	local bonusDamage = 0
+	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+			or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+			bonusDamage = item.armorDropSparkBooster --Saved on the Shovel Knight Armor
+		end
+	end
+	return bonusDamage
+end
+
+--DropSpark Proj Creator
 local function createDropSparkProjectile(inst, target, weapon)
 	local proj = SpawnPrefab("skfxdropspark_wave")--Name of the projectile
 	if proj then
 		if proj.components.projectile then
 			proj.owner = inst --Saves player to Projectile
-			--proj.projDamageBounus =  --Adds bonus damage from armor bonus --Need for Armor--
+			proj.projDamageBonus =  bonusDamageDropSparkPerk(inst)--Adds bonus damage from armor bonus --Need for Armor--
 			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			proj.components.projectile:Throw(weapon, target, inst)
 			inst.SoundEmitter:PlaySound("winston/characters/winston/dropspark")
@@ -297,11 +311,6 @@ local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, 
 	end
 end
 
-local function BecomeWinston(inst)
-	inst.AnimState:SetBank("wilson")
-	inst.AnimState:SetBuild("winston_conjurerscoat")
-end
-
 local function onworked(inst, data)
 	if inst.trenchBladeDebuffTime <= 0 then
 		if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
@@ -354,7 +363,13 @@ local function onattack(inst, data, weapon, pro)
 	end
 end
 
-local function ondeath(inst)
+--local function ondeath(inst)
+	
+--end
+
+local function ondeathkill(inst, deadthing)
+	inst.components.sanity:DoDelta(5) --ConjurersCoat Perk: Gives sanity back for killing things
+	
 	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
     --if inst.level > 0 then
@@ -389,9 +404,6 @@ end
 -- This initializes for the host only
 local master_postinit = function(inst)
 	
-	inst.AnimState:SetBank("wilson")
-	inst.AnimState:SetBuild("winston_conjurerscoat")
-	
 	--Personal Recipes
 	inst:AddTag("skitemtemplate_skbuilder")
 	inst:AddTag("skitemmealticket_skbuilder")
@@ -400,6 +412,10 @@ local master_postinit = function(inst)
 	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
 	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
 	inst:AddTag("skarmorfinalguard_skbuilder")
+	inst:AddTag("skarmorconjurerscoat_skbuilder")
+	inst:AddTag("skarmordynamomail_skbuilder")
+	inst:AddTag("skarmormailofmomentum_skbuilder")
+	inst:AddTag("skarmorornateplate_skbuilder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
@@ -424,7 +440,6 @@ local master_postinit = function(inst)
 	inst.components.combat.damagemultiplier = 1
 	inst.normalAttackSpeed = inst.components.combat.min_attack_period --for ChargeHandle anim
 	inst.components.sanity.night_drain_mult = 1
-	
 	inst.components.eater:SetOnEatFn(oneat)
 	
 	--TrenchBlade Combo and timer
@@ -442,14 +457,16 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
-	inst:ListenForEvent("death", ondeath)
+	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
 	
-	--BecomeWoodie(inst)
---starting item goes here
-		
+	--Used when killing things
+	inst._onplayerkillthing = function(player, data)
+		ondeathkill(inst, data.victim)
+    end
+	
 	local function IsChestArmor(item)
         if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
             return true
@@ -478,19 +495,14 @@ local master_postinit = function(inst)
 	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
-		--Stops Armor from being equipped -OLD Saving just in case
-		--if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-			--Do Special Armor filter here
-			--self.inst.components.inventory:DropItem(item, true, true)
-			--self.inst.components.talker:Say("My mighty armor is mightier")
-			--return false 
-		--end
-		
+
 		--Stops Body from being equipped
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
 			--Do Special Armor filter here
 			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+				
+				--inst:updateWinstonArmorColor(inst, item)
 				return old_Equip(self, item, old_to_active)
 			else
 			
@@ -546,8 +558,19 @@ local master_postinit = function(inst)
 		damage = 15
 		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
 			local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
-			if item.prefab == "skarmorconjurerscoat" then
-				damage = 20
+			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+				damage = item.armorProtection --Saved on the Shovel Knight Armor
+				
+				--Apply Non-Freeze and Non-Sleep Armor Perk
+				if item.prefab == "skarmormailofmomentum" then
+					if inst.components.freezable then
+						inst.components.freezable:Reset()
+					end
+					if inst.components.grogginess then
+						inst.componets.grogginess:ComeTo()
+					end
+				end
 			end
 		end
 		return old_GetAttacked(self,attacker, damage, weapon)
