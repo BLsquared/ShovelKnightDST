@@ -24,9 +24,10 @@ local function OnBlocked(owner)
 end
 
 local function onequip(inst, owner) 
-	--owner.AnimState:SetBuild("winston") --Changes winston color NEEDED
+	owner.AnimState:SetBuild("winston_dynamomail") --Changes winston color
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
+		inst:RemoveComponent("equippable")
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
