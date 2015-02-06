@@ -467,35 +467,42 @@ local master_postinit = function(inst)
 		ondeathkill(inst, data.victim)
     end
 	
-	local function IsChestArmor(item)
-        if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-            return true
-        else
-            return false
-        end
-    end 
+	--local function IsChestArmor(item)
+        --if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
+            --return true
+        --else
+            --return false
+        --end
+    --end 
 	
-	--Working on locking the BODY Slot for only Shovel Knight armor to be swapable.
+	--Template
+	--local old_SwapEquipWithActiveItem = inst.componest.inventory.SwapEquipWithActiveItem()
+	--inst.components.inventory.SwapEquipWithActiveItem() = function(self)
+		
+	--end
+	
+	--Still not working correctly T_T
+	--Locks the BODY Slot for only Shovel Knight armor to be swapable.
 	--local old_Unequip = inst.components.inventory.Unequip
 	--inst.components.inventory.Unequip = function(self, equipslot)
-		--if self.inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
-			--local actItem = self:GetActiveItem()
-			--if actItem.prefab == "skarmorfinalguard" then
-				--return old_Unequip(self, equipslot)
-			--else
-				--return false
-			--end
 		--local item = self.equipslots[equipslot]
-		
+		--if item ~= nil then
+			--if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
+				--if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+					--or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+					--item.components.inventoryitem.owner.components.talker:Say("No... not going to happen!")
+					--self:SetActiveItem(nil)
+					--item = self.activeitem
+					--return item
+				--end
+			--end
 		--end
 		--return old_Unequip(self, equipslot)
 	--end
 	
-	
 	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
-
 		--Stops Body from being equipped
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
 			--Do Special Armor filter here
