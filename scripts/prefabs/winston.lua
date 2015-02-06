@@ -37,8 +37,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "skweaponshovelbladedropspark", "turkeydinner",
-}
+	"skweaponshovelbladebasic",}
 
 --11 Relics, Might add gems to the list
 local relicList = {
