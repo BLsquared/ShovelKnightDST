@@ -1,8 +1,9 @@
 PrefabFiles = {
-	"winston", "skitemtemplate", "skitemmealticket", "skitemmanapotion",
+	"winston", "skitemtemplate",
+	"skitemmealticket", "skitemmanapotion",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
-	"skfxdropspark_wave",
+	"skfxdropspark_wave", "skfxornateplate_glitter"
 }
 
 Assets = {
@@ -38,6 +39,9 @@ Assets = {
 	
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladedropspark.tex" ),
 	Asset( "ATLAS", "images/map_icons/skweaponshovelbladedropspark.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skarmorstalwartplate.tex" ),
+	Asset( "ATLAS", "images/map_icons/skarmorstalwartplate.xml" ),
 }
 
 RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
@@ -154,6 +158,7 @@ AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
+AddMinimapAtlas("images/map_icons/skarmorstalwartplate.xml")
 
 AddModCharacter("winston")
 

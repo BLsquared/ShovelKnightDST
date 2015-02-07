@@ -36,7 +36,6 @@ local function usemanapotion(inst, reader)
 			if reader.manaPotion < manaPotionMAXM then
 				reader.components.sanity:SetMax((reader.manaPotion*10)+120 +bonusSanityMax)
 				reader.components.sanity:DoDelta((reader.manaPotion*10)+120 +bonusSanityMax)
-				inst.bookuses = 0
 				
 				--Shovel Knight Speaks
 				if manaPotionFound == 1 then

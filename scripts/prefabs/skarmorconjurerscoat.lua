@@ -14,11 +14,6 @@ local function activate(owner)
 	owner:ListenForEvent("killed", owner._onplayerkillthing, owner)
 end
 
---Turns off harvest from kills
-local function deactivate(owner)
-	owner:RemoveEventCallback("killed", owner._onplayerkillthing, owner)
-end
-
 local function buffarmor(inst, owner)
 	inst.components.inventoryitem.keepondeath = true
 	inst.components.equippable.walkspeedmult = inst.armorMovement
@@ -43,6 +38,7 @@ local function onequip(inst, owner)
 		owner.components.sanity:SetMax((owner.manaPotion*10)+120 +inst.armorSanityMaxBooster)
 		owner.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
 		activate(owner)
+		inst:RemoveComponent("equippable")
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
@@ -52,14 +48,6 @@ end
 local function onunequip(inst, owner) 
 	owner.AnimState:SetBuild(owner.prefab) --Changes player back
 	debuffarmor(inst) --Resets the item back to normal
-	if owner.prefab == "winston" then
-		--Remove Perk
-		local ownerSanity = owner.components.sanity.current
-		local ownerSanityMax = (owner.manaPotion*10)+120
-		owner.components.sanity:SetMax((owner.manaPotion*10)+120)
-		owner.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
-		deactivate(owner)
-	end
     inst:RemoveEventCallback("blocked", OnBlocked, owner)
 end
 
@@ -95,7 +83,7 @@ local function fn()
 	inst.armorDropSparkBooster = 0
 	
 	--Special perks: Sanity Increase and harvest sanity from kills
-	--Check under winston:ondeathkill(inst, deadthing) and manapotion:bonusSanityPerk(reader)
+	--Check under winston:ondeathkill(inst, deadthing) and winston:old_Equip and manapotion:bonusSanityPerk(reader)
 	inst.armorSanityMaxBooster = 50
 	
     inst:AddComponent("inspectable")
