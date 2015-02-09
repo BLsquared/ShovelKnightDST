@@ -12,6 +12,14 @@ local assets =
 prefabs = {
 }
 
+local nums = {"ONE", "TWO", "THREE", "FOUR" , "FIVE" , "SIX" , "SEVEN" , "EIGHT"}
+
+local function GetEquipQuote(owner)
+	local randomQuotePart = nums[math.random(#nums)]
+	local randomQuote = "ANNOUNCE_SHOVELBLADE_EQUIP"..randomQuotePart
+    return randomQuote
+end
+
 --Does chargeHandle fx
 local function chargeHandleFx(attacker, target)
 	local fx = SpawnPrefab("skfxchargehandle_shatter")
@@ -153,9 +161,11 @@ local function onequip(inst, owner)
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
 			
+			owner.components.talker:Say(GetString(owner, GetEquipQuote(owner))) --Random Equip Quote
+			
 			--Plays special shovelblade EquippedSound
 			inst.playEquippedSound = inst.playEquippedSound +1
-			owner.components.talker:Say("Lets get shoveling!")
+			
 			if inst.playEquippedSound == 1 then
 				owner.SoundEmitter:PlaySound("winston/characters/winston/shovelbladeequipped")
 			end
