@@ -50,6 +50,7 @@ local function fn()
     local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
     local anim = inst.entity:AddAnimState()
+	inst.entity:AddMiniMapEntity()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 
@@ -60,8 +61,7 @@ local function fn()
 	inst.entity:SetPristine()
     MakeHauntableLaunch(inst)
 	
-	local minimap = inst.entity:AddMiniMapEntity()
-    minimap:SetIcon("skarmorstalwartplate.tex")
+	inst.MiniMapEntity:SetIcon("skarmorstalwartplate.tex")
 	
 	MakeInventoryPhysics(inst)
 	

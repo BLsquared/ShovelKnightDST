@@ -79,6 +79,7 @@ local function fn(Sim)
 	local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
     local anim = inst.entity:AddAnimState()
+	inst.entity:AddMiniMapEntity()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
@@ -89,8 +90,7 @@ local function fn(Sim)
 	inst.entity:SetPristine()
     MakeHauntableLaunch(inst)
 	
-	local minimap = inst.entity:AddMiniMapEntity()
-    minimap:SetIcon("skweaponshovelbladebasic.tex")
+	inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
 	
     MakeInventoryPhysics(inst)
 
