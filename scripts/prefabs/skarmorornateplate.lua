@@ -27,11 +27,12 @@ local function onequip(inst, owner)
 	--owner.AnimState:SetBuild("winston") --Changes winston color NEEDED
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
-		--test
-		if inst.fire == nil then
-			inst.fire = SpawnPrefab("skfxornateplate_glitter")
+		
+		--Adds armorGlitter
+		if inst.armorGlitter == nil then
+			inst.armorGlitter = SpawnPrefab("skfxornateplate_glitter")
 			--inst.fire.Transform:SetScale(.125, .125, .125)
-			local follower = inst.fire.entity:AddFollower()
+			local follower = inst.armorGlitter.entity:AddFollower()
 			follower:FollowSymbol(owner.GUID, "swap_body", 0, 0, 0)
 		end
 	
@@ -79,6 +80,9 @@ local function fn()
 	inst.armorChargeHandleBooster = 0
 	inst.armorDropSparkBooster = 0
 	
+	--Special perks: Faster Movement speed and leaves a light trail behind
+	--Check under winston:old_Equip
+	inst.armorGlitter = nil
 	
     inst:AddComponent("inspectable")
     

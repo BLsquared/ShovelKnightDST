@@ -7,6 +7,7 @@ local assets =
 {
 	Asset( "IMAGE", texture ),
 	Asset( "SHADER", shader ),
+	Asset("ANIM", "anim/fireflies.zip"),
 }
 
 local max_scale = 2
@@ -45,14 +46,14 @@ local function fn()
 	local inst = CreateEntity()
 
 	inst.entity:AddTransform()
-    inst.entity:AddLight()
+    --inst.entity:AddLight()
     inst.entity:AddNetwork()
 	
 	InitEnvelope()
 
     local emitter = inst.entity:AddParticleEmitter()
 	emitter:SetRenderResources(texture, shader)
-	emitter:SetMaxNumParticles(6)
+	emitter:SetMaxNumParticles(12)
 	emitter:SetMaxLifetime(max_lifetime)
 	emitter:SetColourEnvelope(colour_envelope_name)
 	emitter:SetScaleEnvelope( scale_envelope_name)
@@ -64,7 +65,7 @@ local function fn()
 	-----------------------------------------------------
 	local tick_time = TheSim:GetTickTime()
 
-	local desired_particles_per_second = 1
+	local desired_particles_per_second = 2
 	local particles_per_tick = desired_particles_per_second * tick_time
 
 	local num_particles_to_emit = 1
@@ -97,6 +98,13 @@ local function fn()
 		end
 
 		num_particles_to_emit = num_particles_to_emit + particles_per_tick
+		
+		--Creates a trail
+		inst.trailCounter = inst.trailCounter + 1
+		if inst.trailCounter >= 50 then
+			inst.trailCounter = 0
+			SpawnPrefab("skfxornateplate_trail").Transform:SetPosition(inst.Transform:GetWorldPosition())
+		end
 	end
 
 	EmitterManager:AddEmitter(inst, nil, updateFunc)
@@ -108,11 +116,13 @@ local function fn()
     inst:AddTag("FX")
     inst.persists = false
 
-    inst.Light:Enable(true)
-    inst.Light:SetIntensity(.5)
-    inst.Light:SetColour(180/255, 195/255, 150/255)
-    inst.Light:SetFalloff(.9)
-    inst.Light:SetRadius(.27)
+    --inst.Light:Enable(true)
+    --inst.Light:SetIntensity(.5)
+    --inst.Light:SetColour(180/255, 195/255, 150/255)
+    --inst.Light:SetFalloff(.9)
+    --inst.Light:SetRadius(.27)
+	
+	inst.trailCounter = 0
 	
     return inst
 end

@@ -506,9 +506,9 @@ local master_postinit = function(inst)
 							
 							--Special Armor Perk Removal for OrnatePlate
 							if itemE.prefab == "skarmorornateplate" then
-								if itemE.fire ~= nil then
-									itemE.fire:Remove()
-									itemE.fire = nil
+								if itemE.armorGlitter ~= nil then
+									itemE.armorGlitter:Remove()
+									itemE.armorGlitter = nil
 								end
 							end
 							

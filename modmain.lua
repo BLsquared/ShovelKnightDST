@@ -3,7 +3,7 @@ PrefabFiles = {
 	"skitemmealticket", "skitemmanapotion",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
-	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter"
+	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
 }
 
 Assets = {
