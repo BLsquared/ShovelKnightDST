@@ -11,7 +11,9 @@ prefabs = {
 
 local function buffarmor(inst, owner)
 	inst.components.inventoryitem.keepondeath = true
-	inst.components.equippable.walkspeedmult = inst.armorMovement
+	owner.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.armorMovement)
+	owner.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.armorMovement)
+	--inst.components.equippable.walkspeedmult = inst.armorMovement
 end
 
 local function debuffarmor(inst)
@@ -27,6 +29,8 @@ local function onequip(inst, owner)
 	--owner.AnimState:SetBuild("winston") --Changes winston color NEEDED
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
+		owner:RemoveComponent("pinnable")
+		inst:RemoveComponent("equippable")
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end

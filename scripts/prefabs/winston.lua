@@ -495,6 +495,10 @@ local master_postinit = function(inst)
 						if itemE.prefab == "skarmorstalwartplate" or itemE.prefab == "skarmorfinalguard" or itemE.prefab == "skarmorconjurerscoat"
 							or itemE.prefab == "skarmordynamomail" or itemE.prefab == "skarmormailofmomentum" or itemE.prefab == "skarmorornateplate" then
 							
+							--Special Armor Perk Removal armorMovement
+							self.inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
+							self.inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
+							
 							--Special Armor Perk Removal for ConjurersCoat
 							if itemE.prefab == "skarmorconjurerscoat" then
 								local ownerSanity = self.inst.components.sanity.current
@@ -502,6 +506,11 @@ local master_postinit = function(inst)
 								self.inst.components.sanity:SetMax((self.inst.manaPotion*10)+120)
 								self.inst.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
 								self.inst:RemoveEventCallback("killed", self.inst._onplayerkillthing, self.inst)
+							end
+							
+							--Special Armor Perk Removal for MailofMomentum
+							if itemE.prefab == "skarmormailofmomentum" then
+								self.inst:AddComponent("pinnable")
 							end
 							
 							--Special Armor Perk Removal for OrnatePlate

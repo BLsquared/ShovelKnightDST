@@ -31,12 +31,6 @@ local function fn()
     inst.entity:AddAnimState()
     inst.entity:AddLight()
 
-    --local parent = proxy.entity:GetParent()
-    --if parent ~= nil then
-        --inst.entity:SetParent(parent.entity)
-    --end
-    --inst.Transform:SetFromProxy(proxy.GUID)
-
 	inst.AnimState:SetBank("fireflies")
     inst.AnimState:SetBuild("fireflies")
 	inst.AnimState:PlayAnimation("swarm_loop")
