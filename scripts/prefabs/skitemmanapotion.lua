@@ -34,6 +34,7 @@ local function usemanapotion(inst, reader)
 			local bonusSanityMax = bonusSanityPerk(reader)
 			--Special
 			if reader.manaPotion < manaPotionMAXM then
+				reader.components.sanity:DoDelta((reader.manaPotion*10)+120 +bonusSanityMax)--Fixes odd bug
 				reader.components.sanity:SetMax((reader.manaPotion*10)+120 +bonusSanityMax)
 				reader.components.sanity:DoDelta((reader.manaPotion*10)+120 +bonusSanityMax)
 				
@@ -81,7 +82,7 @@ local function fn()
      
     anim:SetBank("skitemmanapotion")
     anim:SetBuild("skitemmanapotion")
-    anim:PlayAnimation("idle", true)
+    anim:PlayAnimation("idle")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemmanapotion.xml"

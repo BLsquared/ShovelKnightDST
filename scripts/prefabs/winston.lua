@@ -1,4 +1,3 @@
-
 local MakePlayerCharacter = require "prefabs/player_common"
 
 
@@ -44,8 +43,8 @@ local start_inv = {
 
 --11 Relics
 local relicList = {
-	"carrot", "rocks", "log", "goldnugget", "livinglog", "turkeydinner",
-	"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
+	"skrelicfishingrod", --"rocks", "log", "goldnugget", "livinglog", "turkeydinner",
+	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
 }
 
 --Random vaulable loot list
@@ -178,7 +177,9 @@ local function onupdate(inst, dt)
 	inst.trenchBladeComboTime = inst.trenchBladeComboTime - dt
 	inst.trenchBladeDebuffTime = inst.trenchBladeDebuffTime - dt
 	inst.dropSparkDebuffTime = inst.dropSparkDebuffTime - dt
-		
+	inst.relicDebuffTime = inst.relicDebuffTime - dt
+	
+	--DropSpark Stuff
 	if inst.dropSparkDebuffTime <= 0 then
 		inst.dropSparkDebuffTime = 0
 		if inst.components.health:IsHurt() == false then
@@ -188,7 +189,6 @@ local function onupdate(inst, dt)
 					equipped.components.weapon.attackrange = equipped.normalRangedRange --Make Range
 					equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropsparkready.xml"
 					equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropsparkready")
-					
 				end
 			end
 		end
@@ -203,17 +203,30 @@ local function onupdate(inst, dt)
 		end
 	end
 	
+	--Relic Stuff
+	if inst.relicDebuffTime <= 0 then
+		inst.relicDebuffTime = 0
+		local relicEquipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+		if relicEquipped ~= nil then
+			relicEquipped.components.inventoryitem.atlasname = "images/inventoryimages/"..relicEquipped.prefab..".xml"
+			relicEquipped.components.inventoryitem:ChangeImageName(relicEquipped.prefab)
+		end
+	else
+		local relicEquipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+		if relicEquipped ~= nil then
+			relicEquipped.components.inventoryitem.atlasname = "images/inventoryimages/"..relicEquipped.prefab.."locked.xml"
+			relicEquipped.components.inventoryitem:ChangeImageName(relicEquipped.prefab.."locked")
+		end
+	end
+		
+	--TrenchBlade Stuff
 	if inst.trenchBladeComboBuilder > 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
 		inst.trenchBladeComboBuilder = 0
 		inst.trenchBladeComboTime = 0
 		inst.trenchBladeDebuffTime = 0
-		if inst.trenchBladeClock_Task ~= nil then
-			inst.trenchBladeClock_Task:Cancel()
-			inst.trenchBladeClock_Task = nil
-		end
 		--inst.components.talker:Say("Combo Lost")
 		
-	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 and inst.dropSparkDebuffTime <=0 then
+	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 and inst.dropSparkDebuffTime <=0 and inst.relicDebuffTime <=0 then
 			inst.trenchBladeComboTime = 0
 			inst.trenchBladeDebuffTime = 0
 		if inst.trenchBladeClock_Task ~= nil then
@@ -221,7 +234,6 @@ local function onupdate(inst, dt)
 			inst.trenchBladeClock_Task = nil
 		end
 		--inst.components.talker:Say("Dig Cooldown Dismiss")
-		
 	--else
 	end
 end
@@ -230,6 +242,7 @@ local function onlongupdate(inst, dt)
     inst.trenchBladeComboTime = math.max(0, inst.trenchBladeComboTime - dt)
 	inst.trenchBladeDebuffTime = math.max(0, inst.trenchBladeDebuffTime - dt)
 	inst.dropSparkDebuffTime = math.max(0, inst.dropSparkDebuffTime - dt)
+	inst.relicDebuffTime = math.max(0, inst.relicDebuffTime - dt)
 end
 
 local function startovercharge(inst, duration)
@@ -241,6 +254,8 @@ local function startovercharge(inst, duration)
 		--inst.components.talker:Say("Combo Enguaged")
 	elseif duration == 9 then
 		inst.dropSparkDebuffTime = duration
+	elseif duration == 5 then
+		inst.relicDebuffTime = duration
 	end
 	
 	if inst.trenchBladeClock_Task == nil then
@@ -284,6 +299,9 @@ local function onload(inst, data)
     if data ~= nil and data.trenchBladeDebuffTime ~= nil then
         startovercharge(inst, data.trenchBladeDebuffTime)
     end
+	if data ~= nil and data.relicDebuffTime ~= nil then
+        startovercharge(inst, data.relicDebuffTime)
+    end
 end
 
 local function onsave(inst, data)
@@ -294,6 +312,7 @@ local function onsave(inst, data)
 	data.trenchBladeComboTime = inst.trenchBladeComboTime > 0 and inst.trenchBladeComboTime or nil
 	data.trenchBladeDebuffTime = inst.trenchBladeDebuffTime > 0 and inst.trenchBladeDebuffTime or nil
 	data.dropSparkDebuffTime = inst.dropSparkDebuffTime > 0 and inst.dropSparkDebuffTime or nil
+	data.relicDebuffTime = inst.relicDebuffTime > 0 and inst.relicDebuffTime or nil
 end
 
 local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, afflicter)
@@ -313,6 +332,11 @@ local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, 
 	end
 end
 
+--Set the relic cooldown timer
+local function onrelic(inst)
+	startovercharge(inst, 5)
+end
+
 local function onworked(inst, data)
 	if inst.trenchBladeDebuffTime <= 0 then
 		if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
@@ -325,7 +349,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							--createRelic(relicGen, data.target) --Creates the Relic DISABLED ATM--
+							createRelic(relicGen, data.target) --Creates the Relic
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
@@ -394,7 +418,6 @@ local common_postinit = function(inst)
 		if inst.components.inventory ~= nil then
 			inst.components.inventory.ignoresound = true
 			local itemArmor = SpawnPrefab("skarmorstalwartplate")
-			--inst.components.inventory.equipslots[EQUIPSLOTS.BODY] = itemArmor --Old way
 			inst.components.inventory.activeitem = itemArmor
 			inst.components.inventory:EquipActiveItem()
 			inst.components.inventory:SetActiveItem(nil)
@@ -405,7 +428,6 @@ end
 
 -- This initializes for the host only
 local master_postinit = function(inst)
-	
 	--Personal Recipes
 	inst:AddTag("skitemtemplate_skbuilder")
 	inst:AddTag("skitemmealticket_skbuilder")
@@ -450,10 +472,11 @@ local master_postinit = function(inst)
 	inst.trenchBladeDebuffTime = 0
 	inst.trenchBladeClock_Task = nil
 	
-	--DropSpark Combo
+	--DropSpark timer
 	inst.dropSparkDebuffTime = 0
-		
-	--inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	
+	--Relic timer
+	inst.relicDebuffTime = 0
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
@@ -465,6 +488,7 @@ local master_postinit = function(inst)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
+	inst:ListenForEvent("castrelic", onrelic)
 	
 	--Used when killing things
 	inst._onplayerkillthing = function(player, data)
@@ -550,9 +574,14 @@ local master_postinit = function(inst)
 			end
 		end
 		
-		--Stops Hats from being equipped -Disabled till Relics come into play
+		---Stops Hats from being equipped -Disabled till Relics come into play
 		--if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			---Do Special Relic filter here
+			--if item.prefab == "skitemmealtickettest" then
+				
+				--return old_Equip(self, item, old_to_active)
+			--else
+			
+			---Stops other Head Slot Hats
 			--self:RemoveItem(item, true)
 			--if self:IsFull() then
 				--if not self.activeitem and not TheInput:ControllerAttached() then
@@ -571,6 +600,7 @@ local master_postinit = function(inst)
 			--end
 			--self.inst.components.talker:Say("This is not a Relic!")
 			--return false
+			--end
 		--end
         return old_Equip(self, item, old_to_active)
     end

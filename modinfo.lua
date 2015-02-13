@@ -13,10 +13,24 @@ api_version = 10
 
 dst_compatible = true
 dont_starve_compatible = false
-reign_of_giants_compatible = false
+reign_of_giants_compatible = true
 all_clients_require_mod = true
 
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
 
---configuration_options = {}
+local alpha = {"A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"}
+local KEY_A = 97
+local keyslist = {}
+for i = 1,#alpha do keyslist[i] = {description = alpha[i],data = i + KEY_A - 1} end
+
+configuration_options =
+{
+    {
+        name = "RELICKEY",
+        label = "Relic Button",
+		hover = "The key you need to press activate a Relic.",
+        options = keyslist,
+        default = 114, --R
+    },    
+}

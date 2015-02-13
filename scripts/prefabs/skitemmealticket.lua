@@ -20,9 +20,9 @@ local function usemealticket(inst, reader)
 			local mealTicketFound = reader.mealTicket
 			
 			if reader.mealTicket < mealTicketMAXM then
+				reader.components.health:DoDelta((reader.mealTicket*15)+80) --Fixes odd bug
 				reader.components.health:SetMaxHealth((reader.mealTicket*15)+80)
 				reader.components.health:DoDelta((reader.mealTicket*15)+80)
-				inst.bookuses = 0
 				
 				--Shovel Knight Speaks
 				if mealTicketFound == 1 then
@@ -68,7 +68,7 @@ local function fn()
      
     anim:SetBank("skitemmealticket")
     anim:SetBuild("skitemmealticket")
-    anim:PlayAnimation("idle", true)
+    anim:PlayAnimation("idle")
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemmealticket.xml"

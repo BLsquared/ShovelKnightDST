@@ -1,9 +1,13 @@
+local KEY_CTRL = GLOBAL.KEY_CTRL
+local TheInput = GLOBAL.TheInput
+
 PrefabFiles = {
-	"winston", "skitemtemplate",
-	"skitemmealticket", "skitemmanapotion",
+	"winston", "skitemtemplate", 
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
+	"skrelicfishingrod",
 }
 
 Assets = {
@@ -49,6 +53,11 @@ RemapSoundEvent( "dontstarve/characters/winston/chargehandlecharged", "winston/c
 RemapSoundEvent( "dontstarve/characters/winston/chargehandlerelease", "winston/characters/winston/chargehandlerelease" )
 RemapSoundEvent( "dontstarve/characters/winston/dropspark", "winston/characters/winston/dropspark" )
 RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winston/jump" )
+
+--Key Bind stuff
+local RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
+--local controls = nil
+local keydown = false
 
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
@@ -150,8 +159,69 @@ local function HealthPostInit(self)
 		self.RecalculatePenalty = RecalculatePenalty
 	end
 end
- 
 AddComponentPostInit('health', HealthPostInit)
+
+--Custom Relic Key
+local function IsDefaultScreen()
+	return GLOBAL.TheFrontEnd:GetActiveScreen().name:find("HUD") ~= nil
+end
+
+local function ShowCastRelic()
+	if keydown then return end
+	keydown = true
+	if not IsDefaultScreen() then return end
+	
+	if GLOBAL.ThePlayer.prefab == "winston" then
+		if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
+			local relicItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
+			if relicItem.prefab == "skrelicfishingrod" then
+				relicItem.components.useableitem:StartUsingItem()
+			end
+		end
+	end
+end
+
+local function HideCastRelic()
+	keydown = false
+end
+
+local function AddRelicToggleKey(self)
+	--controls = self -- this just makes controls available in the rest of the modmain's functions
+	
+	GLOBAL.TheInput:AddKeyDownHandler(RELICKEY, ShowCastRelic)
+	GLOBAL.TheInput:AddKeyUpHandler(RELICKEY, HideCastRelic)
+	
+	--local OldOnUpdate = controls.OnUpdate
+	--local function OnUpdate(...)
+		--OldOnUpdate(...)
+		--if keydown then
+		--end
+	--end
+	--controls.OnUpdate = OnUpdate
+end
+AddClassPostConstruct( "widgets/controls", AddRelicToggleKey )
+
+--Fishing
+--local random_loot = "log"
+
+--local rod = _G.require "components/fishingrod"
+--local hook = rod.Collect
+--function rod:Collect(...)
+	--local r=math.random()
+	--local pr
+	--if r<0.5 then
+		--pr="gears"
+	--else
+		--r=r-0.5
+		--if r<0.4 then
+			--pr=random_loot
+		--end
+	--end
+	--if pr and self.fisherman and self.fisherman.components.inventory then
+		--self.fisherman.components.inventory:DropItem(_G.SpawnPrefab(pr), true, true)
+	--end
+	--return hook(self,...)
+--end
 
 AddMinimapAtlas("images/map_icons/winston.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
