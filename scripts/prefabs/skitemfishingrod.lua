@@ -11,7 +11,7 @@ prefabs = {
 
 --Random vaulable fishLoot list
 local fishLootList = {
-	"eel", --Temp, Maybe added the real Appletrout fishes upon catch.... not sure yet.
+	"skitemtroupplefish", --Temp, Maybe added the real Appletrout fishes upon catch.... not sure yet.
 }
 
 local fishRareLootList = {
@@ -104,8 +104,8 @@ local function fn()
     MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.1 --40% chance
-	inst.fishRareLootChance = 0.9 --10% chance
+	inst.fishLootChance = 0.4 --40% chance
+	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil

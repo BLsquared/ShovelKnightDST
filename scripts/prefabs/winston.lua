@@ -38,7 +38,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "turkeydinner",
+	"skweaponshovelbladebasic", "turkeydinner", "skrelicfishingrod",
 }
 
 --11 Relics

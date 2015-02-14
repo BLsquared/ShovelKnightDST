@@ -4,7 +4,7 @@ local TheInput = GLOBAL.TheInput
 PrefabFiles = {
 	"winston", "skitemtemplate", 
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod",
-	"skitemmusicsheet",
+	"skitemmusicsheet", "skitemtroupplefish",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
@@ -201,30 +201,6 @@ local function AddRelicToggleKey(self)
 	--controls.OnUpdate = OnUpdate
 end
 AddClassPostConstruct( "widgets/controls", AddRelicToggleKey )
-
---Fishing
---local fish = GLOBAL.require "components/fishable"
---local old_fishHook = fish.HookFish
-
---function fish:HookFish(...)
-	--if GLOBAL.ThePlayer.prefab == "winston" then
-		--if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HAND] ~= nil then
-			--local handItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HAND]
-			--if handItem.prefab == "skitemfishingrod" then
-
-				--local rareFishChance = math.random()
-				--if rareFishChance < handItem.fishRareLootChance then
-					--local save_fish = self.fish
-					--self.fish = self.fish["fish"] and {skitemmusicsheet="skitemmusicsheet"} or {fish="fish"}
-					--local res = old_fishHook(self,...)
-					--self.fish = save_fish
-					--return res
-				--end
-			--end
-		--end
-	--end
-	--return old_fishHook(self,...)
---end
 
 
 AddMinimapAtlas("images/map_icons/winston.xml")
