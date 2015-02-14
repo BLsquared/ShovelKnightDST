@@ -11,11 +11,19 @@ prefabs = {
 
 --Random vaulable fishLoot list
 local fishLootList = {
-	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget",
+	"log",
+}
+
+local fishRareLootList = {
+	"skitemmusicsheet",
 }
 
 local function randomFishLootGen()
 	return fishLootList[math.random(#fishLootList)]
+end
+
+local function randomFishRareLootGen()
+	return fishRareLootList[math.random(#fishRareLootList)]
 end
 
 local function onequip(inst, owner)
@@ -46,6 +54,11 @@ local function onfished(inst)
 		local fishLootGen = randomFishLootGen() --Finds a random fishLoot
 		if fishLootGen ~= nil then
 			owner.components.inventory:DropItem(SpawnPrefab(fishLootGen), true, true)
+		end
+	elseif math.random() <= inst.fishRareLootChance then
+		local fishRareLootGen = randomFishRareLootGen() --Finds a random fishLoot
+		if fishRareLootGen ~= nil then
+			owner.components.inventory:DropItem(SpawnPrefab(fishRareLootGen), true, true)
 		end
 	end
 	
@@ -81,6 +94,7 @@ local function fn()
  
 	--Fishingrod Stuff
 	inst.fishLootChance = 0.4 --40% chance
+	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishHolster = nil
 	inst.fishOwner = nil
 	
@@ -88,7 +102,7 @@ local function fn()
 	
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(20)
-    inst.components.weapon:SetAttackCallback(inst.Remove)
+    inst.components.weapon:SetAttackCallback(onfishholster)
 
     inst:AddComponent("fishingrod")
     inst.components.fishingrod:SetWaitTimes(4, 40)
