@@ -11,7 +11,7 @@ prefabs = {
 
 --Random vaulable fishLoot list
 local fishLootList = {
-	"log",
+	"eel", --Temp, Maybe added the real Appletrout fishes upon catch.... not sure yet.
 }
 
 local fishRareLootList = {
@@ -48,18 +48,29 @@ local function onfishholster(inst)
 	inst:Remove()
 end
 
-local function onfished(inst)
+local function onfishcatch(inst)
 	local owner = inst.components.inventoryitem.owner
+
 	if math.random() <= inst.fishLootChance then
-		local fishLootGen = randomFishLootGen() --Finds a random fishLoot
+		local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
 		if fishLootGen ~= nil then
-			owner.components.inventory:DropItem(SpawnPrefab(fishLootGen), true, true)
+			inst.components.fishingrod.caughtfish = SpawnPrefab(fishLootGen)
+			inst.fishLootFinal = fishLootGen
 		end
 	elseif math.random() <= inst.fishRareLootChance then
-		local fishRareLootGen = randomFishRareLootGen() --Finds a random fishLoot
+		local fishRareLootGen = randomFishRareLootGen() --Finds a rare random fishLoot
 		if fishRareLootGen ~= nil then
-			owner.components.inventory:DropItem(SpawnPrefab(fishRareLootGen), true, true)
+			inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
+			inst.fishLootFinal = fishRareLootGen
 		end
+	end
+end
+
+local function onfished(inst)
+	local owner = inst.components.inventoryitem.owner
+	if inst.fishLootFinal ~= nil then
+		owner.components.inventory:DropItem(SpawnPrefab(inst.fishLootFinal), true, true)
+		inst.fishLootFinal = nil
 	end
 	
 	--Equip old Hand Item
@@ -93,8 +104,9 @@ local function fn()
     MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.4 --40% chance
-	inst.fishRareLootChance = 0.1 --10% chance
+	inst.fishLootChance = 0.1 --40% chance
+	inst.fishRareLootChance = 0.9 --10% chance
+	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil
 	
@@ -107,8 +119,10 @@ local function fn()
     inst:AddComponent("fishingrod")
     inst.components.fishingrod:SetWaitTimes(4, 40)
     inst.components.fishingrod:SetStrainTimes(0, 5)
+	inst:ListenForEvent("fishingcatch", onfishcatch)
     inst:ListenForEvent("fishingcollect", onfished)
-
+	
+	
     inst:AddComponent("inspectable")
     
     inst:AddComponent("inventoryitem")

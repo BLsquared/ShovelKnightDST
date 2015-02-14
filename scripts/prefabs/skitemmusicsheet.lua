@@ -1,12 +1,16 @@
 local assets=
 {
     Asset("ANIM", "anim/skitemmusicsheet.zip"),
- 
+	
     Asset("ATLAS", "images/inventoryimages/skitemmusicsheet.xml"),
     Asset("IMAGE", "images/inventoryimages/skitemmusicsheet.tex"),
 }
 prefabs = {
 }
+
+local function stopkicking(inst)
+    inst.AnimState:PlayAnimation("idle")
+end
 
 local function fn()
  
@@ -24,11 +28,13 @@ local function fn()
 	
 	anim:SetBank("skitemmusicsheet")
     anim:SetBuild("skitemmusicsheet")
-    anim:PlayAnimation("idle")
+    anim:PlayAnimation("fished")
 	
 	inst.entity:SetPristine()
 	MakeHauntableLaunch(inst)
     
+	inst.build = "skitemmusicsheet"
+	
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemmusicsheet.xml"
 	inst.components.inventoryitem.imagename = "skitemmusicsheet"
@@ -44,7 +50,10 @@ local function fn()
 	--Burn
 	inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
-
+	
+	inst:DoTaskInTime(0.7, stopkicking)
+	inst.OnLoad = stopkicking
+	
     return inst
 end
 

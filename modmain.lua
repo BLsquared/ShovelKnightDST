@@ -203,26 +203,29 @@ end
 AddClassPostConstruct( "widgets/controls", AddRelicToggleKey )
 
 --Fishing
---local random_loot = "log"
+--local fish = GLOBAL.require "components/fishable"
+--local old_fishHook = fish.HookFish
 
---local rod = _G.require "components/fishingrod"
---local hook = rod.Collect
---function rod:Collect(...)
-	--local r=math.random()
-	--local pr
-	--if r<0.5 then
-		--pr="gears"
-	--else
-		--r=r-0.5
-		--if r<0.4 then
-			--pr=random_loot
+--function fish:HookFish(...)
+	--if GLOBAL.ThePlayer.prefab == "winston" then
+		--if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HAND] ~= nil then
+			--local handItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HAND]
+			--if handItem.prefab == "skitemfishingrod" then
+
+				--local rareFishChance = math.random()
+				--if rareFishChance < handItem.fishRareLootChance then
+					--local save_fish = self.fish
+					--self.fish = self.fish["fish"] and {skitemmusicsheet="skitemmusicsheet"} or {fish="fish"}
+					--local res = old_fishHook(self,...)
+					--self.fish = save_fish
+					--return res
+				--end
+			--end
 		--end
 	--end
-	--if pr and self.fisherman and self.fisherman.components.inventory then
-		--self.fisherman.components.inventory:DropItem(_G.SpawnPrefab(pr), true, true)
-	--end
-	--return hook(self,...)
+	--return old_fishHook(self,...)
 --end
+
 
 AddMinimapAtlas("images/map_icons/winston.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
