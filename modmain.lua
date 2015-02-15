@@ -3,8 +3,8 @@ local TheInput = GLOBAL.TheInput
 
 PrefabFiles = {
 	"winston", "skitemtemplate", 
-	"skitemmealticket", "skitemmanapotion", "skitemfishingrod",
-	"skitemmusicsheet", "skitemtroupplefish",
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
+	"skitemtroupplefish", "skitemtroupplefishking",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",

@@ -1,6 +1,6 @@
 local assets=
 {
-    Asset("ANIM", "anim/skitemtroupplefish.zip"),
+    Asset("ANIM", "anim/skitemtroupplefishking.zip"),
 	
 	Asset("ATLAS", "images/inventoryimages/skitemtroupplefish.xml"),
     Asset("IMAGE", "images/inventoryimages/skitemtroupplefish.tex"),
@@ -36,16 +36,18 @@ local function fn()
     end
 	MakeInventoryPhysics(inst)
 	
+	inst:AddTag("largecreature")
+	
 	anim:SetBank("fish")
-    anim:SetBuild("skitemtroupplefish")
+    anim:SetBuild("skitemtroupplefishking")
     anim:PlayAnimation("idle", true)
 	
 	inst.entity:SetPristine()
 	MakeHauntableLaunch(inst)
     
-	--inst.Transform:SetScale(5, 5, 5)
+	inst.Transform:SetScale(4, 4, 4)
 	
-	inst.build = "skitemtroupplefish"
+	inst.build = "skitemtroupplefishking"
 	
     inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem.canbepickedup = false
@@ -74,9 +76,9 @@ local function fn()
 end
 
 
-STRINGS.NAMES.SKITEMTROUPPLEFISH = "Troupple Fish"
-STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMTROUPPLEFISH = "A citizen of the great Troupple Kingdom!"
-STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKITEMTROUPPLEFISH = "What a strange looking apple... fish?"
+STRINGS.NAMES.SKITEMTROUPPLEFISHKING = "Troupple King"
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKITEMTROUPPLEFISHKING = "Ruler of the great Troupple Kingdom!"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKITEMTROUPPLEFISHKING = "What a huge looking apple... fish?!"
 
 
-return  Prefab("common/inventory/skitemtroupplefish", fn, assets, prefabs)
+return  Prefab("common/inventory/skitemtroupplefishking", fn, assets, prefabs)

@@ -11,7 +11,7 @@ prefabs = {
 
 --Random vaulable fishLoot list
 local fishLootList = {
-	"skitemtroupplefish", --Temp, Maybe added the real Appletrout fishes upon catch.... not sure yet.
+	"skitemtroupplefish", 
 }
 
 local fishRareLootList = {
@@ -50,7 +50,13 @@ end
 
 local function onfishcatch(inst)
 	local owner = inst.components.inventoryitem.owner
-
+	
+	--Adds a neat splash effect
+	local fx = SpawnPrefab("splash")
+    local pos = inst.components.fishingrod.target:GetPosition()
+    fx.Transform:SetPosition(pos.x, pos.y, pos.z)
+	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+	
 	if math.random() <= inst.fishLootChance then
 		local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
 		if fishLootGen ~= nil then
@@ -63,6 +69,25 @@ local function onfishcatch(inst)
 			inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
 			inst.fishLootFinal = fishRareLootGen
 		end
+	elseif math.random() <= inst.fishVeryRareLootChance then
+		local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+			inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
+			inst.fishLootFinal = fishVeryRareLootGen
+			
+			--Do special effects
+			for i, v in ipairs(AllPlayers) do
+				v:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
+			end
+			
+			local fx2 = SpawnPrefab("splash")
+			local pos2 = inst.components.fishingrod.target:GetPosition()
+			fx2.Transform:SetPosition(pos2.x + 2, pos2.y + 2, pos2.z + 2)
+			inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+	
+			local fx3 = SpawnPrefab("splash")
+			local pos3 = inst.components.fishingrod.target:GetPosition()
+			fx3.Transform:SetPosition(pos3.x - 2, pos3.y - 2, pos3.z - 2)
+			inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 	end
 end
 
@@ -106,6 +131,7 @@ local function fn()
 	--Fishingrod Stuff
 	inst.fishLootChance = 0.4 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
+	inst.fishVeryRareLootChance = 0.01 --1% chance
 	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil
