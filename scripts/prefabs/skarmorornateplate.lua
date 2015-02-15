@@ -26,7 +26,7 @@ local function OnBlocked(owner)
 end
 
 local function onequip(inst, owner) 
-	--owner.AnimState:SetBuild("winston_ornateplate") --Changes winston color NEEDED
+	owner.AnimState:SetBuild("winston_ornateplate") --Changes winston color 
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
 		
