@@ -7,7 +7,8 @@ local assets =
 {
 	Asset( "IMAGE", texture ),
 	Asset( "SHADER", shader ),
-	Asset("ANIM", "anim/fireflies.zip"),
+	Asset("ANIM", "anim/skfxornateplate_glitter.zip"),
+	Asset("ANIM", "anim/cave_exit_lightsource.zip")
 }
 
 local max_scale = 2
