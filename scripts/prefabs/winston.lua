@@ -31,8 +31,11 @@ local assets = {
         Asset( "ANIM", "anim/beard.zip" ),
 
         Asset( "ANIM", "anim/winston.zip" ),
+		Asset( "ANIM", "anim/winston_finalguard.zip" ),
 		Asset( "ANIM", "anim/winston_conjurerscoat.zip" ),
 		Asset( "ANIM", "anim/winston_dynamomail.zip" ),
+		Asset( "ANIM", "anim/winston_mailofmomentum.zip" ),
+		
         Asset( "ANIM", "anim/ghost_winston_build.zip" ),
 		
 }
