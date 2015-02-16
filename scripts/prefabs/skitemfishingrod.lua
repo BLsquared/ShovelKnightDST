@@ -75,7 +75,7 @@ local function onfishcatch(inst)
 			inst.fishLootFinal = fishVeryRareLootGen
 			
 			--Do special effects
-			v:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
+			owner:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
 			
 			local fx2 = SpawnPrefab("splash")
 			local pos2 = inst.components.fishingrod.target:GetPosition()
@@ -92,8 +92,24 @@ end
 local function onfished(inst)
 	local owner = inst.components.inventoryitem.owner
 	if inst.fishLootFinal ~= nil then
-		owner.components.inventory:DropItem(SpawnPrefab(inst.fishLootFinal), true, true)
-		inst.fishLootFinal = nil
+		
+		--Checks for troupplefish
+		if inst.fishLootFinal == "skitemtroupplefish" then
+			local troupplefish = SpawnPrefab("skitemtroupplefish")
+			troupplefish.catcher = "happy" --inst.components.fishingrod.fisherman
+			
+			if troupplefish ~= nil then
+				--Works but not the best, Would have to create an Entity + animations for better.
+				local posSpawn = inst.components.fishingrod.target:GetPosition()
+				troupplefish.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
+				rotatetotarget(troupplefish, owner)
+				
+				inst.fishLootFinal = nil
+			end
+		else
+			owner.components.inventory:DropItem(SpawnPrefab(inst.fishLootFinal), true, true)
+			inst.fishLootFinal = nil
+		end
 	end
 	
 	--Equip old Hand Item
@@ -102,6 +118,14 @@ local function onfished(inst)
 	end
 	
     inst.components.inventoryitem:RemoveFromOwner(true)
+end
+
+function rotatetotarget(troupplefish, dest)
+	local current = Vector3(dest.Transform:GetWorldPosition() )
+	local wanttogo = Vector3(troupplefish.Transform:GetWorldPosition() )
+	local direction = (wanttogo - current ):GetNormalized()
+    local angle = math.acos(direction:Dot(Vector3(1, 0, 0) ) ) / DEGREES
+    troupplefish.Transform:SetRotation(angle)
 end
 
 local function fn()
@@ -127,7 +151,7 @@ local function fn()
     MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.4 --40% chance
+	inst.fishLootChance = 0.99 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishVeryRareLootChance = 0.01 --1% chance
 	inst.fishLootFinal = nil

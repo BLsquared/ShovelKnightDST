@@ -9,18 +9,71 @@ local assets=
 prefabs = {
 }
 
---local function OnGoingHome(inst)
-    --local fx = SpawnPrefab("splash")
-    --local pos = inst:GetPosition()
-    --fx.Transform:SetPosition(pos.x, pos.y, pos.z)
-
-	--local splash = PlayFX(Vector3(inst.Transform:GetWorldPosition() ), "splash", "splash", "splash")
-	--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
---end
-
---local function stopkicking(inst)
+local function gounderwater(inst)
     --inst.AnimState:PlayAnimation("idle")
---end
+	
+	--Adds a neat splash effect
+	local fx = SpawnPrefab("splash")
+    local pos = inst:GetPosition()
+    fx.Transform:SetPosition(pos.x, pos.y, pos.z)
+	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+	inst:Remove()
+end
+
+local function getPlayerChalice(inst, itemName, owner)
+	
+	for k, v in pairs(owner.components.inventory.itemslots) do
+        if v and v.prefab == itemName then
+                inst.catcherChaliceSlot = k
+				break
+        end
+    end
+
+    --if inst.catcher.components.inventory.activeitem andinst.catcher.components.inventory.activeitem.prefab == item then
+        --if self.activeitem.components.stackable ~= nil then
+            --num_found = num_found + self.activeitem.components.stackable:StackSize()
+        --else
+            --num_found = num_found + 1
+        --end
+    --end
+
+    --local overflow = inst.catcher.components.inventory:GetOverflowContainer()
+    --if overflow ~= nil then
+        --local overflow_enough, overflow_found = overflow:Has(item, amount)
+        --num_found = num_found + overflow_found
+    --end
+	
+end
+
+local function fishybehaviorinspect(inst)
+	--inst.components.talker:Say("Lets see if you have a Troupple Chalice!")
+	
+	--Check for Chalice
+	--local chaliceItem = spa
+	--getPlayerChalice(inst, "log", inst.catcher)
+	if inst.catcherChaliceSlot ~= nil then
+		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+	else
+		gounderwater(inst)
+	end
+	--local chaliceItem = 
+	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
+	--inst:DoTaskInTime(2, fishybehaviorstill)
+end
+
+local function fishybehaviorgreet(inst)
+	inst.components.talker:Say("Well hello "..inst.catcher)
+	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
+	inst:DoTaskInTime(3, fishybehaviorinspect)
+end
+
+
+local function onfishedup(inst)
+	--Fish stuff
+	--
+	inst.catcherChaliceSlot = nil
+	inst:DoTaskInTime(1, fishybehaviorgreet)
+end
 
 local function fn()
  
@@ -30,6 +83,7 @@ local function fn()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
+	inst.Transform:SetFourFaced()
 	
 	if not TheWorld.ismastersim then
         return inst
@@ -43,9 +97,13 @@ local function fn()
 	inst.entity:SetPristine()
 	MakeHauntableLaunch(inst)
     
-	--inst.Transform:SetScale(5, 5, 5)
-	
+	--inst.Transform:SetScale(4, 4, 4)
+	inst.Physics:SetActive(false)
 	inst.build = "skitemtroupplefish"
+	
+	inst.catcher = ""
+	
+	inst:AddComponent("talker")
 	
     inst:AddComponent("inventoryitem")
 	inst.components.inventoryitem.canbepickedup = false
@@ -54,21 +112,9 @@ local function fn()
      
 	inst:AddComponent("inspectable")
 	
-	--inst:AddComponent("knownlocations")
-	--inst:ListenForEvent("goinghome", OnGoingHome)
-	 
-	--inst:AddComponent("stackable")
-	--inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
+	inst.OnLoad = gounderwater
 	
-	--inst:AddComponent("tradable")
-    --inst.components.tradable.goldvalue = 5
-		
-	--Burn
-	--inst:AddComponent("fuel")
-    --inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
-	
-	--inst:DoTaskInTime(0.7, stopkicking)
-	--inst.OnLoad = stopkicking
+	inst:DoTaskInTime(1, onfishedup)
 	
     return inst
 end
