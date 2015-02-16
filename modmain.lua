@@ -29,7 +29,7 @@ Assets = {
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
 	
-	Asset( "SOUNDPACKAGE", "sound/winston.fev" ),
+	Asset( "SOUND", "sound/winston.fev" ), --SOUND
     Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
@@ -66,7 +66,8 @@ local STRINGS = GLOBAL.STRINGS
 local OldIsRecipeValid = GLOBAL.IsRecipeValid
 local function IsRecipeValid(recipe)
 	return OldIsRecipeValid(recipe) and
-		((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
+		(GLOBAL.ThePlayer  or not recipe.tagneeded)
+		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
 end
 GLOBAL.IsRecipeValid = IsRecipeValid
 

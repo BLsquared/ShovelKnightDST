@@ -31,6 +31,7 @@ local function onequip(inst, owner)
 		buffarmor(inst, owner)
 		
 		--Adds armorGlitter
+		owner.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 		if inst.armorGlitter == nil then
 			inst.armorGlitter = SpawnPrefab("skfxornateplate_glitter")
 			--inst.fire.Transform:SetScale(.125, .125, .125)
@@ -67,7 +68,8 @@ local function fn()
     MakeHauntableLaunch(inst)
 	
 	MakeInventoryPhysics(inst)
-		
+	
+	inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
     anim:SetBank("skarmorstalwartplate")
     anim:SetBuild("skarmorornateplate")
     anim:PlayAnimation("idle")
