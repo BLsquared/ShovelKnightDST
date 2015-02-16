@@ -352,7 +352,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							createRelic(relicGen, data.target) --Creates the Relic
+							--createRelic(relicGen, data.target) --Creates the Relic
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
