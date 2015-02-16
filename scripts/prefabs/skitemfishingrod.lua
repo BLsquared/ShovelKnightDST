@@ -96,7 +96,7 @@ local function onfished(inst)
 		--Checks for troupplefish
 		if inst.fishLootFinal == "skitemtroupplefish" then
 			local troupplefish = SpawnPrefab("skitemtroupplefish")
-			troupplefish.catcher = "happy" --inst.components.fishingrod.fisherman
+			troupplefish.catcher = inst.components.fishingrod.fisherman
 			
 			if troupplefish ~= nil then
 				--Works but not the best, Would have to create an Entity + animations for better.
