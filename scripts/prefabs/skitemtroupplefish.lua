@@ -25,6 +25,7 @@ local function getPlayerChalice(inst, itemName, owner)
 	for k, v in pairs(owner.components.inventory.itemslots) do
         if v and v.prefab == itemName then
                 inst.catcherChaliceSlot = k
+				inst.catcherTrouppleChalice = v
 				break
         end
     end
@@ -50,9 +51,12 @@ local function fishybehaviorinspect(inst)
 	
 	--Check for Chalice
 	--local chaliceItem = spa
-	--getPlayerChalice(inst, "log", inst.catcher)
-	if inst.catcherChaliceSlot ~= nil then
+	getPlayerChalice(inst, "log", inst.catcher)
+	--if inst.catcherChaliceSlot ~= nil then
+	if inst.catcherTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		--gounderwater(inst)
 	else
 		gounderwater(inst)
 	end
@@ -62,18 +66,16 @@ local function fishybehaviorinspect(inst)
 end
 
 local function fishybehaviorgreet(inst)
-	if inst.catcher.prefab ~= nil then
+	if inst.catcher.prefab ~= nil then --Stops the odd first load loop
 		inst.components.talker:Say("Well hello "..inst.catcher.prefab)
+		--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
+		inst:DoTaskInTime(3, fishybehaviorinspect)
 	end
-	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
-	inst:DoTaskInTime(3, fishybehaviorinspect)
 end
 
 
 local function onfishedup(inst)
 	--Fish stuff
-	--
-	inst.catcherChaliceSlot = nil
 	inst:DoTaskInTime(1, fishybehaviorgreet)
 end
 
@@ -104,6 +106,8 @@ local function fn()
 	inst.build = "skitemtroupplefish"
 	
 	inst.catcher = ""
+	inst.catcherChaliceSlot = nil
+	inst.catcherTrouppleChalice = nil
 	
 	inst:AddComponent("talker")
 	
