@@ -26,12 +26,12 @@ local function OnBlocked(owner)
 end
 
 local function onequip(inst, owner) 
-	owner.AnimState:SetBuild("winston_ornateplate") --Changes winston color 
+	owner.AnimState:SetBuild("winston_ornateplate") --Changes winston color
+	owner.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	if owner.prefab == "winston" then
 		buffarmor(inst, owner)
 		
 		--Adds armorGlitter
-		owner.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 		if inst.armorGlitter == nil then
 			inst.armorGlitter = SpawnPrefab("skfxornateplate_glitter")
 			--inst.fire.Transform:SetScale(.125, .125, .125)
@@ -48,6 +48,7 @@ end
 
 local function onunequip(inst, owner) 
 	owner.AnimState:SetBuild(owner.prefab) --Changes player back
+	owner.AnimState:ClearBloomEffectHandle()
 	debuffarmor(inst) --Resets the item back to normal
     inst:RemoveEventCallback("blocked", OnBlocked, owner)
 end
