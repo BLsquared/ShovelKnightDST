@@ -65,7 +65,7 @@ local function fn()
 	inst.components.projectile.range = 20 --How far it will go if it misses
 	
 	inst.owner = nil
-	inst.projDamage = 15 --Half the damage of the Shovelblade
+	inst.projDamage = 10 --1/3 the damage of the Shovelblade
 	inst.projDamageBonus = 0 --Bonus damage from armor perk
 	
     return inst

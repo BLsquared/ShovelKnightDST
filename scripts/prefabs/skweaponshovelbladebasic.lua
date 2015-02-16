@@ -11,10 +11,13 @@ local assets =
 }
 prefabs = {
 }
-local function onattack(inst, owner, target)
-    --if owner.components.health and not target:HasTag("wall") then
-        --owner.components.sanity:DoDelta(-1)
-    --end
+
+local nums = {"ONE", "TWO", "THREE", "FOUR" , "FIVE" , "SIX" , "SEVEN" , "EIGHT"}
+
+local function GetEquipQuote(owner)
+	local randomQuotePart = nums[math.random(#nums)]
+	local randomQuote = "ANNOUNCE_SHOVELBLADE_EQUIP"..randomQuotePart
+    return randomQuote
 end
 
 local function onpreload(inst, data)
@@ -30,8 +33,6 @@ end
 local function fn(Sim)
 
 	local function onequip(inst, owner)
-	
-		inst.owner = owner
 		
 		--Sets how strong this weapon is
 		local shovelbladeDamageWinston = 30
@@ -45,9 +46,11 @@ local function fn(Sim)
 		if owner.prefab == "winston" then
 			inst.components.weapon:SetDamage(shovelbladeDamageWinston)
 			
+			owner.components.talker:Say(GetString(owner, GetEquipQuote(owner))) --Random Equip Quote
+			
 			--Plays special shovelblade EquippedSound
 			inst.playEquippedSound = inst.playEquippedSound +1
-			owner.components.talker:Say("Lets get shoveling!")
+			
 			if inst.playEquippedSound == 1 then
 				owner.SoundEmitter:PlaySound("winston/characters/winston/shovelbladeequipped")
 			end
@@ -79,6 +82,7 @@ local function fn(Sim)
 	local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
     local anim = inst.entity:AddAnimState()
+	inst.entity:AddMiniMapEntity()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
@@ -89,8 +93,7 @@ local function fn(Sim)
 	inst.entity:SetPristine()
     MakeHauntableLaunch(inst)
 	
-	local minimap = inst.entity:AddMiniMapEntity()
-    minimap:SetIcon("skweaponshovelbladebasic.tex")
+	inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
 	
     MakeInventoryPhysics(inst)
 
@@ -111,9 +114,6 @@ local function fn(Sim)
 	
 	inst.OnSave = onsave
 	inst.OnPreLoad = onpreload
-	
-	--Special when attacking
-	inst.components.weapon.onattack = onattack
 	
 	--Makes this a Shovel
     inst:AddInherentAction(ACTIONS.DIG)

@@ -1,4 +1,3 @@
-
 local MakePlayerCharacter = require "prefabs/player_common"
 
 
@@ -32,21 +31,32 @@ local assets = {
         Asset( "ANIM", "anim/beard.zip" ),
 
         Asset( "ANIM", "anim/winston.zip" ),
+		Asset( "ANIM", "anim/winston_finalguard.zip" ),
+		Asset( "ANIM", "anim/winston_conjurerscoat.zip" ),
+		Asset( "ANIM", "anim/winston_dynamomail.zip" ),
+		Asset( "ANIM", "anim/winston_mailofmomentum.zip" ),
+		Asset( "ANIM", "anim/winston_ornateplate.zip" ),		
         Asset( "ANIM", "anim/ghost_winston_build.zip" ),
 		
 }
 local prefabs = {}
 local start_inv = {
+<<<<<<< HEAD
 	"skweaponshovelbladebasic",}
-
---11 Relics, Might add gems to the list
-local relicList = {
-	"carrot", "rocks", "log", "goldnugget", "livinglog", "turkeydinner",
-	"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
+=======
+	"skweaponshovelbladebasic", --"turkeydinner", "skrelicfishingrod",
 }
+>>>>>>> origin/Armor_UpdateRelease
+
+--11 Relics
+local relicList = {
+	"skrelicfishingrod", --"rocks", "log", "goldnugget", "livinglog", "turkeydinner",
+	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
+}
+
 --Random vaulable loot list
 local lootList = {
-	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", --"goldnugget",
+	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget",
 }
 
 --Finds a relic to make
@@ -58,7 +68,7 @@ local function randomLootGen()
 	return lootList[math.random(#lootList)]
 end
 
---creates the relic in world
+--creates the relic and loot in world
 local function createRelic(relicPrefab, target)
 	if relicPrefab then
 		local relic = SpawnPrefab(relicPrefab)
@@ -93,13 +103,26 @@ local function createRelic(relicPrefab, target)
 	end
 end
 
---DropSpark Proj
+--DropSpark Proj Damage Booster
+local function bonusDamageDropSparkPerk(inst)
+	local bonusDamage = 0
+	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+			or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+			bonusDamage = item.armorDropSparkBooster --Saved on the Shovel Knight Armor
+		end
+	end
+	return bonusDamage
+end
+
+--DropSpark Proj Creator
 local function createDropSparkProjectile(inst, target, weapon)
 	local proj = SpawnPrefab("skfxdropspark_wave")--Name of the projectile
 	if proj then
 		if proj.components.projectile then
 			proj.owner = inst --Saves player to Projectile
-			--proj.projDamageBounus =  --Adds bonus damage from armor bonus --Need for Armor--
+			proj.projDamageBonus =  bonusDamageDropSparkPerk(inst)--Adds bonus damage from armor bonus --Need for Armor--
 			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			proj.components.projectile:Throw(weapon, target, inst)
 			inst.SoundEmitter:PlaySound("winston/characters/winston/dropspark")
@@ -161,6 +184,9 @@ local function onupdate(inst, dt)
 	inst.trenchBladeComboTime = inst.trenchBladeComboTime - dt
 	inst.trenchBladeDebuffTime = inst.trenchBladeDebuffTime - dt
 	inst.dropSparkDebuffTime = inst.dropSparkDebuffTime - dt
+	inst.relicDebuffTime = inst.relicDebuffTime - dt
+	
+	--DropSpark Stuff
 	if inst.dropSparkDebuffTime <= 0 then
 		inst.dropSparkDebuffTime = 0
 		if inst.components.health:IsHurt() == false then
@@ -170,7 +196,6 @@ local function onupdate(inst, dt)
 					equipped.components.weapon.attackrange = equipped.normalRangedRange --Make Range
 					equipped.components.inventoryitem.atlasname = "images/inventoryimages/skweaponshovelbladedropsparkready.xml"
 					equipped.components.inventoryitem:ChangeImageName("skweaponshovelbladedropsparkready")
-					
 				end
 			end
 		end
@@ -185,17 +210,30 @@ local function onupdate(inst, dt)
 		end
 	end
 	
+	--Relic Stuff
+	if inst.relicDebuffTime <= 0 then
+		inst.relicDebuffTime = 0
+		local relicEquipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+		if relicEquipped ~= nil then
+			relicEquipped.components.inventoryitem.atlasname = "images/inventoryimages/"..relicEquipped.prefab..".xml"
+			relicEquipped.components.inventoryitem:ChangeImageName(relicEquipped.prefab)
+		end
+	else
+		local relicEquipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+		if relicEquipped ~= nil then
+			relicEquipped.components.inventoryitem.atlasname = "images/inventoryimages/"..relicEquipped.prefab.."locked.xml"
+			relicEquipped.components.inventoryitem:ChangeImageName(relicEquipped.prefab.."locked")
+		end
+	end
+		
+	--TrenchBlade Stuff
 	if inst.trenchBladeComboBuilder > 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 then
 		inst.trenchBladeComboBuilder = 0
 		inst.trenchBladeComboTime = 0
 		inst.trenchBladeDebuffTime = 0
-		if inst.trenchBladeClock_Task ~= nil then
-			inst.trenchBladeClock_Task:Cancel()
-			inst.trenchBladeClock_Task = nil
-		end
 		--inst.components.talker:Say("Combo Lost")
 		
-	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 and inst.dropSparkDebuffTime <=0 then
+	elseif inst.trenchBladeComboBuilder == 0 and inst.trenchBladeComboTime <=0 and inst.trenchBladeDebuffTime <= 0 and inst.dropSparkDebuffTime <=0 and inst.relicDebuffTime <=0 then
 			inst.trenchBladeComboTime = 0
 			inst.trenchBladeDebuffTime = 0
 		if inst.trenchBladeClock_Task ~= nil then
@@ -203,7 +241,6 @@ local function onupdate(inst, dt)
 			inst.trenchBladeClock_Task = nil
 		end
 		--inst.components.talker:Say("Dig Cooldown Dismiss")
-		
 	--else
 	end
 end
@@ -212,6 +249,7 @@ local function onlongupdate(inst, dt)
     inst.trenchBladeComboTime = math.max(0, inst.trenchBladeComboTime - dt)
 	inst.trenchBladeDebuffTime = math.max(0, inst.trenchBladeDebuffTime - dt)
 	inst.dropSparkDebuffTime = math.max(0, inst.dropSparkDebuffTime - dt)
+	inst.relicDebuffTime = math.max(0, inst.relicDebuffTime - dt)
 end
 
 local function startovercharge(inst, duration)
@@ -223,6 +261,8 @@ local function startovercharge(inst, duration)
 		--inst.components.talker:Say("Combo Enguaged")
 	elseif duration == 9 then
 		inst.dropSparkDebuffTime = duration
+	elseif duration == 5 then
+		inst.relicDebuffTime = duration
 	end
 	
 	if inst.trenchBladeClock_Task == nil then
@@ -266,6 +306,9 @@ local function onload(inst, data)
     if data ~= nil and data.trenchBladeDebuffTime ~= nil then
         startovercharge(inst, data.trenchBladeDebuffTime)
     end
+	if data ~= nil and data.relicDebuffTime ~= nil then
+        startovercharge(inst, data.relicDebuffTime)
+    end
 end
 
 local function onsave(inst, data)
@@ -276,6 +319,7 @@ local function onsave(inst, data)
 	data.trenchBladeComboTime = inst.trenchBladeComboTime > 0 and inst.trenchBladeComboTime or nil
 	data.trenchBladeDebuffTime = inst.trenchBladeDebuffTime > 0 and inst.trenchBladeDebuffTime or nil
 	data.dropSparkDebuffTime = inst.dropSparkDebuffTime > 0 and inst.dropSparkDebuffTime or nil
+	data.relicDebuffTime = inst.relicDebuffTime > 0 and inst.relicDebuffTime or nil
 end
 
 local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, afflicter)
@@ -295,6 +339,11 @@ local function onhealthupdate(inst, amount, overtime, cause, ignore_invincible, 
 	end
 end
 
+--Set the relic cooldown timer
+local function onrelic(inst)
+	startovercharge(inst, 5)
+end
+
 local function onworked(inst, data)
 	if inst.trenchBladeDebuffTime <= 0 then
 		if data.target and data.target.components.workable and data.target.components.workable.action == ACTIONS.DIG then
@@ -307,7 +356,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							--createRelic(relicGen, data.target) --Creates the Relic DISABLED ATM--
+							--createRelic(relicGen, data.target) --Creates the Relic
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
@@ -347,7 +396,25 @@ local function onattack(inst, data, weapon, pro)
 	end
 end
 
-local function ondeath(inst)
+local function onrespawned(inst)
+	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
+		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+		--Special Gold Glow
+		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY].prefab == "skarmorornateplate" then
+			inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+		end
+	end
+end
+
+--local function ondeath(inst)
+	
+--end
+
+local function ondeathkill(inst, deadthing)
+	inst.components.sanity:DoDelta(5) --ConjurersCoat Perk: Gives sanity back for killing things
+	
 	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
     --if inst.level > 0 then
@@ -363,11 +430,23 @@ local common_postinit = function(inst)
 
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "winston.tex" )
+	
+	--Creates Starting Armor for Shovel Knight
+	inst._OnNewSpawn = inst.OnNewSpawn
+    inst.OnNewSpawn = function()
+		if inst.components.inventory ~= nil then
+			inst.components.inventory.ignoresound = true
+			local itemArmor = SpawnPrefab("skarmorstalwartplate")
+			inst.components.inventory.activeitem = itemArmor
+			inst.components.inventory:EquipActiveItem()
+			inst.components.inventory:SetActiveItem(nil)
+			inst.components.inventory.ignoresound = false
+		end
+	end
 end
 
 -- This initializes for the host only
 local master_postinit = function(inst)
-
 	--Personal Recipes
 	inst:AddTag("skitemtemplate_skbuilder")
 	inst:AddTag("skitemmealticket_skbuilder")
@@ -375,6 +454,11 @@ local master_postinit = function(inst)
 	inst:AddTag("skweaponshovelbladechargehandle_skbuilder")
 	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
 	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
+	inst:AddTag("skarmorfinalguard_skbuilder")
+	inst:AddTag("skarmorconjurerscoat_skbuilder")
+	inst:AddTag("skarmordynamomail_skbuilder")
+	inst:AddTag("skarmormailofmomentum_skbuilder")
+	inst:AddTag("skarmorornateplate_skbuilder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
@@ -399,7 +483,6 @@ local master_postinit = function(inst)
 	inst.components.combat.damagemultiplier = 1
 	inst.normalAttackSpeed = inst.components.combat.min_attack_period --for ChargeHandle anim
 	inst.components.sanity.night_drain_mult = 1
-	
 	inst.components.eater:SetOnEatFn(oneat)
 	
 	--TrenchBlade Combo and timer
@@ -408,8 +491,11 @@ local master_postinit = function(inst)
 	inst.trenchBladeDebuffTime = 0
 	inst.trenchBladeClock_Task = nil
 	
-	--DropSpark Combo
+	--DropSpark timer
 	inst.dropSparkDebuffTime = 0
+	
+	--Relic timer
+	inst.relicDebuffTime = 0
 	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
@@ -417,40 +503,77 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
-	inst:ListenForEvent("death", ondeath)
+	inst:ListenForEvent("ms_respawnedfromghost", onrespawned)
+	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
 	inst:ListenForEvent("onmissother", onattack)
+	inst:ListenForEvent("castrelic", onrelic)
 	
-	local function IsChestArmor(item)
-        if item.components.armor and item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-            return true
-        else
-            return false
-        end
-    end 
+	--Used when killing things
+	inst._onplayerkillthing = function(player, data)
+		ondeathkill(inst, data.victim)
+    end
 	
-	--Just keeping for now
-	--local old_DoAttack = inst.components.combat.DoAttack 
-		--inst.components.combat.DoAttack = function(self, target_override, weapon, projectile)
-		--startovercharge(inst, inst.charge_time + 10)
-		--return old_DoAttack(self, target_override, weapon, projectile)
-	--end
+	--Locks the BODY Slot for only Shovel Knight armor to be swapable.
+	local old_Unequip = inst.components.inventory.Unequip
+	inst.components.inventory.Unequip = function(self, equipslot)
+		if equipslot == EQUIPSLOTS.BODY then
+			return false
+		end
+		return old_Unequip(self, equipslot)
+	end
 	
 	--Limits Shovel Knight to special Armor and Relic slots
 	local old_Equip = inst.components.inventory.Equip
     inst.components.inventory.Equip = function(self, item, old_to_active)
-		--Stops Armor from being equipped -OLD Saving just in case
-		--if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-			--Do Special Armor filter here
-			--self.inst.components.inventory:DropItem(item, true, true)
-			--self.inst.components.talker:Say("My mighty armor is mightier")
-			--return false 
-		--end
-		
-		--Stops Body from being equipped
+	
+		--Checks to see if special armor is present
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
-			--Do Special Armor filter here
+			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+				
+					--To restore Equippable for all armors
+					local itemE = self.equipslots[EQUIPSLOTS.BODY]
+					if itemE ~= nil then
+						if itemE.prefab == "skarmorstalwartplate" or itemE.prefab == "skarmorfinalguard" or itemE.prefab == "skarmorconjurerscoat"
+							or itemE.prefab == "skarmordynamomail" or itemE.prefab == "skarmormailofmomentum" or itemE.prefab == "skarmorornateplate" then
+							
+							--Special Armor Perk Removal armorMovement
+							self.inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
+							self.inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
+							
+							--Special Armor Perk Removal for ConjurersCoat
+							if itemE.prefab == "skarmorconjurerscoat" then
+								local ownerSanity = self.inst.components.sanity.current
+								local ownerSanityMax = (self.inst.manaPotion*10)+120
+								self.inst.components.sanity:SetMax((self.inst.manaPotion*10)+120)
+								self.inst.components.sanity:DoDelta(ownerSanity - ownerSanityMax)
+								self.inst:RemoveEventCallback("killed", self.inst._onplayerkillthing, self.inst)
+							end
+							
+							--Special Armor Perk Removal for MailofMomentum
+							if itemE.prefab == "skarmormailofmomentum" then
+								self.inst:AddComponent("pinnable")
+							end
+							
+							--Special Armor Perk Removal for OrnatePlate
+							if itemE.prefab == "skarmorornateplate" then
+								self.inst.AnimState:ClearBloomEffectHandle()
+								if itemE.armorGlitter ~= nil then
+									itemE.armorGlitter:Remove()
+									itemE.armorGlitter = nil
+								end
+							end
+							
+							itemE = SpawnPrefab(itemE.prefab)
+							self.equipslots[EQUIPSLOTS.BODY] = itemE
+						end
+					end
+				return old_Equip(self, item, old_to_active)
+			else
+			
+			--Stops other BODY Slot Armor
 			self:RemoveItem(item, true)
 			if self:IsFull() then
 				if not self.activeitem and not TheInput:ControllerAttached() then
@@ -468,12 +591,18 @@ local master_postinit = function(inst)
 				self:SetActiveItem(nil)
 			end
 			self.inst.components.talker:Say("My mighty armor is mightier")
-			return false 
+			return false
+			end
 		end
 		
-		--Stops Hats from being equipped -Disabled till Relics come into play
+		---Stops Hats from being equipped -Disabled till Relics come into play
 		--if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			---Do Special Relic filter here
+			--if item.prefab == "skitemmealtickettest" then
+				
+				--return old_Equip(self, item, old_to_active)
+			--else
+			
+			---Stops other Head Slot Hats
 			--self:RemoveItem(item, true)
 			--if self:IsFull() then
 				--if not self.activeitem and not TheInput:ControllerAttached() then
@@ -492,13 +621,31 @@ local master_postinit = function(inst)
 			--end
 			--self.inst.components.talker:Say("This is not a Relic!")
 			--return false
+			--end
 		--end
         return old_Equip(self, item, old_to_active)
     end
 	
 	local old_GetAttacked = inst.components.combat.GetAttacked 
 		inst.components.combat.GetAttacked = function(self,attacker, damage, weapon)
-		damage = 10
+		damage = 15
+		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+			local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
+			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+				damage = item.armorProtection --Saved on the Shovel Knight Armor
+				
+				--Apply Non-Freeze and Non-Sleep MailofMomentum Armor Perk
+				if item.prefab == "skarmormailofmomentum" then
+					if inst.components.freezable then
+						inst.components.freezable:Reset()
+					end
+					if inst.components.grogginess then
+						inst.componets.grogginess:ComeTo()
+					end
+				end
+			end
+		end
 		return old_GetAttacked(self,attacker, damage, weapon)
 	end
 end

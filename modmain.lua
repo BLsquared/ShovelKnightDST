@@ -1,11 +1,13 @@
-GLOBAL.STRINGS.NAMES.SHOVELBLADE = "Shovelblade"
-GLOBAL.STRINGS.CHARACTERS.GENERIC.DESCRIBE.SHOVELBLADE = "Both a worthy weapon and a digging tool."
+local KEY_CTRL = GLOBAL.KEY_CTRL
+local TheInput = GLOBAL.TheInput
 
 PrefabFiles = {
-	"winston", "skitemtemplate", "skitemmealticket", "skitemmanapotion",
+	"winston", --"skitemtemplate", "skitemtroupplefish", "skitemtroupplefishking",
+	"skitemmealticket", "skitemmanapotion", --"skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
-	
-	"skfxdropspark_wave",
+	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
+	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
+	--"skrelicfishingrod",
 }
 
 Assets = {
@@ -27,7 +29,7 @@ Assets = {
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
 	
-	Asset( "SOUNDPACKAGE", "sound/winston.fev" ),
+	Asset( "SOUND", "sound/winston.fev" ), --SOUND
     Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
@@ -41,6 +43,9 @@ Assets = {
 	
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladedropspark.tex" ),
 	Asset( "ATLAS", "images/map_icons/skweaponshovelbladedropspark.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skarmorstalwartplate.tex" ),
+	Asset( "ATLAS", "images/map_icons/skarmorstalwartplate.xml" ),
 }
 
 RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
@@ -49,6 +54,11 @@ RemapSoundEvent( "dontstarve/characters/winston/chargehandlerelease", "winston/c
 RemapSoundEvent( "dontstarve/characters/winston/dropspark", "winston/characters/winston/dropspark" )
 RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winston/jump" )
 
+--Key Bind stuff
+local RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
+--local controls = nil
+local keydown = false
+
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
 
@@ -56,7 +66,8 @@ local STRINGS = GLOBAL.STRINGS
 local OldIsRecipeValid = GLOBAL.IsRecipeValid
 local function IsRecipeValid(recipe)
 	return OldIsRecipeValid(recipe) and
-		((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
+		(GLOBAL.ThePlayer  or not recipe.tagneeded)
+		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
 end
 GLOBAL.IsRecipeValid = IsRecipeValid
 
@@ -66,12 +77,17 @@ local TECH = GLOBAL.TECH
 
 local recipes = 
 {
-	Recipe("skitemtemplate", {Ingredient("berries", 2), Ingredient("carrot", 1)}, RECIPETABS.WAR, TECH.SCIENCE_ONE),
+	--Recipe("skitemtemplate", {Ingredient("berries", 2), Ingredient("carrot", 1)}, RECIPETABS.WAR, TECH.SCIENCE_ONE),
 	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
 	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
 	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("heatrock", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
+	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
+	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
+	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE),
+	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
 }
 
 for k,v in pairs(recipes) do
@@ -108,7 +124,11 @@ STRINGS.RECIPE_DESC.SKITEMMANAPOTION = "Magicist's bubbling brew!"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADECHARGEHANDLE = "Shovelblade Upgrade: Charge Handle"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADETRENCHBLADE = "Shovelblade Upgrade: Trench Blade"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADEDROPSPARK = "Shovelblade Upgrade: Drop Spark"
-
+STRINGS.RECIPE_DESC.SKARMORFINALGUARD = "Lose half as much heat during the cold!"
+STRINGS.RECIPE_DESC.SKARMORCONJURERSCOAT = "Harvest sanity from defeated foes!"
+STRINGS.RECIPE_DESC.SKARMORDYNAMOMAIL = "Increase Shovelblade Upgrade powers!"
+STRINGS.RECIPE_DESC.SKARMORMAILOFMOMENTUM = "Heavily plated, Can't be slowed!"
+STRINGS.RECIPE_DESC.SKARMORORNATEPLATE = "Flashy! Acrobatic! Useless!"
 
 -- Let the game know character is male, female, or robot
 table.insert(GLOBAL.CHARACTER_GENDERS.MALE, "winston")  
@@ -122,31 +142,6 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 			return old_ACTIONPICKUP(act)
 		end
 	end
-	
---Turn off percent on certain Items	
---local function itemtile_post(self, invitem)
-    -- save old function
-    --self.old_SetPercent = self.SetPercent
- 
-    -- override with your own function
-    --self.SetPercent = function(self, percent)
-	
-	    -- call old function first
-		--self:old_SetPercent(percent)
-		
-		--print("Checking prefab")
-		--if self.invitem and self.invitem.prefab == "skitemmealticket" then
-            --local oldStr = self.percent:GetString()
-			--print(oldStr)
-			--self.percent:SetString(string.format("%2.0f", oldStr)) -- remove %
-			--self.percent:SetString(string.sub(oldStr,1,-2))
-			--local newStr = string.sub(oldStr,1,-2)
-            --print(newStr)
-			--self.percent:SetString(newStr)
-		--end
-    --end
---end
---AddClassPostConstruct("widgets/itemtile", itemtile_post)
 
 --Fix Health Penalty From Resurrection
 local function HealthPostInit(self)
@@ -161,18 +156,59 @@ local function HealthPostInit(self)
 					self.numrevives = maxrevives
 				end
 				OldRecalculatePenalty(self, forceupdatewidget)
+		end
+		self.RecalculatePenalty = RecalculatePenalty
+	end
+end
+AddComponentPostInit('health', HealthPostInit)
+
+--Custom Relic Key
+local function IsDefaultScreen()
+	return GLOBAL.TheFrontEnd:GetActiveScreen().name:find("HUD") ~= nil
+end
+
+local function ShowCastRelic()
+	if keydown then return end
+	keydown = true
+	if not IsDefaultScreen() then return end
+	
+	if GLOBAL.ThePlayer.prefab == "winston" then
+		if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
+			local relicItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
+			if relicItem.prefab == "skrelicfishingrod" then
+				relicItem.components.useableitem:StartUsingItem()
 			end
-			self.RecalculatePenalty = RecalculatePenalty
 		end
 	end
- 
-AddComponentPostInit('health', HealthPostInit)
+end
+
+local function HideCastRelic()
+	keydown = false
+end
+
+local function AddRelicToggleKey(self)
+	--controls = self -- this just makes controls available in the rest of the modmain's functions
+	
+	GLOBAL.TheInput:AddKeyDownHandler(RELICKEY, ShowCastRelic)
+	GLOBAL.TheInput:AddKeyUpHandler(RELICKEY, HideCastRelic)
+	
+	--local OldOnUpdate = controls.OnUpdate
+	--local function OnUpdate(...)
+		--OldOnUpdate(...)
+		--if keydown then
+		--end
+	--end
+	--controls.OnUpdate = OnUpdate
+end
+AddClassPostConstruct( "widgets/controls", AddRelicToggleKey )
+
 
 AddMinimapAtlas("images/map_icons/winston.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
+AddMinimapAtlas("images/map_icons/skarmorstalwartplate.xml")
 
 AddModCharacter("winston")
 

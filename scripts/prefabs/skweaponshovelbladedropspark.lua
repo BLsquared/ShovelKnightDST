@@ -14,8 +14,24 @@ local assets =
 prefabs = {
 }
 
+local nums = {"ONE", "TWO", "THREE", "FOUR" , "FIVE" , "SIX" , "SEVEN" , "EIGHT"}
+
+local function GetEquipQuote(owner)
+	local randomQuotePart = nums[math.random(#nums)]
+	local randomQuote = "ANNOUNCE_SHOVELBLADE_EQUIP"..randomQuotePart
+    return randomQuote
+end
+
+--Does chargeHandle fx
+local function chargeHandleFx(attacker, target)
+	local fx = SpawnPrefab("skfxchargehandle_shatter")
+    fx.entity:SetParent(target.entity)
+    fx.Transform:SetPosition(0, 0, 0)
+end
+
 local function onupdate(inst, dt)
-	if inst.owner ~= nil then
+	local owner = inst.components.inventoryitem.owner
+	if owner ~= nil then
 		inst.chargeHandleComboTime = inst.chargeHandleComboTime - dt
 		inst.chargeHandleBuffTime = inst.chargeHandleBuffTime - dt
 		
@@ -27,7 +43,7 @@ local function onupdate(inst, dt)
 				inst.chargeHandleClock_Task:Cancel()
 				inst.chargeHandleClock_Task = nil
 			end
-			--inst.owner.components.talker:Say("Combo Lost")
+			--owner.components.talker:Say("Combo Lost")
 			
 		elseif inst.chargeHandleComboBuilder == 0 and inst.chargeHandleComboTime <=0 and inst.chargeHandleBuffTime <= 0 then
 			inst.chargeHandleComboTime = 0
@@ -36,9 +52,9 @@ local function onupdate(inst, dt)
 				inst.chargeHandleClock_Task:Cancel()
 				inst.chargeHandleClock_Task = nil
 			end
-			inst.owner.components.combat:SetAttackPeriod(inst.owner.normalAttackSpeed)
-			inst.owner.AnimState:SetHaunted(false)
-			--inst.owner.components.talker:Say("Charge Handle Dismiss")
+			owner.components.combat:SetAttackPeriod(owner.normalAttackSpeed)
+			owner.AnimState:SetHaunted(false)
+			--owner.components.talker:Say("Charge Handle Dismiss")
 		--else
 		end
 	end
@@ -77,6 +93,19 @@ local function onpreAttack(inst, attacker, target)
 	end
 end
 
+--ChangeHandle Damage Booster
+local function bonusDamageChargeHandlePerk(attacker)
+	local bonusDamage = 0
+	if attacker.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local item = attacker.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
+			or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
+			bonusDamage = item.armorChargeHandleBooster --Saved on the Shovel Knight Armor
+		end
+	end
+	return bonusDamage
+end
+
 local function onattacks(inst, attacker, target)
 	if target ~= nil and attacker.prefab == "winston" then
 		
@@ -87,10 +116,11 @@ local function onattacks(inst, attacker, target)
 			inst.chargeHandleBuffTime = 0
 			inst.chargeHandleClock_Task:Cancel()
 			inst.chargeHandleClock_Task = nil
+			local chargeHandleDamage = 45 + bonusDamageChargeHandlePerk(attacker) --Charge Handle Damage
 			attacker.AnimState:SetHaunted(false)
-			target.components.combat:GetAttacked(attacker, 45, inst) --Charge Handle Damage
+			target.components.combat:GetAttacked(attacker, chargeHandleDamage, inst) --Deals the damage
 			attacker.components.combat:SetAttackPeriod(attacker.normalAttackSpeed)
-			target.components.freezable:SpawnShatterFX()
+			chargeHandleFx(attacker, target)
 			attacker.SoundEmitter:PlaySound("winston/characters/winston/chargehandlerelease")
 			--target.components.burnable:Ignite(nil, attacker) --Fire for later with flare wand--
 				
@@ -131,7 +161,6 @@ local function onsave(inst, data)
 end
 
 local function onequip(inst, owner)
-		inst.owner = owner
 		
 		--Sets how strong this weapon is
 		local shovelbladeDamageWinston = 30 --+45 damage with Charge Handle
@@ -155,9 +184,11 @@ local function onequip(inst, owner)
 				inst.components.inventoryitem:ChangeImageName("skweaponshovelbladedropspark")
 			end
 			
+			owner.components.talker:Say(GetString(owner, GetEquipQuote(owner))) --Random Equip Quote
+			
 			--Plays special shovelblade EquippedSound
 			inst.playEquippedSound = inst.playEquippedSound +1
-			owner.components.talker:Say("Lets get shoveling!")
+			
 			if inst.playEquippedSound == 1 then
 				owner.SoundEmitter:PlaySound("winston/characters/winston/shovelbladeequipped")
 			end
@@ -202,7 +233,6 @@ local function onunequip(inst, owner)
 		
 		--Resets the Shovelblade damage back to normal
 		inst.components.weapon:SetDamage(shovelbladeDamageGeneric)
-		inst.owner = nil
 end
 
 local function fn(Sim)
@@ -210,6 +240,7 @@ local function fn(Sim)
 	local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
     local anim = inst.entity:AddAnimState()
+	inst.entity:AddMiniMapEntity()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
@@ -220,8 +251,7 @@ local function fn(Sim)
 	inst.entity:SetPristine()
     MakeHauntableLaunch(inst)
 	
-	local minimap = inst.entity:AddMiniMapEntity()
-    minimap:SetIcon("skweaponshovelbladedropspark.tex")
+	inst.MiniMapEntity:SetIcon("skweaponshovelbladedropspark.tex")
 	
     MakeInventoryPhysics(inst)
 	
@@ -242,7 +272,6 @@ local function fn(Sim)
 	inst.playEquippedSound = 0
 	
 	--ChargeHandle Combo and timer
-	inst.owner = nil
 	inst.chargeHandleComboBuilder = 0
 	inst.chargeHandleComboTime = 0
 	inst.chargeHandleBuffTime = 0
