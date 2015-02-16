@@ -1,12 +1,8 @@
 -- This information tells other players more about the mod
-name = "Shovel Knight 0.17.1"
+name = "Shovel Knight: Relic Update [Chalice]"
 description = "A character for Don't Starve Together, who wields a Shovelblade!"
 author = "BLsquared & Jade_KnightBlazer"
-<<<<<<< HEAD
-version = "0.16.1"
-=======
 version = "0.17.1"
->>>>>>> origin/Armor_UpdateRelease
 
 -- This is the URL name of the mod's thread on the forum; the part after the ? and before the first & in the url
 forumthread = "/files/file/1035-character-shovel-knight-the-blue-burrower/"
