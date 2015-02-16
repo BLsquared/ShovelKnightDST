@@ -31,9 +31,9 @@ local function fn()
     inst.entity:AddAnimState()
     inst.entity:AddLight()
 
-	inst.AnimState:SetBank("fireflies")
+	inst.AnimState:SetBank("star")
     inst.AnimState:SetBuild("skfxornateplate_glitter")
-	inst.AnimState:PlayAnimation("swarm_loop")
+	inst.AnimState:PlayAnimation("idle_loop", true)
 	
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 	inst.AnimState:SetRayTestOnBB(true)

@@ -1,4 +1,4 @@
-local texture = "fx/sparkle.tex"
+local texture = "fx/torchfire.tex"
 local shader = "shaders/particle.ksh"
 local colour_envelope_name = "lighterfirecolourenvelope"
 local scale_envelope_name = "lighterfirescaleenvelope"
@@ -7,7 +7,6 @@ local assets =
 {
 	Asset( "IMAGE", texture ),
 	Asset( "SHADER", shader ),
-	Asset("ANIM", "anim/skfxornateplate_glitter.zip"),
 }
 
 local max_scale = 2
@@ -53,7 +52,7 @@ local function fn()
 
     local emitter = inst.entity:AddParticleEmitter()
 	emitter:SetRenderResources(texture, shader)
-	emitter:SetMaxNumParticles(12)
+	emitter:SetMaxNumParticles(0)
 	emitter:SetMaxLifetime(max_lifetime)
 	emitter:SetColourEnvelope(colour_envelope_name)
 	emitter:SetScaleEnvelope( scale_envelope_name)
@@ -99,12 +98,13 @@ local function fn()
 
 		num_particles_to_emit = num_particles_to_emit + particles_per_tick
 		
-		--Creates a trail
+		 --Creates a trail
 		inst.trailCounter = inst.trailCounter + 1
 		if inst.trailCounter >= 50 then
 			inst.trailCounter = 0
 			SpawnPrefab("skfxornateplate_trail").Transform:SetPosition(inst.Transform:GetWorldPosition())
 		end
+
 	end
 
 	EmitterManager:AddEmitter(inst, nil, updateFunc)

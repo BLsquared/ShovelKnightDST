@@ -35,7 +35,7 @@ local function onequip(inst, owner)
 			inst.armorGlitter = SpawnPrefab("skfxornateplate_glitter")
 			--inst.fire.Transform:SetScale(.125, .125, .125)
 			local follower = inst.armorGlitter.entity:AddFollower()
-			follower:FollowSymbol(owner.GUID, "swap_body", 0, 0, 0)
+			follower:FollowSymbol(owner.GUID, "swap_body", 48, 64, 0)
 		end
 	
 		inst:RemoveComponent("equippable")
