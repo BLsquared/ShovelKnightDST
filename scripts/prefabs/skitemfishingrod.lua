@@ -75,9 +75,7 @@ local function onfishcatch(inst)
 			inst.fishLootFinal = fishVeryRareLootGen
 			
 			--Do special effects
-			for i, v in ipairs(AllPlayers) do
-				v:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
-			end
+			v:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
 			
 			local fx2 = SpawnPrefab("splash")
 			local pos2 = inst.components.fishingrod.target:GetPosition()
