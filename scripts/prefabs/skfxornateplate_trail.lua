@@ -1,6 +1,6 @@
 local assets =
 {
-	Asset("ANIM", "anim/fireflies.zip"),
+	Asset("ANIM", "anim/skfxornateplate_glitter.zip"),
 }
 
 ------Trail Stuff
@@ -32,7 +32,7 @@ local function fn()
     inst.entity:AddLight()
 
 	inst.AnimState:SetBank("fireflies")
-    inst.AnimState:SetBuild("fireflies")
+    inst.AnimState:SetBuild("skfxornateplate_glitter")
 	inst.AnimState:PlayAnimation("swarm_loop")
 	
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
