@@ -75,6 +75,7 @@ local function fn()
     inst.foleysound = "dontstarve/movement/foley/metalarmour"
 	
 	--Armor Stats
+	inst.armorName = "winston_ornateplate"
 	inst.armorProtection = 15
 	inst.armorMovement = 1.2
 	inst.armorMovementDebuff = 0.2

@@ -392,6 +392,12 @@ local function onattack(inst, data, weapon, pro)
 	end
 end
 
+local function onrespawned(inst)
+	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
+	end
+end
+
 --local function ondeath(inst)
 	
 --end
@@ -487,6 +493,7 @@ local master_postinit = function(inst)
 	inst.OnPreLoad = onpreload
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
+	inst:ListenForEvent("ms_respawnedfromghost", onrespawned)
 	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
