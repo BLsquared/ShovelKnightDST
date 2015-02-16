@@ -121,6 +121,7 @@ Armor Equippment
 
 *Shovel Knight can only wear special armor, other armors will not be accepted!!*
 *Shovel Knight armor does not drop upon death*
+*Shovel Knight armor effects remain while ghost*
 
 ===
 Stalwart Plate
