@@ -2,13 +2,12 @@ local KEY_CTRL = GLOBAL.KEY_CTRL
 local TheInput = GLOBAL.TheInput
 
 PrefabFiles = {
-	"winston", "skitemtemplate", 
-	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
-	"skitemtroupplefish", "skitemtroupplefishking",
+	"winston", "skitemtemplate", --"skitemtroupplefish", "skitemtroupplefishking",
+	"skitemmealticket", "skitemmanapotion", --"skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
-	"skrelicfishingrod",
+	--"skrelicfishingrod",
 }
 
 Assets = {
