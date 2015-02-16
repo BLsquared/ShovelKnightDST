@@ -99,7 +99,7 @@ local function fn()
 		num_particles_to_emit = num_particles_to_emit + particles_per_tick
 		
 		 --Creates a trail
-		inst.trailCounter = inst.trailCounter + 1
+		inst.trailCounter = inst.trailCounter + math.random(0,5)
 		if inst.trailCounter >= 50 then
 			inst.trailCounter = 0
 			SpawnPrefab("skfxornateplate_trail").Transform:SetPosition(inst.Transform:GetWorldPosition())
