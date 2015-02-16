@@ -62,7 +62,9 @@ local function fishybehaviorinspect(inst)
 end
 
 local function fishybehaviorgreet(inst)
-	inst.components.talker:Say("Well hello "..inst.catcher)
+	if inst.catcher.prefab ~= nil then
+		inst.components.talker:Say("Well hello "..inst.catcher.prefab)
+	end
 	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
 	inst:DoTaskInTime(3, fishybehaviorinspect)
 end
