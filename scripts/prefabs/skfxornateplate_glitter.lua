@@ -1,4 +1,4 @@
-local texture = "fx/torchfire.tex"
+local texture = "fx/sparkle.tex"
 local shader = "shaders/particle.ksh"
 local colour_envelope_name = "lighterfirecolourenvelope"
 local scale_envelope_name = "lighterfirescaleenvelope"
@@ -8,7 +8,6 @@ local assets =
 	Asset( "IMAGE", texture ),
 	Asset( "SHADER", shader ),
 	Asset("ANIM", "anim/skfxornateplate_glitter.zip"),
-	Asset("ANIM", "anim/cave_exit_lightsource.zip")
 }
 
 local max_scale = 2
