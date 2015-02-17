@@ -41,12 +41,8 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-<<<<<<< HEAD
-	"skweaponshovelbladebasic",}
-=======
 	"skweaponshovelbladebasic", --"turkeydinner", "skrelicfishingrod",
 }
->>>>>>> origin/Armor_UpdateRelease
 
 --11 Relics
 local relicList = {
@@ -356,7 +352,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							--createRelic(relicGen, data.target) --Creates the Relic
+							createRelic(relicGen, data.target) --Creates the Relic
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
@@ -595,34 +591,34 @@ local master_postinit = function(inst)
 			end
 		end
 		
-		---Stops Hats from being equipped -Disabled till Relics come into play
-		--if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			--if item.prefab == "skitemmealtickettest" then
+		--Stops Hats from being equipped -Disabled till Relics come into play
+		if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
+			if item.prefab == "skrelicfishingrod" then
 				
-				--return old_Equip(self, item, old_to_active)
-			--else
+				return old_Equip(self, item, old_to_active)
+			else
 			
-			---Stops other Head Slot Hats
-			--self:RemoveItem(item, true)
-			--if self:IsFull() then
-				--if not self.activeitem and not TheInput:ControllerAttached() then
-					--item.components.inventoryitem:OnPutInInventory(self.inst)
-					--self:SetActiveItem(item)
-				--else
-					--self:DropItem(inst, true, true)
-					--self:SetActiveItem(nil)
-				--end
-			--else
-				--self:RemoveItem(item, true)
-				--self.silentfull = true
-				--self:GiveItem(item)
-				--self.silentfull = false
-				--self:SetActiveItem(nil)
-			--end
-			--self.inst.components.talker:Say("This is not a Relic!")
-			--return false
-			--end
-		--end
+			--Stops other Head Slot Hats
+			self:RemoveItem(item, true)
+			if self:IsFull() then
+				if not self.activeitem and not TheInput:ControllerAttached() then
+					item.components.inventoryitem:OnPutInInventory(self.inst)
+					self:SetActiveItem(item)
+				else
+					self:DropItem(inst, true, true)
+					self:SetActiveItem(nil)
+				end
+			else
+				self:RemoveItem(item, true)
+				self.silentfull = true
+				self:GiveItem(item)
+				self.silentfull = false
+				self:SetActiveItem(nil)
+			end
+			self.inst.components.talker:Say("This is not a Relic!")
+			return false
+			end
+		end
         return old_Equip(self, item, old_to_active)
     end
 	
