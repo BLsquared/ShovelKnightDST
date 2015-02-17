@@ -62,17 +62,18 @@ local keydown = false
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
 
--- Item Recipes
-local OldIsRecipeValid = GLOBAL.IsRecipeValid
-local function IsRecipeValid(recipe)
-	return OldIsRecipeValid(recipe) and
-		(GLOBAL.ThePlayer  or not recipe.tagneeded)
+-- Item Recipes -Untill this is fixed
+--local OldIsRecipeValid = GLOBAL.IsRecipeValid
+--local function IsSkRecipeValid(recipe)
+	--return OldIsRecipeValid(recipe) and
+		--(GLOBAL.ThePlayer  or not recipe.tagneeded)
 		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
-end
-GLOBAL.IsRecipeValid = IsRecipeValid
+--end
+--GLOBAL.IsRecipeValid = IsSkRecipeValid
 
 local Recipe = GLOBAL.Recipe
 local RECIPETABS = GLOBAL.RECIPETABS
+local Ingredient = GLOBAL.Ingredient
 local TECH = GLOBAL.TECH
 
 local recipes = 
@@ -91,7 +92,7 @@ local recipes =
 }
 
 for k,v in pairs(recipes) do
-    v.tagneeded = true
+    --v.tagneeded = true
     v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
 end
 
