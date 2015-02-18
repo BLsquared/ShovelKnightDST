@@ -139,12 +139,11 @@ Damage Taken: 15
 Durability: Infinite
 
 Tab: Fight
-Craftable by: (Alchemy Engine) Red Gem x2 + Thermal Stone x6
+Craftable by: (Alchemy Engine) Red Gem x2 + Tentaclespots x6
 
 Special Abilities:
 Movement Speed: + 10%
-Insulation: 120
-Lose half amount of heat during the winter
+A backpack which won't drop during a death!
 
 ===
 Conjurers Coat

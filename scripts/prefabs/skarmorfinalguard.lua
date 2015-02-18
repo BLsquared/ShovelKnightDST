@@ -74,9 +74,9 @@ local function fn()
 	inst.armorChargeHandleBooster = 0
 	inst.armorDropSparkBooster = 0
 	
-	--Special perks: Warmth
-	inst:AddComponent("insulator")
-	inst.components.insulator.insulation = 120
+	--Special perks: Extra Undroppable Storage
+	inst:AddComponent("container")
+    inst.components.container:WidgetSetup("backpack")
 	
     inst:AddComponent("inspectable")
     
@@ -100,7 +100,7 @@ end
 
 
 STRINGS.NAMES.SKARMORFINALGUARD = "Final Guard"
-STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKARMORFINALGUARD = "Great to wear when visiting Polar Knight."
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKARMORFINALGUARD = "Great to wear during risky endeavors."
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKARMORFINALGUARD = "It looks quite heavy."
 
 

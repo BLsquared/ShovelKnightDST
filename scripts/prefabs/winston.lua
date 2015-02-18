@@ -411,7 +411,6 @@ end
 local function ondeathkill(inst, deadthing)
 	inst.components.sanity:DoDelta(5) --ConjurersCoat Perk: Gives sanity back for killing things
 	
-	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
     --if inst.level > 0 then
         --inst.level = 0
@@ -500,6 +499,7 @@ local master_postinit = function(inst)
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
 	inst:ListenForEvent("ms_respawnedfromghost", onrespawned)
+	isnt:ListenForEvent("activateresurrection", onrespawned)
 	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
