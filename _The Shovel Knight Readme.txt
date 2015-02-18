@@ -6,7 +6,7 @@ General...........................
 Items.............................
 Shovelblade Equippment............
 Armor Equippment..................
-
+Relic Equippment..................
 
 ================================================
 General:
@@ -48,6 +48,14 @@ Use: +10 Max Sanity when used by Shovel Knight. Fully restores Sanity
 
 Tab: Survival
 Crafted by: (Alchemy Engine) Red Mushroom x2 + Leafy Meat x1 + Gold Nugget x5
+
+===
+Music Sheet:
+Prefab: "skitemmusicsheet"
+Use: Worth 5 gold nuggets when given to the Pig King.
+
+Not Craftable
+Found by: 10% chance when fishing with the Fishing Rod -Relic
 
 
 ================================================
@@ -199,3 +207,28 @@ Special Abilities:
 Movement Speed: + 20%
 Leaves a light trail
 Flashy! Acrobatic! Useless! *ENABLE SETTINGS: BLOOM for full effect*
+
+
+================================================
+Relic Equippment
+================================================
+
+*Relics are a special item that is placed in the Head Slot of Shovel Knight*
+*Relics can be activated by R-Click on the Item or by the Default "R" Key (Configable in Mods/Configuration)*
+*Relics can be found mainly by Digging with the Shovelblade Upgrade: Trench Blade*
+*Relics consume Sanity each time they are Activated, becarful watch your Sanity!!*
+
+===
+Fishing Rod
+Prefab: "skrelicfishingrod"
+Damage: 20
+Durability: 50 Uses
+Sanity Cost: 6
+
+Not Craftable
+
+Special Abilities:
+On Activate: Creates a Magical Fishing Rod in Shovel Knight's hand, which can be used at all fishable areas to catch normal fish, Troupple Fish, and Music Sheets.
+
+Can also be used as a weapon, which deals 20 damage but is consumed in the process.
+

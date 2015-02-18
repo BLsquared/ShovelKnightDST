@@ -9,15 +9,22 @@ local assets=
 prefabs = {
 }
 
-local function gounderwater(inst)
-    --inst.AnimState:PlayAnimation("idle")
-	
-	--Adds a neat splash effect
+local function splashFx(inst)
 	local fx = SpawnPrefab("splash")
     local pos = inst:GetPosition()
     fx.Transform:SetPosition(pos.x, pos.y, pos.z)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+end
+
+local function gounderwater(inst)
+	splashFx(inst)
 	inst:Remove()
+end
+
+local function fishybehaviorfarewell(inst)
+	inst.components.talker:Say("Farewell, may you be blessed by the Troupple King!")
+	splashFx(inst)
+	inst:DoTaskInTime(3, gounderwater)
 end
 
 local function getPlayerChalice(inst, itemName, owner)
@@ -73,12 +80,14 @@ local function fishybehaviorinspect(inst)
 	--For While active Item
 	if inst.activeitemChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		splashFx(inst)
 		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.catcher.components.inventory:SetActiveItem(SpawnPrefab("goldnugget"))
 		
 	--For Final Guard
 	elseif inst.finalguardTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		splashFx(inst)
 		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.finalguard.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.finalguardChaliceSlot)
 		--gounderwater(inst)
@@ -86,6 +95,7 @@ local function fishybehaviorinspect(inst)
 	--For Main Inventory
 	elseif inst.catcherTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		splashFx(inst)
 		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.catcher.components.inventory:GiveItem(SpawnPrefab("goldnugget"), inst.catcherChaliceSlot)
 		--gounderwater(inst)
@@ -94,21 +104,23 @@ local function fishybehaviorinspect(inst)
 	elseif
 		inst.eESMTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		splashFx(inst)
 		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.eESM.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.eESMChaliceSlot)
 		--gounderwater(inst)
 		
-	--Goes Back underwater
+	--Says Farewell
 	else
-		gounderwater(inst)
+		inst.components.talker:Say("You seem to not have an Empty Troupple Chalice!")
+		splashFx(inst)
+		inst:DoTaskInTime(3, fishybehaviorfarewell)
 	end
-	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
-	--inst:DoTaskInTime(2, fishybehaviorstill)
 end
 
 local function fishybehaviorgreet(inst)
 	if inst.catcher.prefab ~= nil then --Stops the odd first load loop
-		inst.components.talker:Say("Well hello "..inst.catcher.prefab)
+		inst.components.talker:Say("Greetings brave Shovel Knight.")
+		splashFx(inst)
 		--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
 		inst:DoTaskInTime(3, fishybehaviorinspect)
 	end

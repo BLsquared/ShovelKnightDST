@@ -29,7 +29,7 @@ Assets = {
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
 	
-	Asset( "SOUND", "sound/winston.fev" ), --SOUND
+	Asset( "SOUNDPACKAGE", "sound/winston.fev" ), --SOUNDPACKAGE
     Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
