@@ -499,7 +499,7 @@ local master_postinit = function(inst)
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
 	inst:ListenForEvent("ms_respawnedfromghost", onrespawned)
-	isnt:ListenForEvent("activateresurrection", onrespawned)
+	inst:ListenForEvent("activateresurrection", onrespawned)
 	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
@@ -539,6 +539,21 @@ local master_postinit = function(inst)
 							self.inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
 							self.inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
 							
+							--Spcial Armor Perk Removal for Final Guard
+							if itemE.prefab == "skarmorfinalguard" then
+								itemE.components.container:Close(self.inst)
+								
+								local itemEOld = itemE
+								itemE = SpawnPrefab(itemE.prefab)
+								self.equipslots[EQUIPSLOTS.BODY] = itemE
+								
+								for k, v in pairs(itemEOld.components.container.slots) do
+									if v and v.prefab ~= nil then
+										itemE.components.container:GiveItem(SpawnPrefab(v.prefab), k)
+									end
+								end
+							end
+							
 							--Special Armor Perk Removal for ConjurersCoat
 							if itemE.prefab == "skarmorconjurerscoat" then
 								local ownerSanity = self.inst.components.sanity.current
@@ -562,8 +577,11 @@ local master_postinit = function(inst)
 								end
 							end
 							
-							itemE = SpawnPrefab(itemE.prefab)
-							self.equipslots[EQUIPSLOTS.BODY] = itemE
+							--Resets all the armor besides final guard
+							if itemE.prefab ~= "skarmorfinalguard" then
+								itemE = SpawnPrefab(itemE.prefab)
+								self.equipslots[EQUIPSLOTS.BODY] = itemE
+							end
 						end
 					end
 				return old_Equip(self, item, old_to_active)

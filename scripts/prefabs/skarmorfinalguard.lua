@@ -33,12 +33,14 @@ local function onequip(inst, owner)
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
+	inst.components.container:Open(owner)
     inst:ListenForEvent("blocked", OnBlocked, owner)
 end
 
 local function onunequip(inst, owner) 
 	owner.AnimState:SetBuild(owner.prefab) --Changes player back
 	debuffarmor(inst) --Resets the item back to normal
+	inst.components.container:Close(owner)
     inst:RemoveEventCallback("blocked", OnBlocked, owner)
 end
 
@@ -76,7 +78,7 @@ local function fn()
 	
 	--Special perks: Extra Undroppable Storage
 	inst:AddComponent("container")
-    inst.components.container:WidgetSetup("backpack")
+    inst.components.container:WidgetSetup("backpack") --8 Inventory Slots
 	
     inst:AddComponent("inspectable")
     

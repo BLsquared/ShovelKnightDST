@@ -22,6 +22,27 @@ end
 
 local function getPlayerChalice(inst, itemName, owner)
 	
+	--Checks if Active Item
+    if inst.catcher.components.inventory.activeitem and inst.catcher.components.inventory.activeitem.prefab == itemName then
+        inst.activeitemChalice = inst.catcher.components.inventory.activeitem
+    end
+	
+	--Checks for Final Guard
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if containerItem.prefab == "skarmorfinalguard" then
+			inst.finalguard = containerItem
+			for k, v in pairs(inst.finalguard.components.container.slots) do
+				if v and v.prefab == itemName then
+					inst.finalguardChaliceSlot = k
+					inst.finalguardTrouppleChalice = v
+					break
+				end
+			end
+		end
+	end
+	
+	--Checks Main inventory
 	for k, v in pairs(owner.components.inventory.itemslots) do
         if v and v.prefab == itemName then
                 inst.catcherChaliceSlot = k
@@ -29,38 +50,58 @@ local function getPlayerChalice(inst, itemName, owner)
 				break
         end
     end
-
-    --if inst.catcher.components.inventory.activeitem andinst.catcher.components.inventory.activeitem.prefab == item then
-        --if self.activeitem.components.stackable ~= nil then
-            --num_found = num_found + self.activeitem.components.stackable:StackSize()
-        --else
-            --num_found = num_found + 1
-        --end
-    --end
-
-    --local overflow = inst.catcher.components.inventory:GetOverflowContainer()
-    --if overflow ~= nil then
-        --local overflow_enough, overflow_found = overflow:Has(item, amount)
-        --num_found = num_found + overflow_found
-    --end
 	
+	--Checks for Extra Equip Slots Mod Compatiblity
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BACK] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BACK]
+		inst.eESM = containerItem
+		for k, v in pairs(inst.eESM.components.container.slots) do
+			if v and v.prefab == itemName then
+				inst.eESMChaliceSlot = k
+				inst.eESMTrouppleChalice = v
+				break
+			end
+		end
+	end
 end
 
 local function fishybehaviorinspect(inst)
-	--inst.components.talker:Say("Lets see if you have a Troupple Chalice!")
 	
 	--Check for Chalice
-	--local chaliceItem = spa
 	getPlayerChalice(inst, "log", inst.catcher)
-	--if inst.catcherChaliceSlot ~= nil then
-	if inst.catcherTrouppleChalice ~= nil then
+	
+	--For While active Item
+	if inst.activeitemChalice ~= nil then
+		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.catcher.components.inventory:SetActiveItem(SpawnPrefab("goldnugget"))
+		
+	--For Final Guard
+	elseif inst.finalguardTrouppleChalice ~= nil then
+		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.finalguard.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.finalguardChaliceSlot)
+		--gounderwater(inst)
+		
+	--For Main Inventory
+	elseif inst.catcherTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
 		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.catcher.components.inventory:GiveItem(SpawnPrefab("goldnugget"), inst.catcherChaliceSlot)
 		--gounderwater(inst)
+		
+	--For Extra Equip Slots Mod
+	elseif
+		inst.eESMTrouppleChalice ~= nil then
+		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.eESM.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.eESMChaliceSlot)
+		--gounderwater(inst)
+		
+	--Goes Back underwater
 	else
 		gounderwater(inst)
 	end
-	--local chaliceItem = 
 	--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
 	--inst:DoTaskInTime(2, fishybehaviorstill)
 end
@@ -105,9 +146,18 @@ local function fn()
 	inst.Physics:SetActive(false)
 	inst.build = "skitemtroupplefish"
 	
+	--Needed for finding the Chalice
 	inst.catcher = ""
 	inst.catcherChaliceSlot = nil
 	inst.catcherTrouppleChalice = nil
+	inst.finalguard = ""
+	inst.finalguardChaliceSlot = nil
+	inst.finalguardTrouppleChalice = nil
+	inst.eESM = ""
+	inst.eESMChaliceSlot = nil
+	inst.eESMTrouppleChalice = nil
+	inst.activeitem = ""
+	inst.activeitemChalice = nil
 	
 	inst:AddComponent("talker")
 	
