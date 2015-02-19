@@ -70,6 +70,8 @@ local function setonuse(inst)
 				--owner.components.talker:Say("Relic still on cooldown.") --Add a sound effect?
 				end
 			end
+		else
+			owner.components.talker:Say("The heavy ancor hook makes it to complicated.")
 		end
 	end
 	inst.components.useableitem:StopUsingItem()
@@ -128,6 +130,9 @@ local function fn()
 	
 	inst:AddComponent("useableitem")
 	inst.components.useableitem:SetOnUseFn(setonuse)
+	
+	inst:AddComponent("tradable")
+    inst.components.tradable.goldvalue = 1
 	
 	inst:AddComponent("finiteuses")
 	inst.components.finiteuses:SetMaxUses(50)

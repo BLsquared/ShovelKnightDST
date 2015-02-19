@@ -52,7 +52,7 @@ Crafted by: (Alchemy Engine) Red Mushroom x2 + Leafy Meat x1 + Gold Nugget x5
 ===
 Music Sheet:
 Prefab: "skitemmusicsheet"
-Use: Worth 5 gold nuggets when given to the Pig King.
+Use: Worth gold nugget x5 when given to the Pig King.
 
 Not Craftable
 Found by: 10% chance when fishing with the Fishing Rod -Relic
@@ -224,6 +224,7 @@ Prefab: "skrelicfishingrod"
 Damage: 20
 Durability: 50 Uses
 Sanity Cost: 6
+Use: Worth gold nugget x1 when given to the Pig King.
 
 Not Craftable
 
@@ -232,3 +233,51 @@ On Activate: Creates a Magical Fishing Rod in Shovel Knight's hand, which can be
 
 Can also be used as a weapon, which deals 20 damage but is consumed in the process.
 
+===
+Troupple Chalice
+Prefab: "skrelictroupplechalice"
+Durability: Infinite
+Sanity Cost: None
+Use: Worth gold nugget x1 when given to the Pig King.
+
+
+Not Craftable
+
+Special Abilities:
+On Activate: A vessel for storing mythical ichor, which is obtained by the Troupple Fish.
+
+===
+Ichor of Renewal
+Prefab: "skrelictroupplechalicered"
+Durability: 1 Use
+Sanity Cost: None
+Use: Worth gold nugget x2 when given to the Pig King.
+
+Not Craftable
+
+Special Abilities:
+On Activate: Fully restores health and sanity, returns an empty Troupple Chalice
+
+===
+Ichor of Boldness
+Prefab: "skrelictroupplechaliceblue"
+Durability: 1 Use
+Sanity Cost: None
+Use: Worth gold nugget x2 when given to the Pig King.
+
+Not Craftable
+
+Special Abilities:
+On Activate: Become invincible for 10 seconds
+
+===
+Ichor of Fortune
+Prefab: "skrelictroupplechaliceyellow"
+Durability: 1 Use
+Sanity Cost: None
+Use: Worth gold nugget x2 when given to the Pig King.
+
+Not Craftable
+
+Special Abilities:
+On Activate: Absorb nearby treasure for 60 seconds

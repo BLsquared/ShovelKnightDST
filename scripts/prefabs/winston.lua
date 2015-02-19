@@ -249,7 +249,7 @@ local function onlongupdate(inst, dt)
 end
 
 local function startovercharge(inst, duration)
-	if duration == 10 then
+	if duration == 11 then
 		inst.trenchBladeDebuffTime = duration
 		--inst.components.talker:Say("Dig Cooldown Active")
 	elseif duration == 7 then
@@ -297,14 +297,15 @@ end
 
 local function onload(inst, data)
 	if data ~= nil and data.trenchBladeComboTime ~= nil then
-        startovercharge(inst, data.trenchBladeComboTime)
+        inst.trenchBladeComboTime = data.trenchBladeComboTime
     end
     if data ~= nil and data.trenchBladeDebuffTime ~= nil then
-        startovercharge(inst, data.trenchBladeDebuffTime)
+        inst.trenchBladeDebuffTime = data.trenchBladeDebuffTime
     end
 	if data ~= nil and data.relicDebuffTime ~= nil then
-        startovercharge(inst, data.relicDebuffTime)
+        inst.relicDebuffTime = data.relicDebuffTime
     end
+	startovercharge(inst, data.relicDebuffTime)
 end
 
 local function onsave(inst, data)
@@ -371,7 +372,7 @@ local function onworked(inst, data)
 						if inst.trenchBladeComboBuilder >= 5 then
 							inst.trenchBladeComboBuilder = 0
 							inst.trenchBladeComboTime = 0
-							startovercharge(inst, 10)	
+							startovercharge(inst, 11)	
 						end
 					end
 				end
@@ -492,6 +493,9 @@ local master_postinit = function(inst)
 	--Relic timer
 	inst.relicDebuffTime = 0
 	
+	--Troupple Chalice Buffs
+	inst.trouppleChaliceBuff = nil
+	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
 	inst.OnLoad = onload
@@ -611,7 +615,8 @@ local master_postinit = function(inst)
 		
 		--Stops Hats from being equipped -Disabled till Relics come into play
 		if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			if item.prefab == "skrelicfishingrod" then
+			if item.prefab == "skrelicfishingrod" or item.prefab == "skrelictroupplechalice"
+				or item.prefab == "skrelictroupplechalicered" or item.prefab == "skrelictroupplechaliceblue" or item.prefab == "skrelictroupplechaliceyellow" then
 				
 				return old_Equip(self, item, old_to_active)
 			else

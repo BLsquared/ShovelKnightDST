@@ -6,8 +6,9 @@ PrefabFiles = {
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
+	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
-	"skrelicfishingrod",
+	"skfxtroupplechalice_yellow",
 }
 
 Assets = {
@@ -175,7 +176,8 @@ local function ShowCastRelic()
 	if GLOBAL.ThePlayer.prefab == "winston" then
 		if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
 			local relicItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
-			if relicItem.prefab == "skrelicfishingrod" then
+			if relicItem.prefab == "skrelicfishingrod" or relicItem.prefab == "skrelictroupplechalice"
+				or relicItem.prefab == "skrelictroupplechalicered" or relicItem.prefab == "skrelictroupplechaliceblue" or relicItem.prefab == "skrelictroupplechaliceyellow" then
 				relicItem.components.useableitem:StartUsingItem()
 			end
 		end
