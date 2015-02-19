@@ -21,6 +21,10 @@ end
 
 local function useTrouppleChalice(inst, owner)
 	if owner.trouppleChaliceBuff ~= nil then
+		--Special Blue Ichor remover
+		if owner.trouppleChaliceBuff.prefab == "skfxtroupplechalice_blue" then
+			owner.components.health:SetInvincible(false)
+		end
 		owner.trouppleChaliceBuff:Remove()
 		owner.trouppleChaliceBuff = nil
 	end

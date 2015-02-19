@@ -20,10 +20,23 @@ local function equipTrouppleChalice(inst, owner)
 end
 
 local function useTrouppleChalice(inst, owner)
-	--owner.components.health:DoDelta((owner.mealTicket*15)+80)
+	if owner.trouppleChaliceBuff ~= nil then
+		--Special Blue Ichor remover
+		if owner.trouppleChaliceBuff.prefab == "skfxtroupplechalice_blue" then
+			owner.components.health:SetInvincible(false)
+		end
+		owner.trouppleChaliceBuff:Remove()
+		owner.trouppleChaliceBuff = nil
+	end
 	
-	--Needs FX Here
-	
+	if owner.trouppleChaliceBuff == nil then
+		local trouppleChalicefx = SpawnPrefab("skfxtroupplechalice_blue")
+		trouppleChalicefx.entity:SetParent(owner.entity)
+		trouppleChalicefx.Transform:SetPosition(0, 0.2, 0)
+		trouppleChalicefx.buffedOwner = owner
+		
+		owner.trouppleChaliceBuff = trouppleChalicefx
+	end
 end
 
 local function setstopuse(inst, owner)
