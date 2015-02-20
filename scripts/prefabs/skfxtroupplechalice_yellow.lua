@@ -31,24 +31,26 @@ local function pickup(inst, owner, destroy)
     for k,v in pairs(ents) do
         if v.components.inventoryitem and v.components.inventoryitem.canbepickedup and v.components.inventoryitem.cangoincontainer and not
             v.components.inventoryitem:IsHeld() then
+			
+			if v.prefab ~= "fish" and v.prefab ~= "eel" then --Can't pick up fish!!
+				if not owner.components.inventory:IsFull() then
+					--Your inventory isn't full, you can pick something up.
+					getitem(owner, inst, v, destroy)
+					if not destroy then return end
 
-            if not owner.components.inventory:IsFull() then
-                --Your inventory isn't full, you can pick something up.
-                getitem(owner, inst, v, destroy)
-                if not destroy then return end
-
-            elseif v.components.stackable then
-                --Your inventory is full, but the item you're trying to pick up stacks. Check for an exsisting stack.
-                --An acceptable stack should: Be of the same item type, not be full already and not be in the "active item" slot of inventory.
-                local stack = owner.components.inventory:FindItem(function(item) return (item.prefab == v.prefab and not item.components.stackable:IsFull()
-                    and item ~= owner.components.inventory.activeitem) end)
-                if stack then
-                    getitem(owner, inst, v, destroy)
-                    if not destroy then return end
-                end
-            elseif destroy then
-                getitem(owner, inst, v, destroy)
-            end
+				elseif v.components.stackable then
+					--Your inventory is full, but the item you're trying to pick up stacks. Check for an exsisting stack.
+					--An acceptable stack should: Be of the same item type, not be full already and not be in the "active item" slot of inventory.
+					local stack = owner.components.inventory:FindItem(function(item) return (item.prefab == v.prefab and not item.components.stackable:IsFull()
+						and item ~= owner.components.inventory.activeitem) end)
+					if stack then
+						getitem(owner, inst, v, destroy)
+						if not destroy then return end
+					end
+				elseif destroy then
+					getitem(owner, inst, v, destroy)
+				end
+			end
         end
     end
 end

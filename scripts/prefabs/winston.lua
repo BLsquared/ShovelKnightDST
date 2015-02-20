@@ -46,7 +46,7 @@ local start_inv = {
 
 --11 Relics
 local relicList = {
-	"skrelicfishingrod", --"rocks", "log", "goldnugget", "livinglog", "turkeydinner",
+	"skrelicfishingrod", "skrelictroupplechalice", --"log", "goldnugget", "livinglog", "turkeydinner",
 	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
 }
 

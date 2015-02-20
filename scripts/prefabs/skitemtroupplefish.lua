@@ -124,7 +124,7 @@ local function fishybehaviorfillchalice(inst)
 		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.eESM.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.eESMChaliceSlot)
 	end
-	inst:DoTaskInTime(2, fishybehaviorfarewell)
+	inst:DoTaskInTime(1, fishybehaviorfarewell)
 end
 
 local function fishybehaviorspitichor(inst)
