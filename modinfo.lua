@@ -2,7 +2,7 @@
 name = "Shovel Knight: Relic Update [Chalice]"
 description = "A character for Don't Starve Together, who wields a Shovelblade!"
 author = "BLsquared & Jade_KnightBlazer"
-version = "0.17.1"
+version = "0.18.0"
 
 -- This is the URL name of the mod's thread on the forum; the part after the ? and before the first & in the url
 forumthread = "/files/file/1035-character-shovel-knight-the-blue-burrower/"
