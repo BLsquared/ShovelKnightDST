@@ -45,8 +45,6 @@ local function fn()
         return inst
     end
 
-    inst.Transform:SetFourFaced()
-
     inst.AnimState:SetBank("skfxdropspark_attack")
     inst.AnimState:SetBuild("skfxdropspark_attack")
     inst.AnimState:PlayAnimation("idle", true)

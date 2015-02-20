@@ -153,7 +153,7 @@ local function fn()
     MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.4 --40% chance
+	inst.fishLootChance = 0.99 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishVeryRareLootChance = 0.01 --1% chance
 	inst.fishLootFinal = nil

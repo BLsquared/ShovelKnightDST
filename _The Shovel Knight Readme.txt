@@ -14,12 +14,20 @@ General:
 
 Shovel Knight Stats:
 
-Name: Winston
+Prefab: winston
 Max Health: 80
 Max Hunger: 150
 Max Sanity: 120
 Movement Speed: 4
 Basic Damage: 10
+
+===
+Troupple Fish
+Prefab: skitemtroupplefish
+Location: Fishing Ponds
+
+Bio:
+Troupple Fish can be fished up using the Fishing Rod Relic. They will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory.
 
 ================================================
 Items
@@ -256,7 +264,7 @@ Use: Worth gold nugget x2 when given to the Pig King.
 Not Craftable
 
 Special Abilities:
-On Activate: Fully restores health and sanity, returns an empty Troupple Chalice
+On Activate: Fully restores health and sanity, returns an empty Troupple Chalice.
 
 ===
 Ichor of Boldness
@@ -268,7 +276,7 @@ Use: Worth gold nugget x2 when given to the Pig King.
 Not Craftable
 
 Special Abilities:
-On Activate: Become invincible for 10 seconds
+On Activate: Become invincible for 10 seconds, returns an empty Troupple Chalice.
 
 ===
 Ichor of Fortune
@@ -280,4 +288,4 @@ Use: Worth gold nugget x2 when given to the Pig King.
 Not Craftable
 
 Special Abilities:
-On Activate: Absorb nearby treasure for 60 seconds
+On Activate: Absorb nearby treasure for 60 seconds, returns an empty Troupple Chalice.

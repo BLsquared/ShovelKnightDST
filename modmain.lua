@@ -8,7 +8,7 @@ PrefabFiles = {
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
-	"skfxtroupplechalice_red", "skfxtroupplechalice_blue", "skfxtroupplechalice_yellow",
+	"skfxtroupplechalice_red", "skfxtroupplechalice_blue", "skfxtroupplechalice_yellow", "skfxichor_red", "skfxichor_blue", "skfxichor_yellow",
 }
 
 Assets = {
