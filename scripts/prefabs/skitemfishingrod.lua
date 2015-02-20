@@ -69,23 +69,23 @@ local function onfishcatch(inst)
 			inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
 			inst.fishLootFinal = fishRareLootGen
 		end
-	elseif math.random() <= inst.fishVeryRareLootChance then
-		local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
-			inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
-			inst.fishLootFinal = fishVeryRareLootGen
+	--elseif math.random() <= inst.fishVeryRareLootChance then
+		--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+		--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
+		--inst.fishLootFinal = fishVeryRareLootGen
 			
-			--Do special effects
-			owner:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
+		--Do special effects
+		--owner:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
 			
-			local fx2 = SpawnPrefab("splash")
-			local pos2 = inst.components.fishingrod.target:GetPosition()
-			fx2.Transform:SetPosition(pos2.x + 2, pos2.y + 2, pos2.z + 2)
-			inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+		--local fx2 = SpawnPrefab("splash")
+		--local pos2 = inst.components.fishingrod.target:GetPosition()
+		--fx2.Transform:SetPosition(pos2.x + 2, pos2.y + 2, pos2.z + 2)
+		--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 	
-			local fx3 = SpawnPrefab("splash")
-			local pos3 = inst.components.fishingrod.target:GetPosition()
-			fx3.Transform:SetPosition(pos3.x - 2, pos3.y - 2, pos3.z - 2)
-			inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+		--local fx3 = SpawnPrefab("splash")
+		--local pos3 = inst.components.fishingrod.target:GetPosition()
+		--fx3.Transform:SetPosition(pos3.x - 2, pos3.y - 2, pos3.z - 2)
+		--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 	end
 end
 
@@ -93,7 +93,7 @@ local function onfished(inst)
 	local owner = inst.components.inventoryitem.owner
 	if inst.fishLootFinal ~= nil then
 		
-		--Checks for troupplefish
+		--Checks for Troupple fish Event
 		if inst.fishLootFinal == "skitemtroupplefish" then
 			local troupplefish = SpawnPrefab("skitemtroupplefish")
 			troupplefish.catcher = inst.components.fishingrod.fisherman
@@ -106,6 +106,8 @@ local function onfished(inst)
 				
 				inst.fishLootFinal = nil
 			end
+			
+		--Normal Loot Event
 		else
 			owner.components.inventory:DropItem(SpawnPrefab(inst.fishLootFinal), true, true)
 			inst.fishLootFinal = nil
@@ -151,7 +153,7 @@ local function fn()
     MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.99 --40% chance
+	inst.fishLootChance = 0.4 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishVeryRareLootChance = 0.01 --1% chance
 	inst.fishLootFinal = nil

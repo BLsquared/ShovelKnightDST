@@ -41,12 +41,8 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-<<<<<<< HEAD
-	"skweaponshovelbladebasic",}
-=======
 	"skweaponshovelbladebasic", --"turkeydinner", "skrelicfishingrod",
 }
->>>>>>> origin/Armor_UpdateRelease
 
 --11 Relics
 local relicList = {
@@ -356,7 +352,7 @@ local function onworked(inst, data)
 					if math.random() <= trenchBladeRelicFinder then
 						local relicGen = randomRelicGen() --Finds a random Relic
 						if relicGen ~= nil then
-							--createRelic(relicGen, data.target) --Creates the Relic
+							createRelic(relicGen, data.target) --Creates the Relic
 						end
 					elseif math.random() <= trenchBladeRelicFinder then
 						local lootGen = randomLootGen() --Finds a random Loot
@@ -415,7 +411,6 @@ end
 local function ondeathkill(inst, deadthing)
 	inst.components.sanity:DoDelta(5) --ConjurersCoat Perk: Gives sanity back for killing things
 	
-	--startovercharge(inst, inst.charge_time + TUNING.TOTAL_DAY_TIME * (.5 + .5 * math.random()))
 	--Don't need Meal Tickets and Mana Potions removed on death
     --if inst.level > 0 then
         --inst.level = 0
@@ -504,6 +499,7 @@ local master_postinit = function(inst)
 	
 	inst:ListenForEvent("healthdelta", onhealthupdate)
 	inst:ListenForEvent("ms_respawnedfromghost", onrespawned)
+	inst:ListenForEvent("activateresurrection", onrespawned)
 	--inst:ListenForEvent("death", ondeath)
 	inst:ListenForEvent("working", onworked)
 	inst:ListenForEvent("onhitother", onattack)
@@ -543,6 +539,21 @@ local master_postinit = function(inst)
 							self.inst.components.locomotor.walkspeed = TUNING.WILSON_WALK_SPEED
 							self.inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
 							
+							--Spcial Armor Perk Removal for Final Guard
+							if itemE.prefab == "skarmorfinalguard" then
+								itemE.components.container:Close(self.inst)
+								
+								local itemEOld = itemE
+								itemE = SpawnPrefab(itemE.prefab)
+								self.equipslots[EQUIPSLOTS.BODY] = itemE
+								
+								for k, v in pairs(itemEOld.components.container.slots) do
+									if v and v.prefab ~= nil then
+										itemE.components.container:GiveItem(SpawnPrefab(v.prefab), k)
+									end
+								end
+							end
+							
 							--Special Armor Perk Removal for ConjurersCoat
 							if itemE.prefab == "skarmorconjurerscoat" then
 								local ownerSanity = self.inst.components.sanity.current
@@ -566,8 +577,11 @@ local master_postinit = function(inst)
 								end
 							end
 							
-							itemE = SpawnPrefab(itemE.prefab)
-							self.equipslots[EQUIPSLOTS.BODY] = itemE
+							--Resets all the armor besides final guard
+							if itemE.prefab ~= "skarmorfinalguard" then
+								itemE = SpawnPrefab(itemE.prefab)
+								self.equipslots[EQUIPSLOTS.BODY] = itemE
+							end
 						end
 					end
 				return old_Equip(self, item, old_to_active)
@@ -595,34 +609,34 @@ local master_postinit = function(inst)
 			end
 		end
 		
-		---Stops Hats from being equipped -Disabled till Relics come into play
-		--if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			--if item.prefab == "skitemmealtickettest" then
+		--Stops Hats from being equipped -Disabled till Relics come into play
+		if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
+			if item.prefab == "skrelicfishingrod" then
 				
-				--return old_Equip(self, item, old_to_active)
-			--else
+				return old_Equip(self, item, old_to_active)
+			else
 			
-			---Stops other Head Slot Hats
-			--self:RemoveItem(item, true)
-			--if self:IsFull() then
-				--if not self.activeitem and not TheInput:ControllerAttached() then
-					--item.components.inventoryitem:OnPutInInventory(self.inst)
-					--self:SetActiveItem(item)
-				--else
-					--self:DropItem(inst, true, true)
-					--self:SetActiveItem(nil)
-				--end
-			--else
-				--self:RemoveItem(item, true)
-				--self.silentfull = true
-				--self:GiveItem(item)
-				--self.silentfull = false
-				--self:SetActiveItem(nil)
-			--end
-			--self.inst.components.talker:Say("This is not a Relic!")
-			--return false
-			--end
-		--end
+			--Stops other Head Slot Hats
+			self:RemoveItem(item, true)
+			if self:IsFull() then
+				if not self.activeitem and not TheInput:ControllerAttached() then
+					item.components.inventoryitem:OnPutInInventory(self.inst)
+					self:SetActiveItem(item)
+				else
+					self:DropItem(inst, true, true)
+					self:SetActiveItem(nil)
+				end
+			else
+				self:RemoveItem(item, true)
+				self.silentfull = true
+				self:GiveItem(item)
+				self.silentfull = false
+				self:SetActiveItem(nil)
+			end
+			self.inst.components.talker:Say("This is not a Relic!")
+			return false
+			end
+		end
         return old_Equip(self, item, old_to_active)
     end
 	

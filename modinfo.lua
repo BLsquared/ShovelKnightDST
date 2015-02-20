@@ -1,5 +1,5 @@
 -- This information tells other players more about the mod
-name = "Shovel Knight 0.17.1"
+name = "Shovel Knight: Relic Update [Chalice]"
 description = "A character for Don't Starve Together, who wields a Shovelblade!"
 author = "BLsquared & Jade_KnightBlazer"
 version = "0.17.1"

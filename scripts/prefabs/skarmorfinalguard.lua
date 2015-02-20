@@ -33,12 +33,14 @@ local function onequip(inst, owner)
 	else
 		owner.components.talker:Say("Ugh... its so heavy!")
 	end
+	inst.components.container:Open(owner)
     inst:ListenForEvent("blocked", OnBlocked, owner)
 end
 
 local function onunequip(inst, owner) 
 	owner.AnimState:SetBuild(owner.prefab) --Changes player back
 	debuffarmor(inst) --Resets the item back to normal
+	inst.components.container:Close(owner)
     inst:RemoveEventCallback("blocked", OnBlocked, owner)
 end
 
@@ -74,9 +76,9 @@ local function fn()
 	inst.armorChargeHandleBooster = 0
 	inst.armorDropSparkBooster = 0
 	
-	--Special perks: Warmth
-	inst:AddComponent("insulator")
-	inst.components.insulator.insulation = 120
+	--Special perks: Extra Undroppable Storage
+	inst:AddComponent("container")
+    inst.components.container:WidgetSetup("backpack") --8 Inventory Slots
 	
     inst:AddComponent("inspectable")
     
@@ -100,7 +102,7 @@ end
 
 
 STRINGS.NAMES.SKARMORFINALGUARD = "Final Guard"
-STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKARMORFINALGUARD = "Great to wear when visiting Polar Knight."
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKARMORFINALGUARD = "Great to wear during risky endeavors."
 STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKARMORFINALGUARD = "It looks quite heavy."
 
 

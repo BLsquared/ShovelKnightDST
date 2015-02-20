@@ -2,12 +2,12 @@ local KEY_CTRL = GLOBAL.KEY_CTRL
 local TheInput = GLOBAL.TheInput
 
 PrefabFiles = {
-	"winston", --"skitemtemplate", "skitemtroupplefish", "skitemtroupplefishking",
-	"skitemmealticket", "skitemmanapotion", --"skitemfishingrod", "skitemmusicsheet",
+	"winston", "skitemtroupplefish", "skitemtroupplefishking",
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
-	--"skrelicfishingrod",
+	"skrelicfishingrod",
 }
 
 Assets = {
@@ -29,7 +29,7 @@ Assets = {
 	Asset( "IMAGE", "images/avatars/avatar_ghost_winston.tex" ),
     Asset( "ATLAS", "images/avatars/avatar_ghost_winston.xml" ),
 	
-	Asset( "SOUND", "sound/winston.fev" ), --SOUND
+	Asset( "SOUNDPACKAGE", "sound/winston.fev" ), --SOUNDPACKAGE
     Asset( "SOUND", "sound/winston_bank00.fsb" ),
 
 	Asset( "IMAGE", "images/map_icons/skweaponshovelbladebasic.tex" ),
@@ -62,28 +62,28 @@ local keydown = false
 local require = GLOBAL.require
 local STRINGS = GLOBAL.STRINGS
 
--- Item Recipes
-local OldIsRecipeValid = GLOBAL.IsRecipeValid
-local function IsRecipeValid(recipe)
-	return OldIsRecipeValid(recipe) and
-		(GLOBAL.ThePlayer  or not recipe.tagneeded)
+-- Item Recipes -Untill this is fixed
+--local OldIsRecipeValid = GLOBAL.IsRecipeValid
+--local function IsSkRecipeValid(recipe)
+	--return OldIsRecipeValid(recipe) and
+		--(GLOBAL.ThePlayer  or not recipe.tagneeded)
 		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
-end
-GLOBAL.IsRecipeValid = IsRecipeValid
+--end
+--GLOBAL.IsRecipeValid = IsSkRecipeValid
 
 local Recipe = GLOBAL.Recipe
 local RECIPETABS = GLOBAL.RECIPETABS
+local Ingredient = GLOBAL.Ingredient
 local TECH = GLOBAL.TECH
 
 local recipes = 
 {
-	--Recipe("skitemtemplate", {Ingredient("berries", 2), Ingredient("carrot", 1)}, RECIPETABS.WAR, TECH.SCIENCE_ONE),
 	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
 	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
 	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
 	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
-	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("heatrock", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
 	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
 	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
 	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE),
@@ -91,7 +91,7 @@ local recipes =
 }
 
 for k,v in pairs(recipes) do
-    v.tagneeded = true
+    --v.tagneeded = true
     v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
 end
 
@@ -124,7 +124,7 @@ STRINGS.RECIPE_DESC.SKITEMMANAPOTION = "Magicist's bubbling brew!"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADECHARGEHANDLE = "Shovelblade Upgrade: Charge Handle"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADETRENCHBLADE = "Shovelblade Upgrade: Trench Blade"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADEDROPSPARK = "Shovelblade Upgrade: Drop Spark"
-STRINGS.RECIPE_DESC.SKARMORFINALGUARD = "Lose half as much heat during the cold!"
+STRINGS.RECIPE_DESC.SKARMORFINALGUARD = "Lose only half as much stuff during a death!"
 STRINGS.RECIPE_DESC.SKARMORCONJURERSCOAT = "Harvest sanity from defeated foes!"
 STRINGS.RECIPE_DESC.SKARMORDYNAMOMAIL = "Increase Shovelblade Upgrade powers!"
 STRINGS.RECIPE_DESC.SKARMORMAILOFMOMENTUM = "Heavily plated, Can't be slowed!"
