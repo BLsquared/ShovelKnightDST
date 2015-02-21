@@ -25,6 +25,7 @@ Basic Damage: 10
 Troupple Fish
 Prefab: skitemtroupplefish
 Location: Fishing Ponds
+Catch Rate: 40%
 
 Bio:
 Troupple Fish can be fished up using the Fishing Rod Relic. They will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory.

@@ -232,7 +232,7 @@ local function fn()
 	inst.activeitemChalice = nil
 	inst.relicChalice = nil
 	inst.relicLocation = nil
-	inst.ichorColor = "red"
+	inst.ichorColor = "red" --Default
 	
 	inst:AddComponent("talker")
 	
