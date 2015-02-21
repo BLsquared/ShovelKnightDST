@@ -532,7 +532,7 @@ local master_postinit = function(inst)
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
 			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
-				
+					
 					--To restore Equippable for all armors
 					local itemE = self.equipslots[EQUIPSLOTS.BODY]
 					if itemE ~= nil then

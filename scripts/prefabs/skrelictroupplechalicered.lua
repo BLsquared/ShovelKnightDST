@@ -109,7 +109,7 @@ local function fn()
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.atlasname = "images/inventoryimages/skrelictroupplechalicered.xml"
 	inst.components.inventoryitem.imagename = "skrelictroupplechalicered"
-    
+	
 	inst:AddComponent("equippable")
     inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
 	

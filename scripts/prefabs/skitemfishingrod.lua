@@ -163,7 +163,6 @@ local function fn()
 	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil
-	inst.fishyFish = nil
 	
 	inst:AddTag("show_spoilage")
 	
