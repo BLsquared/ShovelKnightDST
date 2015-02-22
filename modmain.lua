@@ -59,42 +59,79 @@ RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winst
 local RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
 --local controls = nil
 local keydown = false
-
 local require = GLOBAL.require
+local unpack = GLOBAL.unpack
 local STRINGS = GLOBAL.STRINGS
 
--- Item Recipes -Untill this is fixed
---local OldIsRecipeValid = GLOBAL.IsRecipeValid
---local function IsSkRecipeValid(recipe)
-	--return OldIsRecipeValid(recipe) and
-		--(GLOBAL.ThePlayer  or not recipe.tagneeded)
-		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
+--New Recipe System Does not work with Drok Mod
+--if not GLOBAL.TheNet:IsDedicated() then
+    --local OldIsRecipeValid = GLOBAL.IsRecipeValid
+   --local function IsRecipeValid(recipe)
+        --return OldIsRecipeValid(recipe) and
+            --((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
+    --end
+    --GLOBAL.IsRecipeValid = IsRecipeValid
 --end
---GLOBAL.IsRecipeValid = IsSkRecipeValid
-
+ 
 local Recipe = GLOBAL.Recipe
-local RECIPETABS = GLOBAL.RECIPETABS
 local Ingredient = GLOBAL.Ingredient
+local RECIPETABS = GLOBAL.RECIPETABS
 local TECH = GLOBAL.TECH
 
-local recipes = 
-{
-	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
-	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
-	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
-	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
-	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
-	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
-	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
-	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
-	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE),
-	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
-}
+--Global Recipes
+local skitemmealticket = GLOBAL.Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO)
+skitemmealticket.atlas = "images/inventoryimages/skitemmealticket.xml"
 
-for k,v in pairs(recipes) do
+local skitemmanapotion = GLOBAL.Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO)
+skitemmanapotion.atlas = "images/inventoryimages/skitemmanapotion.xml"
+
+local skweaponshovelbladechargehandle = GLOBAL.Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO)
+skweaponshovelbladechargehandle.atlas = "images/inventoryimages/skweaponshovelbladechargehandle.xml"
+
+local skweaponshovelbladetrenchblade = GLOBAL.Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO)
+skweaponshovelbladetrenchblade.atlas = "images/inventoryimages/skweaponshovelbladetrenchblade.xml"
+
+local skweaponshovelbladedropspark = GLOBAL.Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE)
+skweaponshovelbladedropspark.atlas = "images/inventoryimages/skweaponshovelbladedropspark.xml"
+
+local skarmorfinalguard = GLOBAL.Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO)
+skarmorfinalguard.atlas = "images/inventoryimages/skarmorfinalguard.xml"
+
+local skarmorconjurerscoat = GLOBAL.Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO)
+skarmorconjurerscoat.atlas = "images/inventoryimages/skarmorconjurerscoat.xml"
+
+local skarmordynamomail = GLOBAL.Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO)
+skarmordynamomail.atlas = "images/inventoryimages/skarmordynamomail.xml"
+
+local skarmormailofmomentum = GLOBAL.Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE)
+skarmormailofmomentum.atlas = "images/inventoryimages/skarmormailofmomentum.xml"
+
+local skarmorornateplate = GLOBAL.Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO)
+skarmorornateplate.atlas = "images/inventoryimages/skarmorornateplate.xml"
+
+--local recipes = 
+--{
+	--Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
+	--Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
+	--Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
+	--Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
+	--Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
+	--Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
+	--Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
+	--Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
+	--Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE),
+	--Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
+--}
+--#rezecib this is a bit of a hack; hardcoding the sortkeys should avoid mod clashes
+-- due to different load order, but if a mod somehow declares sortkeys in this range in
+-- the same way, then problems will always occur with that mod
+--local sortkey = -110000
+--for k,v in pairs(recipes) do
+    --sortkey = sortkey - 1
+    --v.sortkey = sortkey
     --v.tagneeded = true
-    v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
-end
+	--v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
+--end
 
 -- The character select screen lines
 STRINGS.CHARACTER_TITLES.winston = "The Blue Burrower"

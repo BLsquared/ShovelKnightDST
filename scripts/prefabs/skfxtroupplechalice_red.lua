@@ -76,9 +76,7 @@ local function fn(Sim)
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
+
 
     inst.AnimState:SetBank("forcefield")
     inst.AnimState:SetBuild("skfxtroupplechalicebubble_red")
@@ -86,6 +84,10 @@ local function fn(Sim)
     inst.AnimState:PushAnimation("idle_loop", true)
 
 	inst.Transform:SetScale(0.6, 0.6, 0.6)
+	
+	if not TheWorld.ismastersim then
+        return inst
+    end
 	
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/forcefield_LP", "loop")
 

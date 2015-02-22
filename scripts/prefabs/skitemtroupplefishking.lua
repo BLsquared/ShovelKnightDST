@@ -1,6 +1,7 @@
 local assets=
 {
     Asset("ANIM", "anim/skitemtroupplefishking.zip"),
+	Asset("ANIM", "anim/skitemtroupplefishkinglay.zip"),
 	
 	Asset("ATLAS", "images/inventoryimages/skitemtroupplefish.xml"),
     Asset("IMAGE", "images/inventoryimages/skitemtroupplefish.tex"),
@@ -30,20 +31,21 @@ local function fn()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
-	
-	if not TheWorld.ismastersim then
-        return inst
-    end
 	MakeInventoryPhysics(inst)
 	
 	inst:AddTag("largecreature")
 	
 	anim:SetBank("fish")
-    anim:SetBuild("skitemtroupplefishking")
-    anim:PlayAnimation("idle", true)
+    --anim:SetBuild("skitemtroupplefishking")
+    --anim:PlayAnimation("idle", true)
+	anim:SetBuild("skitemtroupplefishkinglay")
+    anim:PlayAnimation("dead", true)
+	
+	if not TheWorld.ismastersim then
+        return inst
+    end
 	
 	inst.entity:SetPristine()
-	MakeHauntableLaunch(inst)
     
 	inst.Transform:SetScale(4, 4, 4)
 	
@@ -72,6 +74,8 @@ local function fn()
 	--inst:DoTaskInTime(0.7, stopkicking)
 	--inst.OnLoad = stopkicking
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

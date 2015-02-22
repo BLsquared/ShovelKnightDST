@@ -203,17 +203,18 @@ local function fn()
 	
 	inst.Transform:SetFourFaced()
 	
-	if not TheWorld.ismastersim then
-        return inst
-    end
+
 	MakeInventoryPhysics(inst)
 	
 	anim:SetBank("fish")
     anim:SetBuild("skitemtroupplefish")
     anim:PlayAnimation("idle", true)
 	
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
 	inst.entity:SetPristine()
-	MakeHauntableLaunch(inst)
     
 	inst.Physics:SetActive(false)
 	inst.build = "skitemtroupplefish"
@@ -247,6 +248,8 @@ local function fn()
 	
 	inst:DoTaskInTime(1, onfishedup)
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

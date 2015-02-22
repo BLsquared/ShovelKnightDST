@@ -154,7 +154,6 @@ local function fn()
     end
 	
 	inst.entity:SetPristine()
-    MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
 	inst.fishLootChance = 0.4 --40% chance
@@ -194,6 +193,8 @@ local function fn()
 	inst.components.perishable:StartPerishing()
 	inst.components.perishable:SetOnPerishFn(onfishholster)
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

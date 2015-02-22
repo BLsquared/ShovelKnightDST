@@ -56,19 +56,18 @@ local function fn()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
-	if not TheWorld.ismastersim then
-        return inst
-    end
-	
-	inst.entity:SetPristine()
-	MakeHauntableLaunch(inst)
-	
     MakeInventoryPhysics(inst)
      
     anim:SetBank("skrelictroupplechalice")
     anim:SetBuild("skrelictroupplechalice")
     anim:PlayAnimation("idle")
     
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
+	inst.entity:SetPristine()
+	
 	--Relic Stats
 	inst.relicCastCost = 0 --How much Sanity Cost to Cast
 	
@@ -89,6 +88,8 @@ local function fn()
 	
 	inst:AddComponent("tradable")
     inst.components.tradable.goldvalue = 1
+	
+	MakeHauntableLaunch(inst)
 	
     return inst
 end

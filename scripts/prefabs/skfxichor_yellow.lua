@@ -23,14 +23,14 @@ local function fn()
 	MakeInventoryPhysics(inst)
 	RemovePhysicsColliders(inst)
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
-
     inst.AnimState:SetBank("skfxichor")
     inst.AnimState:SetBuild("skfxichor_yellow")
     inst.AnimState:PlayAnimation("idle", true)
 
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
     inst:AddTag("projectile")
 	
     inst.persists = false
