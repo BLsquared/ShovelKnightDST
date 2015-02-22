@@ -444,17 +444,17 @@ end
 -- This initializes for the host only
 local master_postinit = function(inst)
 	--Personal Recipes
-	inst:AddTag("skitemtemplate_skbuilder")
-	inst:AddTag("skitemmealticket_skbuilder")
-	inst:AddTag("skitemmanapotion_skbuilder")
-	inst:AddTag("skweaponshovelbladechargehandle_skbuilder")
-	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
-	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
-	inst:AddTag("skarmorfinalguard_skbuilder")
-	inst:AddTag("skarmorconjurerscoat_skbuilder")
-	inst:AddTag("skarmordynamomail_skbuilder")
-	inst:AddTag("skarmormailofmomentum_skbuilder")
-	inst:AddTag("skarmorornateplate_skbuilder")
+	inst:AddTag("skitemtemplate_builder")
+	inst:AddTag("skitemmealticket_builder")
+	inst:AddTag("skitemmanapotion_builder")
+	inst:AddTag("skweaponshovelbladechargehandle_builder")
+	inst:AddTag("skweaponshovelbladetrenchblade_builder")
+	inst:AddTag("skweaponshovelbladedropspark_builder")
+	inst:AddTag("skarmorfinalguard_builder")
+	inst:AddTag("skarmorconjurerscoat_builder")
+	inst:AddTag("skarmordynamomail_builder")
+	inst:AddTag("skarmormailofmomentum_builder")
+	inst:AddTag("skarmorornateplate_builder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
