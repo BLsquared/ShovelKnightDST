@@ -10,19 +10,6 @@ local assets=
 prefabs = {
 }
 
---local function OnGoingHome(inst)
-    --local fx = SpawnPrefab("splash")
-    --local pos = inst:GetPosition()
-    --fx.Transform:SetPosition(pos.x, pos.y, pos.z)
-
-	--local splash = PlayFX(Vector3(inst.Transform:GetWorldPosition() ), "splash", "splash", "splash")
-	--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
---end
-
---local function stopkicking(inst)
-    --inst.AnimState:PlayAnimation("idle")
---end
-
 local function fn()
  
     local inst = CreateEntity()
@@ -36,10 +23,10 @@ local function fn()
 	inst:AddTag("largecreature")
 	
 	anim:SetBank("fish")
-    --anim:SetBuild("skitemtroupplefishking")
-    --anim:PlayAnimation("idle", true)
-	anim:SetBuild("skitemtroupplefishkinglay")
-    anim:PlayAnimation("dead", true)
+    anim:SetBuild("skitemtroupplefishking")
+    anim:PlayAnimation("idle", true)
+	--anim:SetBuild("skitemtroupplefishkinglay")
+    --anim:PlayAnimation("dead", true)
 	
 	if not TheWorld.ismastersim then
         return inst
@@ -57,22 +44,6 @@ local function fn()
 	inst.components.inventoryitem.imagename = "skitemtroupplefish"
      
 	inst:AddComponent("inspectable")
-	
-	--inst:AddComponent("knownlocations")
-	--inst:ListenForEvent("goinghome", OnGoingHome)
-	 
-	--inst:AddComponent("stackable")
-	--inst.components.stackable.maxsize = TUNING.STACK_SIZE_SMALLITEM
-	
-	--inst:AddComponent("tradable")
-    --inst.components.tradable.goldvalue = 5
-		
-	--Burn
-	--inst:AddComponent("fuel")
-    --inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
-	
-	--inst:DoTaskInTime(0.7, stopkicking)
-	--inst.OnLoad = stopkicking
 	
 	MakeHauntableLaunch(inst)
 		

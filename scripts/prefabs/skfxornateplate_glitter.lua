@@ -109,6 +109,8 @@ local function fn()
 
 	EmitterManager:AddEmitter(inst, nil, updateFunc)
 
+	inst.trailCounter = 0
+	
     if not TheWorld.ismastersim then
         return inst
     end
@@ -122,7 +124,7 @@ local function fn()
     --inst.Light:SetFalloff(.9)
     --inst.Light:SetRadius(.27)
 	
-	inst.trailCounter = 0
+	
 	
     return inst
 end
