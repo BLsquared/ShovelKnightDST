@@ -1,6 +1,3 @@
-local KEY_CTRL = GLOBAL.KEY_CTRL
-local TheInput = GLOBAL.TheInput
-
 PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
@@ -55,10 +52,6 @@ RemapSoundEvent( "dontstarve/characters/winston/chargehandlerelease", "winston/c
 RemapSoundEvent( "dontstarve/characters/winston/dropspark", "winston/characters/winston/dropspark" )
 RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winston/jump" )
 
---Key Bind stuff
-local RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
---local controls = nil
-local keydown = false
 local require = GLOBAL.require
 local unpack = GLOBAL.unpack
 local STRINGS = GLOBAL.STRINGS
@@ -169,45 +162,32 @@ end
 AddComponentPostInit('health', HealthPostInit)
 
 --Custom Relic Key
+GLOBAL.RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
+
 local function IsDefaultScreen()
 	return GLOBAL.TheFrontEnd:GetActiveScreen().name:find("HUD") ~= nil
 end
 
-local function ShowCastRelic()
-	if keydown then return end
-	keydown = true
-	if not IsDefaultScreen() then return end
+local SKUSERELIC = GLOBAL.Action()
+SKUSERELIC.str = "skUseRElic"
+SKUSERELIC.id = "SKUSERELIC"
+SKUSERELIC.fn = function(act)
+	if not IsDefaultScreen() then return true end
 	
-	if GLOBAL.ThePlayer.prefab == "winston" then
-		if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
-			local relicItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
+	local silent = true
+	if act.target.prefab == "winston" then
+		if act.target.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
+			local relicItem = act.target.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
 			if relicItem.prefab == "skrelicfishingrod" or relicItem.prefab == "skrelictroupplechalice"
 				or relicItem.prefab == "skrelictroupplechalicered" or relicItem.prefab == "skrelictroupplechaliceblue" or relicItem.prefab == "skrelictroupplechaliceyellow" then
 				relicItem.components.useableitem:StartUsingItem()
+				--act.target.components.talker:Say("Relic key was pressed")
 			end
 		end
 	end
+	return true
 end
-
-local function HideCastRelic()
-	keydown = false
-end
-
-local function AddRelicToggleKey(self)
-	--controls = self -- this just makes controls available in the rest of the modmain's functions
-	
-	GLOBAL.TheInput:AddKeyDownHandler(RELICKEY, ShowCastRelic)
-	GLOBAL.TheInput:AddKeyUpHandler(RELICKEY, HideCastRelic)
-	
-	--local OldOnUpdate = controls.OnUpdate
-	--local function OnUpdate(...)
-		--OldOnUpdate(...)
-		--if keydown then
-		--end
-	--end
-	--controls.OnUpdate = OnUpdate
-end
-AddClassPostConstruct( "widgets/controls", AddRelicToggleKey )
+AddAction(SKUSERELIC) 
 
 
 AddMinimapAtlas("images/map_icons/winston.xml")
