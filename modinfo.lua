@@ -1,5 +1,5 @@
 -- This information tells other players more about the mod
-name = "Shovel Knight: Relic Update [FlareWand]"
+name = "Shovel Knight 0.19.1"
 description = "A character for Don't Starve Together, who wields a Shovelblade!"
 author = "BLsquared & Jade_KnightBlazer"
 version = "0.19.1"
