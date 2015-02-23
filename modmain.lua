@@ -162,7 +162,7 @@ end
 AddComponentPostInit('health', HealthPostInit)
 
 --Custom Relic Key
-GLOBAL.RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
+GLOBAL.SKRELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
 
 local function IsDefaultScreen()
 	return GLOBAL.TheFrontEnd:GetActiveScreen().name:find("HUD") ~= nil

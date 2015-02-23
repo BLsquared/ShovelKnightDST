@@ -46,7 +46,7 @@ local start_inv = {
 
 local function OnRelicKeyPressed(inst, data)
     if data.inst == ThePlayer then
-        if data.key == RELICKEY then
+        if data.key == SKRELICKEY then
             if TheWorld.ismastersim then
                 BufferedAction(inst, inst, ACTIONS.SKUSERELIC):Do()
                 -- Since we are the server, do the action on the server.
