@@ -1,5 +1,5 @@
 local MakePlayerCharacter = require "prefabs/player_common"
-
+local theInput = require("input")
 
 local assets = {
 
@@ -43,6 +43,19 @@ local prefabs = {}
 local start_inv = {
 	"skweaponshovelbladebasic", --"turkeydinner", "skrelicfishingrod",
 }
+
+local function OnRelicKeyPressed(inst, data)
+    if data.inst == ThePlayer then
+        if data.key == SKRELICKEY then
+            if TheWorld.ismastersim then
+                BufferedAction(inst, inst, ACTIONS.SKUSERELIC):Do()
+                -- Since we are the server, do the action on the server.
+            else
+                SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.SKUSERELIC.code, inst, ACTIONS.SKUSERELIC.mod_name)
+            end
+        end
+    end
+end
 
 --11 Relics
 local relicList = {
@@ -420,7 +433,12 @@ local function ondeathkill(inst, deadthing)
 end
 
 -- This initializes for both clients and the host
-local common_postinit = function(inst) 
+local common_postinit = function(inst)
+
+	--Relic Key
+	inst:AddComponent("relickeyhandler")
+    inst:ListenForEvent("relickeypressed", OnRelicKeyPressed)
+	
 	-- choose which sounds this character will play
 	inst.soundsname = "wolfgang" --Need Shovel Knight Beeps--
 
