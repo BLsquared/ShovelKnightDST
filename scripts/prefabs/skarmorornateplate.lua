@@ -60,13 +60,6 @@ local function fn()
     local anim = inst.entity:AddAnimState()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
-
-	if not TheWorld.ismastersim then
-        return inst
-    end
-	
-	inst.entity:SetPristine()
-    MakeHauntableLaunch(inst)
 	
 	MakeInventoryPhysics(inst)
 	
@@ -75,6 +68,12 @@ local function fn()
     anim:SetBuild("skarmorornateplate")
     anim:PlayAnimation("idle")
     
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
+	inst.entity:SetPristine()
+	
     inst.foleysound = "dontstarve/movement/foley/metalarmour"
 	
 	--Armor Stats
@@ -107,6 +106,8 @@ local function fn()
 	inst:AddComponent("characterspecific")
     inst.components.characterspecific:SetOwner("winston")
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

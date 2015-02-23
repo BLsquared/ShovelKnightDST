@@ -99,7 +99,8 @@ local function fn()
 		num_particles_to_emit = num_particles_to_emit + particles_per_tick
 		
 		 --Creates a trail
-		inst.trailCounter = inst.trailCounter + math.random(0,5)
+		local randomizer = math.random(0,5)
+		inst.trailCounter = inst.trailCounter + randomizer
 		if inst.trailCounter >= 50 then
 			inst.trailCounter = 0
 			SpawnPrefab("skfxornateplate_trail").Transform:SetPosition(inst.Transform:GetWorldPosition())
@@ -109,6 +110,8 @@ local function fn()
 
 	EmitterManager:AddEmitter(inst, nil, updateFunc)
 
+	inst.trailCounter = 0
+	
     if not TheWorld.ismastersim then
         return inst
     end
@@ -122,7 +125,7 @@ local function fn()
     --inst.Light:SetFalloff(.9)
     --inst.Light:SetRadius(.27)
 	
-	inst.trailCounter = 0
+	
 	
     return inst
 end

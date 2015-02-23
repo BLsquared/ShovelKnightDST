@@ -60,15 +60,18 @@ local function onfishcatch(inst)
 	if math.random() <= inst.fishLootChance then
 		local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
 		if fishLootGen ~= nil then
+			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
 			inst.components.fishingrod.caughtfish = SpawnPrefab(fishLootGen)
 			inst.fishLootFinal = fishLootGen
 		end
 	elseif math.random() <= inst.fishRareLootChance then
 		local fishRareLootGen = randomFishRareLootGen() --Finds a rare random fishLoot
 		if fishRareLootGen ~= nil then
+			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
 			inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
 			inst.fishLootFinal = fishRareLootGen
 		end
+		
 	--elseif math.random() <= inst.fishVeryRareLootChance then
 		--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
 		--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
@@ -92,6 +95,7 @@ end
 local function onfished(inst)
 	local owner = inst.components.inventoryitem.owner
 	if inst.fishLootFinal ~= nil then
+		inst.components.fishingrod.caughtfish:Remove()
 		
 		--Checks for Troupple fish Event
 		if inst.fishLootFinal == "skitemtroupplefish" then
@@ -150,7 +154,6 @@ local function fn()
     end
 	
 	inst.entity:SetPristine()
-    MakeHauntableLaunch(inst)
  
 	--Fishingrod Stuff
 	inst.fishLootChance = 0.4 --40% chance
@@ -190,6 +193,8 @@ local function fn()
 	inst.components.perishable:StartPerishing()
 	inst.components.perishable:SetOnPerishFn(onfishholster)
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

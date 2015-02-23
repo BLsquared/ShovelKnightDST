@@ -1,5 +1,8 @@
 Need to figure out a way to destory Bonfires for rare chance at loots.
 
-Add a Rare special Item to all of the Armor crafting
 
+Add a Rare special Item to all of the Armor crafting
 Final Guard: "mosquitosack"
+
+
+Add the: Bag of Spoils item

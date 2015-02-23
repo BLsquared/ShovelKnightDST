@@ -12,13 +12,15 @@ local function fn(sim)
     inst.entity:AddLight()
     inst.entity:AddNetwork()
 
-    if not TheWorld.ismastersim then
-        return inst
-    end
+
 
     inst.AnimState:SetBank("frozen_shatter")
     inst.AnimState:SetBuild("skfxchargehandle_shatter")
     inst.AnimState:PlayAnimation("small")
+	
+	if not TheWorld.ismastersim then
+        return inst
+    end
 	
     inst.persists = false
     return inst

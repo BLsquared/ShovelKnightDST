@@ -1,6 +1,7 @@
 local assets=
 {
     Asset("ANIM", "anim/skitemtroupplefish.zip"),
+	Asset("ANIM", "anim/skitemtroupplefishlay.zip"),
 	
 	Asset("ATLAS", "images/inventoryimages/skitemtroupplefish.xml"),
     Asset("IMAGE", "images/inventoryimages/skitemtroupplefish.tex"),
@@ -8,6 +9,15 @@ local assets=
 
 prefabs = {
 }
+
+--Random ichor Loot list
+local ichorLootList = {
+	"red", "blue", "yellow",
+}
+
+local function randomIchorLootGen()
+	return ichorLootList[math.random(#ichorLootList)]
+end
 
 local function splashFx(inst)
 	local fx = SpawnPrefab("splash")
@@ -27,13 +37,32 @@ local function fishybehaviorfarewell(inst)
 	inst:DoTaskInTime(3, gounderwater)
 end
 
+local function createIchorProjectile(inst, target)
+	inst.ichorColor = randomIchorLootGen()
+	local proj = SpawnPrefab("skfxichor_"..inst.ichorColor)--Name of the projectile
+	if proj then
+		if proj.components.projectile then
+			proj.owner = inst --Saves player to Projectile
+			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
+			proj.components.projectile:Throw(inst, target, inst)
+			inst.SoundEmitter:PlaySound("dontstarve/creatures/spat/spit")
+		end
+	end
+end
+
 local function getPlayerChalice(inst, itemName, owner)
 	
 	--Checks if Active Item
     if inst.catcher.components.inventory.activeitem and inst.catcher.components.inventory.activeitem.prefab == itemName then
         inst.activeitemChalice = inst.catcher.components.inventory.activeitem
     end
-	
+	--Checks if Troupple Chalice is in Relic Slot
+	if owner.components.inventory.equipslots[EQUIPSLOTS.HEAD] ~= nil then
+		local relicItem = owner.components.inventory.equipslots[EQUIPSLOTS.HEAD]
+		if relicItem.prefab == itemName then
+			inst.relicChalice = relicItem
+		end
+	end
 	--Checks for Final Guard
 	if owner.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
 		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BODY]
@@ -48,7 +77,6 @@ local function getPlayerChalice(inst, itemName, owner)
 			end
 		end
 	end
-	
 	--Checks Main inventory
 	for k, v in pairs(owner.components.inventory.itemslots) do
         if v and v.prefab == itemName then
@@ -57,7 +85,6 @@ local function getPlayerChalice(inst, itemName, owner)
 				break
         end
     end
-	
 	--Checks for Extra Equip Slots Mod Compatiblity
 	if owner.components.inventory.equipslots[EQUIPSLOTS.BACK] ~= nil then
 		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BACK]
@@ -72,43 +99,79 @@ local function getPlayerChalice(inst, itemName, owner)
 	end
 end
 
+local function fishybehaviorfillchalice(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefish")
+	inst.AnimState:PlayAnimation("idle", true)
+	--inst.components.talker:Say("Pthweep...") --Could be the random quotes here
+	if inst.relicLocation == 1 then
+		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.catcher.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 2 then
+		inst.relicChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.catcher.components.inventory:Equip(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 3 then
+		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.finalguard.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.finalguardChaliceSlot)
+	end
+	if inst.relicLocation == 4 then
+		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.catcher.components.inventory:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.catcherChaliceSlot)
+	end
+	if inst.relicLocation == 5 then
+		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.eESM.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.eESMChaliceSlot)
+	end
+	inst:DoTaskInTime(1, fishybehaviorfarewell)
+end
+
+local function fishybehaviorspitichor(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishlay")
+	inst.AnimState:PlayAnimation("dead", true)
+	splashFx(inst)
+	createIchorProjectile(inst, inst.catcher)
+	inst:DoTaskInTime(1, fishybehaviorfillchalice)
+end
+
 local function fishybehaviorinspect(inst)
 	
 	--Check for Chalice
-	getPlayerChalice(inst, "log", inst.catcher)
+	getPlayerChalice(inst, "skrelictroupplechalice", inst.catcher)
 	
 	--For While active Item
 	if inst.activeitemChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
 		splashFx(inst)
-		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
-		inst.catcher.components.inventory:SetActiveItem(SpawnPrefab("goldnugget"))
-		
+		inst.relicLocation = 1
+		inst:DoTaskInTime(3, fishybehaviorspitichor)
+	--For Troupple Chalice in Relic Slot
+	elseif inst.relicChalice ~= nil then
+		inst.components.talker:Say("You have an Empty Troupple Chalice!")
+		splashFx(inst)
+		inst.relicLocation = 2
+		inst:DoTaskInTime(3, fishybehaviorspitichor)
 	--For Final Guard
 	elseif inst.finalguardTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
 		splashFx(inst)
-		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
-		inst.finalguard.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.finalguardChaliceSlot)
-		--gounderwater(inst)
-		
+		inst.relicLocation = 3
+		inst:DoTaskInTime(3, fishybehaviorspitichor)
 	--For Main Inventory
 	elseif inst.catcherTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
 		splashFx(inst)
-		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
-		inst.catcher.components.inventory:GiveItem(SpawnPrefab("goldnugget"), inst.catcherChaliceSlot)
-		--gounderwater(inst)
-		
+		inst.relicLocation = 4
+		inst:DoTaskInTime(3, fishybehaviorspitichor)
 	--For Extra Equip Slots Mod
 	elseif
 		inst.eESMTrouppleChalice ~= nil then
 		inst.components.talker:Say("You have an Empty Troupple Chalice!")
 		splashFx(inst)
-		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
-		inst.eESM.components.container:GiveItem(SpawnPrefab("goldnugget"), inst.eESMChaliceSlot)
-		--gounderwater(inst)
-		
+		inst.relicLocation = 5
+		inst:DoTaskInTime(3, fishybehaviorspitichor)
 	--Says Farewell
 	else
 		inst.components.talker:Say("You seem to not have an Empty Troupple Chalice!")
@@ -121,14 +184,12 @@ local function fishybehaviorgreet(inst)
 	if inst.catcher.prefab ~= nil then --Stops the odd first load loop
 		inst.components.talker:Say("Greetings brave Shovel Knight.")
 		splashFx(inst)
-		--inst.SoundEmitter:PlaySound("dontstarve/common/wendy")
 		inst:DoTaskInTime(3, fishybehaviorinspect)
 	end
 end
 
 
 local function onfishedup(inst)
-	--Fish stuff
 	inst:DoTaskInTime(1, fishybehaviorgreet)
 end
 
@@ -142,19 +203,19 @@ local function fn()
 	
 	inst.Transform:SetFourFaced()
 	
-	if not TheWorld.ismastersim then
-        return inst
-    end
+
 	MakeInventoryPhysics(inst)
 	
 	anim:SetBank("fish")
     anim:SetBuild("skitemtroupplefish")
     anim:PlayAnimation("idle", true)
 	
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
 	inst.entity:SetPristine()
-	MakeHauntableLaunch(inst)
     
-	--inst.Transform:SetScale(4, 4, 4)
 	inst.Physics:SetActive(false)
 	inst.build = "skitemtroupplefish"
 	
@@ -170,6 +231,9 @@ local function fn()
 	inst.eESMTrouppleChalice = nil
 	inst.activeitem = ""
 	inst.activeitemChalice = nil
+	inst.relicChalice = nil
+	inst.relicLocation = nil
+	inst.ichorColor = "red" --Default
 	
 	inst:AddComponent("talker")
 	
@@ -184,6 +248,8 @@ local function fn()
 	
 	inst:DoTaskInTime(1, onfishedup)
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

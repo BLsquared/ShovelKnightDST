@@ -72,18 +72,18 @@ local function fn()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
-	if not TheWorld.ismastersim then
-        return inst
-    end
-	
-	inst.entity:SetPristine()
-	
     MakeInventoryPhysics(inst)
      
     anim:SetBank("skitemmanapotion")
     anim:SetBuild("skitemmanapotion")
     anim:PlayAnimation("idle")
 
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
+	inst.entity:SetPristine()
+	
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemmanapotion.xml"
 	inst.components.inventoryitem.imagename = "skitemmanapotion"

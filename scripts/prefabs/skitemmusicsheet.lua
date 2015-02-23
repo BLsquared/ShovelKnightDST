@@ -20,18 +20,17 @@ local function fn()
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
-	
-	if not TheWorld.ismastersim then
-        return inst
-    end
 	MakeInventoryPhysics(inst)
 	
 	anim:SetBank("skitemmusicsheet")
     anim:SetBuild("skitemmusicsheet")
     anim:PlayAnimation("fished")
 	
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
 	inst.entity:SetPristine()
-	MakeHauntableLaunch(inst)
     
 	inst.build = "skitemmusicsheet"
 	
@@ -54,6 +53,8 @@ local function fn()
 	inst:DoTaskInTime(0.7, stopkicking)
 	inst.OnLoad = stopkicking
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

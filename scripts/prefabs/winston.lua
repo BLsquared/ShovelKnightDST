@@ -46,7 +46,7 @@ local start_inv = {
 
 --11 Relics
 local relicList = {
-	"skrelicfishingrod", --"rocks", "log", "goldnugget", "livinglog", "turkeydinner",
+	"skrelicfishingrod", "skrelictroupplechalice", --"log", "goldnugget", "livinglog", "turkeydinner",
 	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
 }
 
@@ -249,7 +249,7 @@ local function onlongupdate(inst, dt)
 end
 
 local function startovercharge(inst, duration)
-	if duration == 10 then
+	if duration == 11 then
 		inst.trenchBladeDebuffTime = duration
 		--inst.components.talker:Say("Dig Cooldown Active")
 	elseif duration == 7 then
@@ -297,14 +297,15 @@ end
 
 local function onload(inst, data)
 	if data ~= nil and data.trenchBladeComboTime ~= nil then
-        startovercharge(inst, data.trenchBladeComboTime)
+        inst.trenchBladeComboTime = data.trenchBladeComboTime
     end
     if data ~= nil and data.trenchBladeDebuffTime ~= nil then
-        startovercharge(inst, data.trenchBladeDebuffTime)
+        inst.trenchBladeDebuffTime = data.trenchBladeDebuffTime
     end
 	if data ~= nil and data.relicDebuffTime ~= nil then
-        startovercharge(inst, data.relicDebuffTime)
+        inst.relicDebuffTime = data.relicDebuffTime
     end
+	startovercharge(inst, data.relicDebuffTime)
 end
 
 local function onsave(inst, data)
@@ -371,7 +372,7 @@ local function onworked(inst, data)
 						if inst.trenchBladeComboBuilder >= 5 then
 							inst.trenchBladeComboBuilder = 0
 							inst.trenchBladeComboTime = 0
-							startovercharge(inst, 10)	
+							startovercharge(inst, 11)	
 						end
 					end
 				end
@@ -443,17 +444,17 @@ end
 -- This initializes for the host only
 local master_postinit = function(inst)
 	--Personal Recipes
-	inst:AddTag("skitemtemplate_skbuilder")
-	inst:AddTag("skitemmealticket_skbuilder")
-	inst:AddTag("skitemmanapotion_skbuilder")
-	inst:AddTag("skweaponshovelbladechargehandle_skbuilder")
-	inst:AddTag("skweaponshovelbladetrenchblade_skbuilder")
-	inst:AddTag("skweaponshovelbladedropspark_skbuilder")
-	inst:AddTag("skarmorfinalguard_skbuilder")
-	inst:AddTag("skarmorconjurerscoat_skbuilder")
-	inst:AddTag("skarmordynamomail_skbuilder")
-	inst:AddTag("skarmormailofmomentum_skbuilder")
-	inst:AddTag("skarmorornateplate_skbuilder")
+	inst:AddTag("skitemtemplate_builder")
+	inst:AddTag("skitemmealticket_builder")
+	inst:AddTag("skitemmanapotion_builder")
+	inst:AddTag("skweaponshovelbladechargehandle_builder")
+	inst:AddTag("skweaponshovelbladetrenchblade_builder")
+	inst:AddTag("skweaponshovelbladedropspark_builder")
+	inst:AddTag("skarmorfinalguard_builder")
+	inst:AddTag("skarmorconjurerscoat_builder")
+	inst:AddTag("skarmordynamomail_builder")
+	inst:AddTag("skarmormailofmomentum_builder")
+	inst:AddTag("skarmorornateplate_builder")
 	
 	--Personal Reading
 	inst:AddComponent("reader")
@@ -492,6 +493,9 @@ local master_postinit = function(inst)
 	--Relic timer
 	inst.relicDebuffTime = 0
 	
+	--Troupple Chalice Buffs
+	inst.trouppleChaliceBuff = nil
+	
 	inst.OnLongUpdate = onlongupdate
 	inst.OnSave = onsave
 	inst.OnLoad = onload
@@ -528,7 +532,7 @@ local master_postinit = function(inst)
 		if item.components.equippable.equipslot == EQUIPSLOTS.BODY then
 			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
-				
+					
 					--To restore Equippable for all armors
 					local itemE = self.equipslots[EQUIPSLOTS.BODY]
 					if itemE ~= nil then
@@ -611,7 +615,8 @@ local master_postinit = function(inst)
 		
 		--Stops Hats from being equipped -Disabled till Relics come into play
 		if item.components.equippable.equipslot == EQUIPSLOTS.HEAD then
-			if item.prefab == "skrelicfishingrod" then
+			if item.prefab == "skrelicfishingrod" or item.prefab == "skrelictroupplechalice"
+				or item.prefab == "skrelictroupplechalicered" or item.prefab == "skrelictroupplechaliceblue" or item.prefab == "skrelictroupplechaliceyellow" then
 				
 				return old_Equip(self, item, old_to_active)
 			else

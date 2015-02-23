@@ -86,13 +86,6 @@ local function fn(Sim)
 	inst.entity:AddNetwork()
     local sound = inst.entity:AddSoundEmitter()
 	
-	if not TheWorld.ismastersim then
-        return inst
-    end
-	
-	inst.entity:SetPristine()
-    MakeHauntableLaunch(inst)
-	
 	inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
 	
     MakeInventoryPhysics(inst)
@@ -103,6 +96,12 @@ local function fn(Sim)
     anim:SetBuild("skweaponshovelbladebasic")
     anim:PlayAnimation("idle", true)
 
+	if not TheWorld.ismastersim then
+        return inst
+    end
+	
+	inst.entity:SetPristine()
+	
     --Makes this a Tool with actions
     inst:AddComponent("tool")
     inst.components.tool:SetAction(ACTIONS.DIG)
@@ -131,6 +130,8 @@ local function fn(Sim)
 	inst:AddComponent("characterspecific")
     inst.components.characterspecific:SetOwner("winston")
 	
+	MakeHauntableLaunch(inst)
+		
     return inst
 end
 

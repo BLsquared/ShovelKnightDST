@@ -6,8 +6,9 @@ PrefabFiles = {
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
+	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
-	"skrelicfishingrod",
+	"skfxtroupplechalice_red", "skfxtroupplechalice_blue", "skfxtroupplechalice_yellow", "skfxichor_red", "skfxichor_blue", "skfxichor_yellow",
 }
 
 Assets = {
@@ -58,41 +59,46 @@ RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winst
 local RELICKEY = GetModConfigData("RELICKEY")--Relic Toggle Key
 --local controls = nil
 local keydown = false
-
 local require = GLOBAL.require
+local unpack = GLOBAL.unpack
 local STRINGS = GLOBAL.STRINGS
 
--- Item Recipes -Untill this is fixed
---local OldIsRecipeValid = GLOBAL.IsRecipeValid
---local function IsSkRecipeValid(recipe)
-	--return OldIsRecipeValid(recipe) and
-		--(GLOBAL.ThePlayer  or not recipe.tagneeded)
-		--((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_skbuilder")) or not recipe.tagneeded)
---end
---GLOBAL.IsRecipeValid = IsSkRecipeValid
-
+--New Recipe System
+if not GLOBAL.TheNet:IsDedicated() then
+    local OldIsRecipeValid = GLOBAL.IsRecipeValid
+   local function IsRecipeValid(recipe)
+        return OldIsRecipeValid(recipe) and
+            ((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_builder")) or not recipe.tagneeded)
+    end
+    GLOBAL.IsRecipeValid = IsRecipeValid
+end
+ 
 local Recipe = GLOBAL.Recipe
-local RECIPETABS = GLOBAL.RECIPETABS
 local Ingredient = GLOBAL.Ingredient
+local RECIPETABS = GLOBAL.RECIPETABS
 local TECH = GLOBAL.TECH
 
+--Dedicated server Recipes
 local recipes = 
 {
-	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
-	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, TECH.SCIENCE_TWO),
-	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
-	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, TECH.MAGIC_TWO),
-	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, TECH.MAGIC_THREE),
-	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
-	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
-	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, TECH.MAGIC_TWO),
-	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, TECH.MAGIC_THREE),
-	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, TECH.SCIENCE_TWO),
+	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
 }
 
+local sortkey = -110000
 for k,v in pairs(recipes) do
-    --v.tagneeded = true
-    v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
+    sortkey = sortkey - 1
+    v.sortkey = sortkey
+    v.tagneeded = true
+	v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
 end
 
 -- The character select screen lines
@@ -175,7 +181,8 @@ local function ShowCastRelic()
 	if GLOBAL.ThePlayer.prefab == "winston" then
 		if GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD] ~= nil then
 			local relicItem = GLOBAL.ThePlayer.components.inventory.equipslots[GLOBAL.EQUIPSLOTS.HEAD]
-			if relicItem.prefab == "skrelicfishingrod" then
+			if relicItem.prefab == "skrelicfishingrod" or relicItem.prefab == "skrelictroupplechalice"
+				or relicItem.prefab == "skrelictroupplechalicered" or relicItem.prefab == "skrelictroupplechaliceblue" or relicItem.prefab == "skrelictroupplechaliceyellow" then
 				relicItem.components.useableitem:StartUsingItem()
 			end
 		end
