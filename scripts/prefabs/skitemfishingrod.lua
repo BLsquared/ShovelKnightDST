@@ -95,11 +95,11 @@ local function onfishcatch(inst)
 			inst.fishLootFinal = fishRareLootGen
 		end
 		
-	--elseif math.random() <= inst.fishVeryRareLootChance then
-		--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
-		--inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-		--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
-		--inst.fishLootFinal = fishVeryRareLootGen
+	elseif math.random() <= inst.fishVeryRareLootChance then
+		local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+		inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+		inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
+		inst.fishLootFinal = fishVeryRareLootGen
 	end
 end
 

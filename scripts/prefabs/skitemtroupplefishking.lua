@@ -70,10 +70,10 @@ local function fn()
 	inst:AddTag("largecreature")
 	
 	anim:SetBank("fish")
-    anim:SetBuild("skitemtroupplefishking")
-    anim:PlayAnimation("idle", true)
-	--anim:SetBuild("skitemtroupplefishkinglay")
-    --anim:PlayAnimation("dead", true)
+    --anim:SetBuild("skitemtroupplefishking")
+    --anim:PlayAnimation("idle", true)
+	anim:SetBuild("skitemtroupplefishkinglay")
+    anim:PlayAnimation("dead", true)
 	
 	if not TheWorld.ismastersim then
         return inst
