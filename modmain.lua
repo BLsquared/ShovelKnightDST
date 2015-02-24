@@ -1,5 +1,3 @@
---GLOBAL.require("widgets/widgetutil") --Needed with Old Recipe system
-
 PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
@@ -57,16 +55,6 @@ RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winst
 local require = GLOBAL.require
 local unpack = GLOBAL.unpack
 local STRINGS = GLOBAL.STRINGS
-
---Old Recipe System, Keeping just in case
---if not GLOBAL.TheNet:IsDedicated() then
-    --local OldIsRecipeValid = GLOBAL.IsRecipeValid
-	--local function IsRecipeValid(recipe)
-        --return OldIsRecipeValid(recipe) and
-            --((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_builder")) or not recipe.builder_tag)
-    --end
-   -- GLOBAL.IsRecipeValid = IsRecipeValid
---end
  
 local Recipe = GLOBAL.Recipe
 local Ingredient = GLOBAL.Ingredient
