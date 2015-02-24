@@ -133,7 +133,7 @@ local function fishybehaviorspitichor(inst)
 	inst.AnimState:PlayAnimation("dead", true)
 	splashFx(inst)
 	createIchorProjectile(inst, inst.catcher)
-	inst:DoTaskInTime(1, fishybehaviorfillchalice)
+	inst:DoTaskInTime(0.5, fishybehaviorfillchalice)
 end
 
 local function fishybehaviorinspect(inst)
@@ -203,7 +203,6 @@ local function fn()
 	
 	inst.Transform:SetFourFaced()
 	
-
 	MakeInventoryPhysics(inst)
 	
 	anim:SetBank("fish")

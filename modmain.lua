@@ -55,16 +55,6 @@ RemapSoundEvent( "dontstarve/characters/winston/jump", "winston/characters/winst
 local require = GLOBAL.require
 local unpack = GLOBAL.unpack
 local STRINGS = GLOBAL.STRINGS
-
---New Recipe System
-if not GLOBAL.TheNet:IsDedicated() then
-    local OldIsRecipeValid = GLOBAL.IsRecipeValid
-   local function IsRecipeValid(recipe)
-        return OldIsRecipeValid(recipe) and
-            ((GLOBAL.ThePlayer and GLOBAL.ThePlayer:HasTag(recipe.name.."_builder")) or not recipe.tagneeded)
-    end
-    GLOBAL.IsRecipeValid = IsRecipeValid
-end
  
 local Recipe = GLOBAL.Recipe
 local Ingredient = GLOBAL.Ingredient
@@ -74,23 +64,23 @@ local TECH = GLOBAL.TECH
 --Dedicated server Recipes
 local recipes = 
 {
-	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
-	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil, true),
+	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skitemmanapotion", {Ingredient("blue_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skitemmealticket", {Ingredient("red_cap", 2), Ingredient("plantmeat", 1), Ingredient("goldnugget", 5)}, RECIPETABS.SURVIVAL, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
 }
 
 local sortkey = -110000
 for k,v in pairs(recipes) do
     sortkey = sortkey - 1
     v.sortkey = sortkey
-    v.tagneeded = true
+    v.builder_tag = v.name.."_builder"
 	v.atlas = "images/inventoryimages/" .. v.name .. ".xml"
 end
 
@@ -117,7 +107,6 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.WINSTON =
 }
 
 --Needed Item Strings
-STRINGS.RECIPE_DESC.SKITEMTEMPLATE = "A skitemtemplate."
 STRINGS.RECIPE_DESC.SKITEMMEALTICKET = "Gastronomer's home cooking!"
 STRINGS.RECIPE_DESC.SKITEMMANAPOTION = "Magicist's bubbling brew!"
 STRINGS.RECIPE_DESC.SKWEAPONSHOVELBLADECHARGEHANDLE = "Shovelblade Upgrade: Charge Handle"
@@ -128,9 +117,6 @@ STRINGS.RECIPE_DESC.SKARMORCONJURERSCOAT = "Harvest sanity from defeated foes!"
 STRINGS.RECIPE_DESC.SKARMORDYNAMOMAIL = "Increase Shovelblade Upgrade powers!"
 STRINGS.RECIPE_DESC.SKARMORMAILOFMOMENTUM = "Heavily plated, Can't be slowed!"
 STRINGS.RECIPE_DESC.SKARMORORNATEPLATE = "Flashy! Acrobatic! Useless!"
-
--- Let the game know character is male, female, or robot
-table.insert(GLOBAL.CHARACTER_GENDERS.MALE, "winston")  
 
 local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 	GLOBAL.ACTIONS.PICKUP.fn = function(act)
@@ -189,6 +175,8 @@ SKUSERELIC.fn = function(act)
 end
 AddAction(SKUSERELIC) 
 
+-- Let the game know character is male, female, or robot
+table.insert(GLOBAL.CHARACTER_GENDERS.MALE, "winston")
 
 AddMinimapAtlas("images/map_icons/winston.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladebasic.xml")
@@ -197,5 +185,5 @@ AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
 AddMinimapAtlas("images/map_icons/skarmorstalwartplate.xml")
 
-AddModCharacter("winston")
+AddModCharacter("winston", "MALE")
 

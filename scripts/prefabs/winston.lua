@@ -65,7 +65,7 @@ local relicList = {
 
 --Random vaulable loot list
 local lootList = {
-	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget",
+	"redgem", "bluegem", "orangegem", "yellowgem", "greengem", "purplegem", "goldnugget", "gears",
 }
 
 --Finds a relic to make

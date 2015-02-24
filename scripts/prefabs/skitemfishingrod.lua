@@ -48,14 +48,37 @@ local function onfishholster(inst)
 	inst:Remove()
 end
 
+local function trouppleKingShake(inst, pond)
+    for i, v in ipairs(AllPlayers) do
+        v:ShakeCamera(CAMERASHAKE.SIDE, 3, .05, .1, pond, 40)
+    end
+end
+
+local function randomSplashFx(inst)
+	local fx = SpawnPrefab("splash")
+    local pos = inst.components.fishingrod.target:GetPosition()
+	
+	local a = math.random()*math.pi*2
+	local x = math.sin(a)*1.4+math.random()*0.3
+	local z = math.cos(a)*1.6+math.random()*0.3
+	
+	fx.Transform:SetPosition(pos.x + x, pos.y + 0, pos.z + z)
+	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+end
+
+local function splashFx(inst)
+	local fx = SpawnPrefab("splash")
+    local pos = inst.components.fishingrod.target:GetPosition()
+
+	fx.Transform:SetPosition(pos.x, pos.y, pos.z)
+	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+end
+
 local function onfishcatch(inst)
 	local owner = inst.components.inventoryitem.owner
 	
 	--Adds a neat splash effect
-	local fx = SpawnPrefab("splash")
-    local pos = inst.components.fishingrod.target:GetPosition()
-    fx.Transform:SetPosition(pos.x, pos.y, pos.z)
-	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
+	splashFx(inst)
 	
 	if math.random() <= inst.fishLootChance then
 		local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
@@ -74,26 +97,16 @@ local function onfishcatch(inst)
 		
 	--elseif math.random() <= inst.fishVeryRareLootChance then
 		--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+		--inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
 		--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
 		--inst.fishLootFinal = fishVeryRareLootGen
-			
-		--Do special effects
-		--owner:ShakeCamera(CAMERASHAKE.SIDE, 4, .05, .1, inst, 40)
-			
-		--local fx2 = SpawnPrefab("splash")
-		--local pos2 = inst.components.fishingrod.target:GetPosition()
-		--fx2.Transform:SetPosition(pos2.x + 2, pos2.y + 2, pos2.z + 2)
-		--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
-	
-		--local fx3 = SpawnPrefab("splash")
-		--local pos3 = inst.components.fishingrod.target:GetPosition()
-		--fx3.Transform:SetPosition(pos3.x - 2, pos3.y - 2, pos3.z - 2)
-		--inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 	end
 end
 
 local function onfished(inst)
 	local owner = inst.components.inventoryitem.owner
+	
+	--Special Loot Creator
 	if inst.fishLootFinal ~= nil then
 		inst.components.fishingrod.caughtfish:Remove()
 		
@@ -107,6 +120,28 @@ local function onfished(inst)
 				local posSpawn = inst.components.fishingrod.target:GetPosition()
 				troupplefish.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
 				rotatetotarget(troupplefish, owner)
+				
+				inst.fishLootFinal = nil
+			end
+		
+		--Checks for Troupple fish King Event
+		elseif inst.fishLootFinal == "skitemtroupplefishking" then
+			local troupplefishking = SpawnPrefab("skitemtroupplefishking")
+			troupplefishking.catcher = inst.components.fishingrod.fisherman
+			
+			if troupplefishking ~= nil then
+				--Works but not the best, Would have to create an Entity + animations for better.
+				local posSpawn = inst.components.fishingrod.target:GetPosition()
+				troupplefishking.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
+				rotatetotarget(troupplefishking, owner)
+				troupplefishking.entity:Hide()
+				
+				--Shake Screen
+				trouppleKingShake(inst, inst.components.fishingrod.target)
+				
+				--if ThePlayer ~= nil then
+					--ThePlayer:ShakeCamera(CAMERASHAKE.FULL, .7, .02, .5, proxy, 40)
+				--end
 				
 				inst.fishLootFinal = nil
 			end
@@ -156,9 +191,9 @@ local function fn()
 	inst.entity:SetPristine()
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.4 --40% chance
+	inst.fishLootChance = 0.1 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
-	inst.fishVeryRareLootChance = 0.01 --1% chance
+	inst.fishVeryRareLootChance = 0.99 --1% chance
 	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil
