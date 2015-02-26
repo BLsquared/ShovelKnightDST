@@ -41,7 +41,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", --"turkeydinner", "skrelicfishingrod",
+	"skweaponshovelbladebasic", "cane", "skrelicfishingrod", "skarmorornateplate",
 }
 
 local function OnRelicKeyPressed(inst, data)
@@ -280,6 +280,18 @@ local function startovercharge(inst, duration)
     end
 end
 
+local function onrespawned(inst)
+	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
+		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+		--Special Gold Glow
+		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY].prefab == "skarmorornateplate" then
+			inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+		end
+	end
+end
+
 local function onpreload(inst, data)
     if data ~= nil then
 		if data.level ~= nil then
@@ -318,6 +330,7 @@ local function onload(inst, data)
 	if data ~= nil and data.relicDebuffTime ~= nil then
         inst.relicDebuffTime = data.relicDebuffTime
     end
+	onrespawned(inst)
 	startovercharge(inst, data.relicDebuffTime)
 end
 
@@ -402,18 +415,6 @@ local function onattack(inst, data, weapon, pro)
 				createDropSparkProjectile(inst, data.target, equipped)
 				startovercharge(inst, 9)
 			end
-		end
-	end
-end
-
-local function onrespawned(inst)
-	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
-		inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
-		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
-		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
-		--Special Gold Glow
-		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY].prefab == "skarmorornateplate" then
-			inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 		end
 	end
 end

@@ -77,29 +77,31 @@ end
 local function onfishcatch(inst)
 	local owner = inst.components.inventoryitem.owner
 	
-	--Adds a neat splash effect
-	splashFx(inst)
-	
-	if math.random() <= inst.fishLootChance then
-		local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
-		if fishLootGen ~= nil then
-			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-			inst.components.fishingrod.caughtfish = SpawnPrefab(fishLootGen)
-			inst.fishLootFinal = fishLootGen
-		end
-	elseif math.random() <= inst.fishRareLootChance then
-		local fishRareLootGen = randomFishRareLootGen() --Finds a rare random fishLoot
-		if fishRareLootGen ~= nil then
-			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-			inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
-			inst.fishLootFinal = fishRareLootGen
-		end
+	if inst.components.fishingrod.target.prefab ~= "sktiletroupplepond" then
+		--Adds a neat splash effect
+		splashFx(inst)
 		
-	elseif math.random() <= inst.fishVeryRareLootChance then
-		local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
-		inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-		inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
-		inst.fishLootFinal = fishVeryRareLootGen
+		if math.random() <= inst.fishLootChance then
+			local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
+			if fishLootGen ~= nil then
+				inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+				inst.components.fishingrod.caughtfish = SpawnPrefab(fishLootGen)
+				inst.fishLootFinal = fishLootGen
+			end
+		elseif math.random() <= inst.fishRareLootChance then
+			local fishRareLootGen = randomFishRareLootGen() --Finds a rare random fishLoot
+			if fishRareLootGen ~= nil then
+				inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+				inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
+				inst.fishLootFinal = fishRareLootGen
+			end
+			
+		elseif math.random() <= inst.fishVeryRareLootChance then
+			local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+			inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
+			inst.fishLootFinal = fishVeryRareLootGen
+		end
 	end
 end
 
@@ -119,7 +121,12 @@ local function onfished(inst)
 				--Works but not the best, Would have to create an Entity + animations for better.
 				local posSpawn = inst.components.fishingrod.target:GetPosition()
 				troupplefish.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
+				
+				--local dest = Vector3(inst.components.fishingrod.fisherman.Transform:GetWorldPosition() )
 				rotatetotarget(troupplefish, owner)
+				--troupplefish.Transform:SetRotation(180)
+				--rotatetotarget(dest, troupplefish)
+				
 				
 				inst.fishLootFinal = nil
 			end
@@ -133,7 +140,8 @@ local function onfished(inst)
 				--Works but not the best, Would have to create an Entity + animations for better.
 				local posSpawn = inst.components.fishingrod.target:GetPosition()
 				troupplefishking.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
-				rotatetotarget(troupplefishking, owner)
+				
+				--rotatetotarget(troupplefishking, owner)
 				troupplefishking.entity:Hide()
 				
 				--Shake Screen
@@ -161,6 +169,7 @@ local function onfished(inst)
     inst.components.inventoryitem:RemoveFromOwner(true)
 end
 
+--Old Hackish
 function rotatetotarget(troupplefish, dest)
 	local current = Vector3(dest.Transform:GetWorldPosition() )
 	local wanttogo = Vector3(troupplefish.Transform:GetWorldPosition() )
@@ -168,6 +177,15 @@ function rotatetotarget(troupplefish, dest)
     local angle = math.acos(direction:Dot(Vector3(1, 0, 0) ) ) / DEGREES
     troupplefish.Transform:SetRotation(angle)
 end
+
+--Working on
+--function rotatetotarget(dest, troupplefish)
+    --local current = Vector3(troupplefish.Transform:GetWorldPosition() )
+    --local direction = (dest - current):GetNormalized()
+    --local angle = math.acos(direction:Dot(Vector3(1, 0, 0) ) ) / DEGREES
+    --troupplefish.Transform:SetRotation(angle)
+    --troupplefish:FacePoint(dest)
+--end
 
 local function fn()
 
@@ -191,7 +209,7 @@ local function fn()
 	inst.entity:SetPristine()
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.1 --40% chance
+	inst.fishLootChance = 0.99 --40% chance
 	inst.fishRareLootChance = 0.1 --10% chance
 	inst.fishVeryRareLootChance = 0.99 --1% chance
 	inst.fishLootFinal = nil
