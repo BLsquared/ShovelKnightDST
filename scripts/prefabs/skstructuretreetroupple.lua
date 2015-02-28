@@ -79,6 +79,32 @@ local function createTrouppleLoot(lootPrefab, target)
 	end
 end
 
+local function OnSnowLevel(inst, snowlevel, thresh)
+	thresh = thresh or .02
+	
+	if inst.snowTresh ~= nil and inst.snowThresh > snowlevel then
+		snowlevel = inst.snowThresh
+		inst.snowThresh = nil
+	end
+	
+	if snowlevel > thresh and not inst.frozen then
+		inst.frozen = true
+		inst.AnimState:PlayAnimation("sway_agro_pre") --4 legged
+		inst.AnimState:PlayAnimation("idle_loop_agro") --4 legged
+		inst.AnimState:ClearOverrideSymbol("swap_leaves")
+		inst.AnimState:OverrideSymbol("swap_leaves", "", "swap_leaves") --Top color
+		inst.SoundEmitter:PlaySound("dontstarve/forest/treeWilt")
+
+	elseif snowlevel < thresh and inst.frozen then
+		inst.frozen = false
+		inst.AnimState:PlayAnimation("sway_agro_pst") --4 legged
+		inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
+		inst.AnimState:ClearOverrideSymbol("swap_leaves")
+		inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleaf", "swap_leaves") --Top color
+		inst.SoundEmitter:PlaySound("dontstarve/forest/treeGrow")
+	end
+end
+
 local function SpawnLeafFX(inst, waittime, chop)
     if waittime then
         inst:DoTaskInTime(waittime, function(inst, chop) SpawnLeafFX(inst, nil, chop) end)
@@ -96,7 +122,6 @@ local function SpawnLeafFX(inst, waittime, chop)
 end
 
 local function chop_tree(inst, chopper, chops)
-    
     if not chopper or (chopper and not chopper:HasTag("playerghost")) then
         if chopper and chopper.components.beaverness and chopper.components.beaverness:IsBeaver() then
     		inst.SoundEmitter:PlaySound("dontstarve/characters/woodie/beaver_chop_tree")
@@ -141,10 +166,11 @@ local function chop_tree(inst, chopper, chops)
     end
 	
 	SpawnLeafFX(inst, nil, true)
-
     inst.AnimState:PlayAnimation("sway_loop_agro")
-    inst.AnimState:PushAnimation("idle_loop_agro", true)
-    
+	if inst.frozen == false then
+		inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
+	end
+
 	---tell any nearby leifs to wake up
 	--local ents = TheSim:FindEntities(x, y, z, TUNING.LEIF_REAWAKEN_RADIUS, {"leif"})
 	--for k,v in pairs(ents) do
@@ -156,8 +182,31 @@ local function chop_tree(inst, chopper, chops)
 end
 
 local function chop_down_tree(inst, chopper)
+	inst.orbHolder.orb = 0
+	inst:RemoveComponent("workable")
+	inst.AnimState:ClearOverrideSymbol("eye")
     --inst.SoundEmitter:PlaySound("dontstarve/forest/treefall") --drop glow sound
 	createTrouppleLoot("goldnugget", inst)
+end
+
+local function hasOrb(inst)
+	if inst.orbHolder.orb == 1 then
+		inst:AddComponent("workable")
+		inst.components.workable:SetWorkAction(ACTIONS.CHOP)
+		inst.components.workable:SetOnWorkCallback(chop_tree)
+		inst.components.workable:SetOnFinishCallback(chop_down_tree)
+		inst.AnimState:OverrideSymbol("eye", "skstructuretreetroupplefeature", "eye") --Orb thing
+	else
+		inst:RemoveComponent("workable")
+		inst.AnimState:ClearOverrideSymbol("eye")
+	end
+end
+
+local function onload(inst, data, newents)
+	if inst.orbHolder.prefab ~= nil then
+		hasOrb(inst)
+	end
+	OnSnowLevel(inst, TheWorld.state.snowlevel)
 end
 
 local function fn()
@@ -180,15 +229,16 @@ local function fn()
 	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleaf", "swap_leaves") --Top color
 	inst.AnimState:OverrideSymbol("legs", "skstructuretreetroupplefeature", "legs") --Legs
     inst.AnimState:OverrideSymbol("legs_mouseover", "skstructuretreetroupplefeature", "legs_mouseover") --Legs
-	--inst.AnimState:OverrideSymbol("eye", "skstructuretreetroupplefeature", "eye") --Crown, Could be an Orb thing
-	
-	MakeSnowCoveredPristine(inst)
 	
 	if not TheWorld.ismastersim then
 		return inst
 	end
 
 	inst.entity:SetPristine()
+	
+	inst.orbHolder = ""
+	inst.frozen = false
+	inst.snowThresh = nil
 	
 	--MakeFx("green_leaves_chop", "tree_leaf_fx", "tree_leaf_fx_green","chop", nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	
@@ -199,22 +249,21 @@ local function fn()
 	
 	inst:AddComponent("inspectable")
 
-	inst:AddComponent("workable")
-    inst.components.workable:SetWorkAction(ACTIONS.CHOP)
-    inst.components.workable:SetOnWorkCallback(chop_tree)
-	inst.components.workable:SetOnFinishCallback(chop_down_tree)
-
 	inst.AnimState:SetTime(math.random()*2)
-        
-	MakeSnowCovered(inst)
 
+	inst:WatchWorldState("snowlevel", OnSnowLevel)
+	inst.OnLoad = onload
+	
+	inst:ListenForEvent("growOrb", hasOrb)
+	
+	inst:DoTaskInTime(0.2, onload)
+	
 	return inst
 end  
 
-
 STRINGS.NAMES.SKSTRUCTURETREETROUPPLE = "Great Troupple Tree"
-STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKSTRUCTURETREETROUPPLE = "Where Troupple fish are created!"
-STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKSTRUCTURETREETROUPPLE = "What an large tree... is that fish?!"
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKSTRUCTURETREETROUPPLE = "Where Troupple fish grow from."
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKSTRUCTURETREETROUPPLE = "What an large tree... are those fish or apples?!"
 
    --{
 	    --name = "green_leaves_chop", 

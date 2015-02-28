@@ -12,6 +12,27 @@ local prefabs =
 	"eel",
 }
 
+local function onpreload(inst, data)
+    if data ~= nil then
+        if data.orb ~= nil then
+			inst.orb = data.orb
+		end
+    end
+end
+
+local function onsave(inst, data)
+	data.orb = inst.orb >= 0 and inst.orb or nil
+end
+
+local function OnIsDay(inst, isday)
+    if not TheWorld.state.iswinter and inst.orb == 0 then
+        inst.orb = 1
+		if inst.orbKeeper.prefab ~= nil then
+			inst.orbKeeper:PushEvent("growOrb")
+		end
+    end
+end
+
 local function OnSnowLevel(inst, snowlevel, thresh)
 	thresh = thresh or .02
 	
@@ -41,11 +62,15 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 end
 
 local function onload(inst, data, newents)
+	OnIsDay(inst, TheWorld.state.isday)
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
 end
 
 --Creates the Border around the Troupple Pond
 local function spawnBorder(inst)
+	--Grow Orb
+	OnIsDay(inst, TheWorld.state.isday)
+	
 	--Make Border
 	local border = SpawnPrefab("sktiletroupplepondborder")
 	local posSpawn = inst:GetPosition()
@@ -56,6 +81,9 @@ local function spawnBorder(inst)
 	local tree = SpawnPrefab("skstructuretreetroupple")
 	local posSpawn2 = inst:GetPosition()
 	tree.Transform:SetPosition(posSpawn2.x - 3.5, posSpawn2.y, posSpawn2.z + 1.7)
+	inst.orbKeeper = tree
+	tree.orbHolder = inst
+	tree.snowThresh = inst.snowThresh
 	
 	--Make Sign
 	local sign = SpawnPrefab("skstructuresigntroupple")
@@ -93,6 +121,11 @@ local function fn()
     inst.entity:SetPristine()
 
 	inst.Physics:SetActive(false)
+	
+	--Orb Stuff
+	inst.orb = 0
+	inst.orbKeeper = ""
+	
 	inst.frozen = false
 	inst.snowThresh = nil
 	
@@ -107,10 +140,13 @@ local function fn()
 	inst.components.fishable:AddFish("fish")
 	inst.components.fishable:AddFish("eel")
 	
+	inst:WatchWorldState("isday", OnIsDay)
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
 	
+	inst.OnSave = onsave
 	inst.OnLoad = onload
-
+	inst.OnPreLoad = onpreload
+	
 	inst:DoTaskInTime(0.2, spawnBorder)
 	
 	return inst

@@ -111,11 +111,11 @@ local function fn()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
-	inst.Transform:SetScale(2.2, 2.2, 2.2) --2
+	inst.Transform:SetScale(2.2, 2.2, 2.2)
 	inst.Transform:SetRotation(180)
 	
     MakeObstaclePhysics(inst, 17.1) --1.95 --17.1
-
+	
     inst.AnimState:SetBuild("sktiletroupplepondborder")
     inst.AnimState:SetBank("marsh_tile")
     inst.AnimState:PlayAnimation("idle_mos", true)
