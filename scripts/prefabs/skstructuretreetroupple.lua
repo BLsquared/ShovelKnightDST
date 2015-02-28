@@ -185,6 +185,10 @@ local function chop_down_tree(inst, chopper)
 	inst.orbHolder.orb = 0
 	inst:RemoveComponent("workable")
 	inst.AnimState:ClearOverrideSymbol("eye")
+	if inst.orbGlow ~= nil then
+		inst.orbGlow:Remove()
+		inst.orbGlow = nil
+	end
     --inst.SoundEmitter:PlaySound("dontstarve/forest/treefall") --drop glow sound
 	createTrouppleLoot("goldnugget", inst)
 end
@@ -196,9 +200,18 @@ local function hasOrb(inst)
 		inst.components.workable:SetOnWorkCallback(chop_tree)
 		inst.components.workable:SetOnFinishCallback(chop_down_tree)
 		inst.AnimState:OverrideSymbol("eye", "skstructuretreetroupplefeature", "eye") --Orb thing
+		if inst.orbGlow == nil then
+			inst.orbGlow = SpawnPrefab("skfxtrouppletree_orbglow")
+			local follower = inst.orbGlow.entity:AddFollower()
+			follower:FollowSymbol(inst.GUID, "eye", 0, 0, 0)
+		end
 	else
 		inst:RemoveComponent("workable")
 		inst.AnimState:ClearOverrideSymbol("eye")
+		if inst.orbGlow ~= nil then
+			inst.orbGlow:Remove()
+			inst.orbGlow = nil
+		end
 	end
 end
 
@@ -237,6 +250,7 @@ local function fn()
 	inst.entity:SetPristine()
 	
 	inst.orbHolder = ""
+	inst.orbGlow = nil
 	inst.frozen = false
 	inst.snowThresh = nil
 	
