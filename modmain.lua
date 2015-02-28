@@ -1,6 +1,6 @@
 PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
-	"skstructuresigntroupple",
+	"skstructuresigntroupple", "skstructuretreetroupple",
 	"sktiletroupplepond", "sktiletroupplepondborder", 
 	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
@@ -46,6 +46,11 @@ Assets = {
 	
 	Asset( "IMAGE", "images/map_icons/skarmorstalwartplate.tex" ),
 	Asset( "ATLAS", "images/map_icons/skarmorstalwartplate.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/sktiletroupplepond.tex" ),
+	Asset( "ATLAS", "images/map_icons/sktiletroupplepond.xml" ),
+	Asset( "IMAGE", "images/map_icons/sktiletroupplepondfrozen.tex" ),
+	Asset( "ATLAS", "images/map_icons/sktiletroupplepondfrozen.xml" ),
 }
 
 RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
@@ -186,6 +191,8 @@ AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
 AddMinimapAtlas("images/map_icons/skarmorstalwartplate.xml")
+AddMinimapAtlas("images/map_icons/sktiletroupplepond.xml")
+AddMinimapAtlas("images/map_icons/sktiletroupplepondfrozen.xml")
 
 AddModCharacter("winston", "MALE")
 

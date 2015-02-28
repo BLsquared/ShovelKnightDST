@@ -77,7 +77,12 @@ end
 local function onfishcatch(inst)
 	local owner = inst.components.inventoryitem.owner
 	
-	if inst.components.fishingrod.target.prefab ~= "sktiletroupplepond" then
+	--Troupple Pond
+	if inst.components.fishingrod.target.prefab == "sktiletroupplepond" then
+	
+	
+	--Other Fishing Source
+	else
 		--Adds a neat splash effect
 		splashFx(inst)
 		
@@ -96,11 +101,11 @@ local function onfishcatch(inst)
 				inst.fishLootFinal = fishRareLootGen
 			end
 			
-		elseif math.random() <= inst.fishVeryRareLootChance then
-			local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
-			inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-			inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
-			inst.fishLootFinal = fishVeryRareLootGen
+		--elseif math.random() <= inst.fishVeryRareLootChance then
+			--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
+			--inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+			--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
+			--inst.fishLootFinal = fishVeryRareLootGen
 		end
 	end
 end
@@ -146,10 +151,6 @@ local function onfished(inst)
 				
 				--Shake Screen
 				trouppleKingShake(inst, inst.components.fishingrod.target)
-				
-				--if ThePlayer ~= nil then
-					--ThePlayer:ShakeCamera(CAMERASHAKE.FULL, .7, .02, .5, proxy, 40)
-				--end
 				
 				inst.fishLootFinal = nil
 			end

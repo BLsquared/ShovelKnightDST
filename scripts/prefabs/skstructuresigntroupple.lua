@@ -1,9 +1,6 @@
 local assets =
 {
 	Asset("ANIM", "anim/skstructuresign.zip"),
-	
-	Asset("ATLAS", "images/map_icons/skweaponshovelbladebasic.xml"),
-	Asset("IMAGE", "images/map_icons/skweaponshovelbladebasic.tex"),
 }
     
 local function fn()
@@ -16,8 +13,6 @@ local function fn()
     inst.entity:AddNetwork()
 
     MakeObstaclePhysics(inst, 1)
-
-    --inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
     
     inst.AnimState:SetBank("sign_home")
     inst.AnimState:SetBuild("skstructuresign")
@@ -41,7 +36,7 @@ local function fn()
 end
 
 STRINGS.NAMES.SKSTRUCTURESIGNTROUPPLE = "Old Sign"
-STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKSTRUCTURESIGNTROUPPLE = "Troupple Pond"
-STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKSTRUCTURESIGNTROUPPLE = "Troupple Pond"
+STRINGS.CHARACTERS.WINSTON.DESCRIBE.SKSTRUCTURESIGNTROUPPLE = "Troupple Pond: No Fishing Allowed"
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.SKSTRUCTURESIGNTROUPPLE = "Troupple Pond: No Fishing Allowed"
 
 return Prefab("common/objects/skstructuresigntroupple", fn, assets)

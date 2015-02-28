@@ -3,8 +3,10 @@ local assets =
 	Asset("ANIM", "anim/sktiletroupplepondborder.zip"),
 	Asset("ANIM", "anim/splash.zip"),
 	
-	Asset("ATLAS", "images/map_icons/skweaponshovelbladebasic.xml"),
-	Asset("IMAGE", "images/map_icons/skweaponshovelbladebasic.tex"),
+	Asset("ATLAS", "images/map_icons/sktiletroupplepond.xml"),
+	Asset("IMAGE", "images/map_icons/sktiletroupplepond.tex"),
+	Asset("ATLAS", "images/map_icons/sktiletroupplepondfrozen.xml"),
+	Asset("IMAGE", "images/map_icons/sktiletroupplepondfrozen.tex"),
 }
 
 local prefabs =
@@ -32,7 +34,7 @@ local function SpawnPlants(inst, plantname)
 
 	local plant_offsets = {}
 
-	for i=1,math.random(2,4) do
+	for i=1,math.random(6,8) do
 		local a = math.random()*math.pi*2
 		local x = math.sin(a)*3.8+math.random()*0.3 --1.9
 		local z = math.cos(a)*4.2+math.random()*0.3 --2.1
@@ -59,6 +61,7 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 		inst.frozen = true
 		inst.AnimState:PlayAnimation("frozen")
 		inst.SoundEmitter:PlaySound("dontstarve/winter/pondfreeze")
+		inst.MiniMapEntity:SetIcon("sktiletroupplepondfrozen.tex")
 	    --inst.components.childspawner:StopSpawning()
 
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
@@ -73,6 +76,7 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 	elseif snowlevel < thresh and inst.frozen then
 		inst.frozen = false
 		inst.AnimState:PlayAnimation("idle_mos")
+		inst.MiniMapEntity:SetIcon("sktiletroupplepond.tex")
 	    --inst.components.childspawner:StartSpawning()
 
 		inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
@@ -119,7 +123,7 @@ local function fn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
 
-    inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
+    inst.MiniMapEntity:SetIcon("sktiletroupplepond.tex")
 
     if not TheWorld.ismastersim then
         return inst

@@ -2,14 +2,12 @@ local assets =
 {
 	Asset("ANIM", "anim/sktiletroupplepondborder.zip"),
 	Asset("ANIM", "anim/splash.zip"),
-	
-	Asset("ATLAS", "images/map_icons/skweaponshovelbladebasic.xml"),
-	Asset("IMAGE", "images/map_icons/skweaponshovelbladebasic.tex"),
 }
 
 local prefabs =
 {
 	"sktiletroupplepondborder",
+	"skitemmusicsheet",
 	"fish",
 	"eel",
 }
@@ -22,7 +20,6 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 	if snowlevel > thresh and not inst.frozen then
 		inst.frozen = true
 		inst.AnimState:PlayAnimation("frozen")
-		inst.SoundEmitter:PlaySound("dontstarve/winter/pondfreeze")
 		inst.components.fishable:Freeze()
 
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
@@ -55,11 +52,15 @@ local function spawnBorder(inst)
 	border.Transform:SetPosition(posSpawn.x - 3.2, posSpawn.y, posSpawn.z + 1.5)
 	border.snowThresh = inst.snowThresh
 	
+	--Make Tree
+	local tree = SpawnPrefab("skstructuretreetroupple")
+	local posSpawn2 = inst:GetPosition()
+	tree.Transform:SetPosition(posSpawn2.x - 3.5, posSpawn2.y, posSpawn2.z + 1.7)
+	
 	--Make Sign
 	local sign = SpawnPrefab("skstructuresigntroupple")
-	local posSpawn2 = inst:GetPosition()
-	sign.Transform:SetPosition(posSpawn2.x + 4.3, posSpawn2.y, posSpawn2.z - 3.3)
-	--sign.Transform:SetPosition(posSpawn2.x + 4.3, posSpawn2.y, posSpawn2.z - 3.4)
+	local posSpawn3 = inst:GetPosition()
+	sign.Transform:SetPosition(posSpawn3.x + 4.3, posSpawn3.y, posSpawn3.z - 3.3)
 	
 	inst:DoTaskInTime(0.2, onload)
 end
@@ -74,7 +75,6 @@ local function fn()
     inst.entity:AddNetwork()
 
 	inst.Transform:SetScale(1, 1, 1)
-	--inst.Transform:SetScale(2.5, 2.5, 2.5)
 	inst.Transform:SetRotation(180)
 	
 	MakeObstaclePhysics(inst, 4)
@@ -85,8 +85,6 @@ local function fn()
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     --inst.AnimState:SetLayer(LAYER_BACKGROUND)
     --inst.AnimState:SetSortOrder(3)
-
-    --inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
 
     if not TheWorld.ismastersim then
         return inst
@@ -105,6 +103,7 @@ local function fn()
 	--Add Fish
 	inst:AddComponent("fishable")
 	inst.components.fishable:SetRespawnTime(TUNING.FISH_RESPAWN_TIME)
+	--inst.components.fishable:AddFish("skitemmusicsheet")
 	inst.components.fishable:AddFish("fish")
 	inst.components.fishable:AddFish("eel")
 	
