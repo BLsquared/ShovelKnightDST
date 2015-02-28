@@ -114,8 +114,7 @@ local function fn()
 	inst.Transform:SetScale(2.2, 2.2, 2.2)
 	inst.Transform:SetRotation(180)
 	
-    --MakeObstaclePhysics(inst, 17.1) --1.95 --17.1
-	MakeObstaclePhysics(inst, .5)
+    MakeObstaclePhysics(inst, 17.1) --1.95 --17.1
 	
     inst.AnimState:SetBuild("sktiletroupplepondborder")
     inst.AnimState:SetBank("marsh_tile")
