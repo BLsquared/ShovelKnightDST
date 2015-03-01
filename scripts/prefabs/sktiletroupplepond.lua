@@ -133,7 +133,7 @@ local function fn()
 	inst.orbKeeper = ""
 	
 	--Plant Stuff
-	inst.plant = 1
+	inst.plant = 0
 	inst.plantKeeper = ""
 	
 	inst.frozen = false

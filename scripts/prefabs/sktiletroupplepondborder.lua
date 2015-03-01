@@ -22,6 +22,7 @@ local prefabs =
 		--child:PushEvent("gohome")
 	--end
 --end
+
 local function createRealPlants(inst, name, x, y, z)
 	local plant = SpawnPrefab(name)
 	local posSpawn = inst:GetPosition()
@@ -29,20 +30,25 @@ local function createRealPlants(inst, name, x, y, z)
 end
 
 local function growRealPlant(inst)
-	if inst.plantHolder.plant == 1 then
-		--inst.plantHolder.plant = 0
+	if inst.plantHolder.plant == 0 then
+		inst.plantHolder.plant = 1
 		
-		--createRealPlants(inst, "skstructuresigntroupple", 5.5, 0, 7) --Grass 1
-		--createRealPlants(inst, "skstructuresigntroupple", 1, 0, 9) --Grass 2
-		--createRealPlants(inst, "skstructuresigntroupple", -3, 0, 8.5) --Grass 3
+		createRealPlants(inst, "grass", 5.5, 0, 7) --Grass 1
+		createRealPlants(inst, "grass", 1, 0, 9) --Grass 2
+		createRealPlants(inst, "grass", -3, 0, 8.5) --Grass 3
+		createRealPlants(inst, "grass", -5, 0, -5.5) --Grass 4
+		createRealPlants(inst, "grass", 2, 0, -9) --Grass 5
+		createRealPlants(inst, "grass", 3, 0, -8) --Grass 6
 		
-		--createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Reed 1
-		--createRealPlants(inst, "skstructuresigntroupple", 8.5, 0, 2.5) --Reed 2
-		--createRealPlants(inst, "skstructuresigntroupple", 7.5, 0, 5) --Reed 3
-		--createRealPlants(inst, "skstructuresigntroupple", -6, 0, 7) --Reed 4
-		--createRealPlants(inst, "skstructuresigntroupple", -7, 0, 5) --Reed 5
-		--createRealPlants(inst, "skstructuresigntroupple", -8, 0, 1) --Reed 6
-		
+		createRealPlants(inst, "reeds", 9, 0, 1) --Reed 1
+		createRealPlants(inst, "reeds", 8.5, 0, 2.5) --Reed 2
+		createRealPlants(inst, "reeds", 7.5, 0, 5) --Reed 3
+		createRealPlants(inst, "reeds", -6, 0, 7) --Reed 4
+		createRealPlants(inst, "reeds", -7, 0, 5) --Reed 5
+		createRealPlants(inst, "reeds", -8, 0, 1) --Reed 6
+		createRealPlants(inst, "reeds", -6, 0, -4) --Reed 7
+		createRealPlants(inst, "reeds", 4.5, 0, -7.5) --Reed 8
+		createRealPlants(inst, "reeds", 6.5, 0, -7) --Reed 9
 	end
 end
 
@@ -56,7 +62,7 @@ local function SpawnPlants(inst, plantname)
 
 	local plant_offsets = {}
 
-	for i=1,math.random(2,4) do
+	for i=1,math.random(6,8) do
 		local a = math.random()*math.pi*2
 		local x = math.sin(a)*3.8+math.random()*0.3 --1.9
 		local z = math.cos(a)*4.2+math.random()*0.3 --2.1
@@ -139,8 +145,7 @@ local function fn()
 	inst.Transform:SetScale(2.2, 2.2, 2.2)
 	inst.Transform:SetRotation(180)
 	
-    --MakeObstaclePhysics(inst, 17.1) --1.95 --17.1
-	MakeObstaclePhysics(inst, .5)
+    MakeObstaclePhysics(inst, 17.1) --1.95 --17.1
 	
     inst.AnimState:SetBuild("sktiletroupplepondborder")
     inst.AnimState:SetBank("marsh_tile")
