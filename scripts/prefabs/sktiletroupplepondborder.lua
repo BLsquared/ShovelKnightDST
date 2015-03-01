@@ -32,11 +32,16 @@ local function growRealPlant(inst)
 	if inst.plantHolder.plant == 1 then
 		--inst.plantHolder.plant = 0
 		
-		createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Grass 1
+		--createRealPlants(inst, "skstructuresigntroupple", 5.5, 0, 7) --Grass 1
+		--createRealPlants(inst, "skstructuresigntroupple", 1, 0, 9) --Grass 2
+		--createRealPlants(inst, "skstructuresigntroupple", -3, 0, 8.5) --Grass 3
 		
-		createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Reed 1
-		createRealPlants(inst, "skstructuresigntroupple", 8.5, 0, 2.5) --Reed 2
-		createRealPlants(inst, "skstructuresigntroupple", 7.5, 0, 5) --Reed 3
+		--createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Reed 1
+		--createRealPlants(inst, "skstructuresigntroupple", 8.5, 0, 2.5) --Reed 2
+		--createRealPlants(inst, "skstructuresigntroupple", 7.5, 0, 5) --Reed 3
+		--createRealPlants(inst, "skstructuresigntroupple", -6, 0, 7) --Reed 4
+		--createRealPlants(inst, "skstructuresigntroupple", -7, 0, 5) --Reed 5
+		--createRealPlants(inst, "skstructuresigntroupple", -8, 0, 1) --Reed 6
 		
 	end
 end
