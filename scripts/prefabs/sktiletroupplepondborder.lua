@@ -22,9 +22,26 @@ local prefabs =
 		--child:PushEvent("gohome")
 	--end
 --end
+local function createRealPlants(inst, name, x, y, z)
+	local plant = SpawnPrefab(name)
+	local posSpawn = inst:GetPosition()
+	plant.Transform:SetPosition(posSpawn.x + x, posSpawn.y + y, posSpawn.z + z)
+end
+
+local function growRealPlant(inst)
+	if inst.plantHolder.plant == 1 then
+		--inst.plantHolder.plant = 0
+		
+		createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Grass 1
+		
+		createRealPlants(inst, "skstructuresigntroupple", 9, 0, 1) --Reed 1
+		createRealPlants(inst, "skstructuresigntroupple", 8.5, 0, 2.5) --Reed 2
+		createRealPlants(inst, "skstructuresigntroupple", 7.5, 0, 5) --Reed 3
+		
+	end
+end
 
 local function SpawnPlants(inst, plantname)
-
 	if inst.decor then
 		for i,item in ipairs(inst.decor) do
 			item:Remove()
@@ -34,7 +51,7 @@ local function SpawnPlants(inst, plantname)
 
 	local plant_offsets = {}
 
-	for i=1,math.random(6,8) do
+	for i=1,math.random(2,4) do
 		local a = math.random()*math.pi*2
 		local x = math.sin(a)*3.8+math.random()*0.3 --1.9
 		local z = math.cos(a)*4.2+math.random()*0.3 --2.1
@@ -90,6 +107,9 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 end
 
 local function onload(inst, data, newents)
+	if inst.plantHolder.prefab ~= nil then
+		growRealPlant(inst)
+	end
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
 end
 
@@ -141,6 +161,8 @@ local function fn()
 	--inst.components.childspawner:SetMaxChildren(math.random(3,4))
 	--inst.components.childspawner:StartRegen()
 
+	inst.plantHolder = ""
+	
 	inst.frozen = false
 	inst.snowThresh = nil
 	

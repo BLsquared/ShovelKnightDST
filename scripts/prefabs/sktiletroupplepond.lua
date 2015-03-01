@@ -17,11 +17,15 @@ local function onpreload(inst, data)
         if data.orb ~= nil then
 			inst.orb = data.orb
 		end
+		if data.plant ~= nil then
+			inst.plant = data.plant
+		end
     end
 end
 
 local function onsave(inst, data)
 	data.orb = inst.orb >= 0 and inst.orb or nil
+	data.plant = inst.plant > 0 and inst.plant or nil
 end
 
 local function OnIsDay(inst, isday)
@@ -75,6 +79,8 @@ local function spawnBorder(inst)
 	local border = SpawnPrefab("sktiletroupplepondborder")
 	local posSpawn = inst:GetPosition()
 	border.Transform:SetPosition(posSpawn.x - 3.2, posSpawn.y, posSpawn.z + 1.5)
+	inst.plantKeeper = border
+	border.plantHolder = inst
 	border.snowThresh = inst.snowThresh
 	
 	--Make Tree
@@ -125,6 +131,10 @@ local function fn()
 	--Orb Stuff
 	inst.orb = 0
 	inst.orbKeeper = ""
+	
+	--Plant Stuff
+	inst.plant = 1
+	inst.plantKeeper = ""
 	
 	inst.frozen = false
 	inst.snowThresh = nil
