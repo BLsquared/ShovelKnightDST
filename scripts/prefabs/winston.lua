@@ -587,9 +587,9 @@ local master_postinit = function(inst)
 							end
 							
 							--Special Armor Perk Removal for MailofMomentum
-							if itemE.prefab == "skarmormailofmomentum" then
-								self.inst:AddComponent("pinnable")
-							end
+							--if itemE.prefab == "skarmormailofmomentum" then
+								--self.inst:AddComponent("pinnable")
+							--end
 							
 							--Special Armor Perk Removal for OrnatePlate
 							if itemE.prefab == "skarmorornateplate" then
@@ -680,6 +680,9 @@ local master_postinit = function(inst)
 					end
 					if inst.components.grogginess then
 						inst.componets.grogginess:ComeTo()
+					end
+					if inst.components.pinnable then
+						inst.components.pinable:Unstick()
 					end
 				end
 			end
