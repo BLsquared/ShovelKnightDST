@@ -190,7 +190,7 @@ local function chop_down_tree(inst, chopper)
 		inst.orbGlow = nil
 	end
     --inst.SoundEmitter:PlaySound("dontstarve/forest/treefall") --drop glow sound
-	createTrouppleLoot("goldnugget", inst)
+	createTrouppleLoot("lightbulb", inst)
 end
 
 local function hasOrb(inst)

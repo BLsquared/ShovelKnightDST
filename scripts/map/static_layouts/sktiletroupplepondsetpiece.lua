@@ -11,12 +11,12 @@ return {
     {
       name = "ground",
       firstgid = 1,
-      filename = "../../../../../../../../../../Users/Jades/Desktop/tileset/ground.tsx",
+      filename = "../../../../../../../../../../Users/Jades/Desktop/ShovelKnight/tiled/tileset/ground.tsx",
       tilewidth = 64,
       tileheight = 64,
       spacing = 0,
       margin = 0,
-      image = "../../../../../../../../../../Users/Jades/Desktop/tileset/tiles.png",
+      image = "../../../../../../../../../../Users/Jades/Desktop/ShovelKnight/tiled/tileset/tiles.png",
       imagewidth = 512,
       imageheight = 128,
       properties = {},
@@ -36,11 +36,11 @@ return {
       properties = {},
       encoding = "lua",
       data = {
-        6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6,
-        6, 6, 6, 6, 6
+        7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7,
+        7, 7, 7, 7, 7
       }
     },
     {
@@ -52,21 +52,10 @@ return {
       objects = {
         {
           name = "",
-          type = "sktiletroupplepondhotspot",
-          shape = "rectangle",
-          x = 159,
-          y = 158,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
           type = "sktiletroupplepond",
           shape = "rectangle",
-          x = 159,
-          y = 158,
+          x = 160,
+          y = 160,
           width = 0,
           height = 0,
           visible = true,
