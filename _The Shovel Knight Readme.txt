@@ -83,6 +83,8 @@ Found by: 10% chance when fishing with the Fishing Rod -Relic
 ===
 Troupple Apple:
 Prefab: "skitemtrouppleapple"
+Food Type: Meat
+Crook Pot Vaule: Fish:1 , Fruit:1
 Food Eaten: Restores 3 Health, 9.375 Hunger, 5 Sanity
 
 Not Craftable
@@ -91,6 +93,7 @@ Found by: When fishing at the Troupple Pond
 ===
 Prepared Troupple Apple:
 Prefab: "skitemtrouppleapple_cooked"
+Food Type: Veggie
 Food Eaten: Restores 20 Health, 12.5 Hunger, 5 Sanity
 
 Not Craftable
