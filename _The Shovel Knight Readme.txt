@@ -3,6 +3,7 @@
 -___Table of Contents___-
 
 General...........................
+Locations.........................
 Items.............................
 Shovelblade Equippment............
 Armor Equippment..................
@@ -29,6 +30,19 @@ Catch Rate: 40%
 
 Bio:
 Troupple Fish can be fished up using the Fishing Rod Relic. They will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory.
+
+================================================
+World Gen
+================================================
+
+*Special objects and Structures will appear on the map*
+
+===
+Troupple Pond:
+Prefab: sktiletroupplepond
+Spawn: 1 Troupple Pond is created on the map
+
+Purpose: The releam of the Great Troupple King, where the Troupple Tree grows Troupple Fish. Also Troupple Apples can be fished out of this pond.
 
 ================================================
 Items
@@ -66,6 +80,21 @@ Use: Worth gold nugget x5 when given to the Pig King.
 Not Craftable
 Found by: 10% chance when fishing with the Fishing Rod -Relic
 
+===
+Troupple Apple:
+Prefab: "skitemtrouppleapple"
+Food Eaten: Restores 3 Health, 9.375 Hunger, 5 Sanity
+
+Not Craftable
+Found by: When fishing at the Troupple Pond
+
+===
+Prepared Troupple Apple:
+Prefab: "skitemtrouppleapple_cooked"
+Food Eaten: Restores 20 Health, 12.5 Hunger, 5 Sanity
+
+Not Craftable
+Found by: Cooking a Troupple Apple.
 
 ================================================
 Shovelblade Equippment

@@ -2,7 +2,7 @@ PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
 	"skstructuresigntroupple", "skstructuretreetroupple",
 	"sktiletroupplepond", "sktiletroupplepondborder", 
-	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet", "skitemtrouppleapple",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
@@ -124,6 +124,9 @@ STRINGS.RECIPE_DESC.SKARMORCONJURERSCOAT = "Harvest sanity from defeated foes!"
 STRINGS.RECIPE_DESC.SKARMORDYNAMOMAIL = "Increase Shovelblade Upgrade powers!"
 STRINGS.RECIPE_DESC.SKARMORMAILOFMOMENTUM = "Heavily plated, Can't be slowed!"
 STRINGS.RECIPE_DESC.SKARMORORNATEPLATE = "Flashy! Acrobatic! Useless!"
+
+--Food
+AddIngredientValues({"skitemtrouppleapple"}, {fish=1, fruit=1})
 
 local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 	GLOBAL.ACTIONS.PICKUP.fn = function(act)

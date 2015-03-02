@@ -7,9 +7,8 @@ local assets =
 local prefabs =
 {
 	"sktiletroupplepondborder",
+	"skitemtrouppleapple",
 	"skitemmusicsheet",
-	"fish",
-	"eel",
 }
 
 local function onpreload(inst, data)
@@ -146,9 +145,10 @@ local function fn()
 	--Add Fish
 	inst:AddComponent("fishable")
 	inst.components.fishable:SetRespawnTime(TUNING.FISH_RESPAWN_TIME)
+	inst.components.fishable:AddFish("skitemtrouppleapple")
 	--inst.components.fishable:AddFish("skitemmusicsheet")
-	inst.components.fishable:AddFish("fish")
-	inst.components.fishable:AddFish("eel")
+	--inst.components.fishable:AddFish("fish")
+	--inst.components.fishable:AddFish("eel")
 	
 	inst:WatchWorldState("isday", OnIsDay)
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
