@@ -1,6 +1,6 @@
 local assets =
 {
-	Asset("ANIM", "anim/sktiletroupplepondborder.zip"),
+	Asset("ANIM", "anim/sktiletroupplepond.zip"),
 	Asset("ANIM", "anim/splash.zip"),
 }
 
@@ -19,12 +19,16 @@ local function onpreload(inst, data)
 		if data.plant ~= nil then
 			inst.plant = data.plant
 		end
+		if data.kingEvent ~= nil then
+			inst.kingEvent = data.kingEvent
+		end
     end
 end
 
 local function onsave(inst, data)
 	data.orb = inst.orb >= 0 and inst.orb or nil
 	data.plant = inst.plant > 0 and inst.plant or nil
+	data.kingEvent = inst.kingEvent >= 0 and inst.kingEvent or nil
 end
 
 local function OnIsDay(inst, isday)
@@ -34,6 +38,21 @@ local function OnIsDay(inst, isday)
 			inst.orbKeeper:PushEvent("growOrb")
 		end
     end
+	if not TheWorld.state.iswinter and inst.kingEvent == 0 then
+        inst.kingEvent = 1
+		if inst.kingKeeper.prefab ~= nil then
+			inst.kingKeeper:PushEvent("raiseKing")
+		end
+    end
+	--Make Troupple King
+	if not TheWorld.state.iswinter and isday then
+		local king = SpawnPrefab("skitemtroupplefishking")
+		local posSpawn2 = inst:GetPosition()
+		king.Transform:SetPosition(posSpawn2.x - 0.5 , posSpawn2.y - 1, posSpawn2.z + 1)
+		inst.kingKeeper = king
+		king.kingHolder = inst
+		king.snowThresh = inst.snowThresh
+	end
 end
 
 local function OnSnowLevel(inst, snowlevel, thresh)
@@ -72,7 +91,7 @@ end
 --Creates the Border around the Troupple Pond
 local function spawnBorder(inst)
 	--Grow Orb
-	OnIsDay(inst, TheWorld.state.isday)
+	--OnIsDay(inst, TheWorld.state.isday)
 	
 	--Make Border
 	local border = SpawnPrefab("sktiletroupplepondborder")
@@ -98,6 +117,8 @@ local function spawnBorder(inst)
 	inst:DoTaskInTime(0.2, onload)
 end
 
+
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -112,12 +133,12 @@ local function fn()
 	
 	MakeObstaclePhysics(inst, 4)
 	
-    inst.AnimState:SetBuild("sktiletroupplepondborder")
+    inst.AnimState:SetBuild("sktiletroupplepond")
     inst.AnimState:SetBank("marsh_tile")
     inst.AnimState:PlayAnimation("idle", true)
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    --inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    --inst.AnimState:SetSortOrder(3)
+    inst.AnimState:SetLayer(LAYER_BACKGROUND)
+    inst.AnimState:SetSortOrder(3)
 
     if not TheWorld.ismastersim then
         return inst
@@ -135,6 +156,10 @@ local function fn()
 	inst.plant = 0
 	inst.plantKeeper = ""
 	
+	--Troupple King
+	inst.kingEvent = 0
+	inst.kingKeeper = ""
+	
 	inst.frozen = false
 	inst.snowThresh = nil
 	
@@ -147,8 +172,12 @@ local function fn()
 	inst.components.fishable:SetRespawnTime(TUNING.FISH_RESPAWN_TIME)
 	inst.components.fishable:AddFish("skitemtrouppleapple")
 	--inst.components.fishable:AddFish("skitemmusicsheet")
-	--inst.components.fishable:AddFish("fish")
-	--inst.components.fishable:AddFish("eel")
+	
+	--Trade Troupple Chalice
+	--inst:AddComponent("trader")
+	--inst.components.trader:SetAcceptTest(AcceptTest)
+    --inst.components.trader.onaccept = OnGetItemFromPlayer
+    --inst.components.trader.onrefuse = OnRefuseItem
 	
 	inst:WatchWorldState("isday", OnIsDay)
 	inst:WatchWorldState("snowlevel", OnSnowLevel)

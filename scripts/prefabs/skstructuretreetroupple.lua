@@ -82,7 +82,7 @@ end
 local function OnSnowLevel(inst, snowlevel, thresh)
 	thresh = thresh or .02
 	
-	if inst.snowTresh ~= nil and inst.snowThresh > snowlevel then
+	if inst.snowThresh ~= nil and inst.snowThresh > snowlevel then
 		snowlevel = inst.snowThresh
 		inst.snowThresh = nil
 	end
