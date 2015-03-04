@@ -46,12 +46,17 @@ local function OnIsDay(inst, isday)
     end
 	--Make Troupple King
 	if not TheWorld.state.iswinter and isday then
-		local king = SpawnPrefab("skitemtroupplefishking")
-		local posSpawn2 = inst:GetPosition()
-		king.Transform:SetPosition(posSpawn2.x - 0.5 , posSpawn2.y - 1, posSpawn2.z + 1)
-		inst.kingKeeper = king
-		king.kingHolder = inst
-		king.snowThresh = inst.snowThresh
+		if inst.plantKeeper.prefab ~= nil then
+			inst.plantKeeper:PushEvent("bubbleWater")
+			
+			local king = SpawnPrefab("skitemtroupplefishking")
+			local posSpawn2 = inst:GetPosition()
+			king.Transform:SetPosition(posSpawn2.x - 0.5 , posSpawn2.y - 1, posSpawn2.z + 1)
+			king.entity:Hide()
+			inst.kingKeeper = king
+			king.kingHolder = inst
+			king.snowThresh = inst.snowThresh
+		end
 	end
 end
 
@@ -90,9 +95,6 @@ end
 
 --Creates the Border around the Troupple Pond
 local function spawnBorder(inst)
-	--Grow Orb
-	--OnIsDay(inst, TheWorld.state.isday)
-	
 	--Make Border
 	local border = SpawnPrefab("sktiletroupplepondborder")
 	local posSpawn = inst:GetPosition()
@@ -114,10 +116,8 @@ local function spawnBorder(inst)
 	local posSpawn3 = inst:GetPosition()
 	sign.Transform:SetPosition(posSpawn3.x + 4.3, posSpawn3.y, posSpawn3.z - 3.3)
 	
-	inst:DoTaskInTime(0.2, onload)
+	inst:DoTaskInTime(0.3, onload)
 end
-
-
 
 local function fn()
 	local inst = CreateEntity()
@@ -158,6 +158,7 @@ local function fn()
 	
 	--Troupple King
 	inst.kingEvent = 0
+	--inst.kingLimit = 0
 	inst.kingKeeper = ""
 	
 	inst.frozen = false
@@ -171,19 +172,12 @@ local function fn()
 	inst:AddComponent("fishable")
 	inst.components.fishable:SetRespawnTime(TUNING.FISH_RESPAWN_TIME)
 	inst.components.fishable:AddFish("skitemtrouppleapple")
-	--inst.components.fishable:AddFish("skitemmusicsheet")
-	
-	--Trade Troupple Chalice
-	--inst:AddComponent("trader")
-	--inst.components.trader:SetAcceptTest(AcceptTest)
-    --inst.components.trader.onaccept = OnGetItemFromPlayer
-    --inst.components.trader.onrefuse = OnRefuseItem
 	
 	inst:WatchWorldState("isday", OnIsDay)
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
 	
 	inst.OnSave = onsave
-	inst.OnLoad = onload
+	--inst.OnLoad = onload
 	inst.OnPreLoad = onpreload
 	
 	inst:DoTaskInTime(0.2, spawnBorder)

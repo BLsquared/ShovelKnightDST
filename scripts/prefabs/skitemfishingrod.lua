@@ -48,12 +48,6 @@ local function onfishholster(inst)
 	inst:Remove()
 end
 
-local function trouppleKingShake(inst, pond)
-    for i, v in ipairs(AllPlayers) do
-        v:ShakeCamera(CAMERASHAKE.SIDE, 3, .05, .1, pond, 40)
-    end
-end
-
 local function randomSplashFx(inst)
 	local fx = SpawnPrefab("splash")
     local pos = inst.components.fishingrod.target:GetPosition()
@@ -66,11 +60,11 @@ local function randomSplashFx(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 end
 
-local function splashFx(inst)
+local function splashFx(inst, x, y, z)
 	local fx = SpawnPrefab("splash")
     local pos = inst.components.fishingrod.target:GetPosition()
 
-	fx.Transform:SetPosition(pos.x, pos.y, pos.z)
+	fx.Transform:SetPosition(pos.x + x, pos.y + y, pos.z + z)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 end
 
@@ -79,12 +73,22 @@ local function onfishcatch(inst)
 	
 	--Troupple Pond
 	if inst.components.fishingrod.target.prefab == "sktiletroupplepond" then
-	
+		--Adds a neat splash effect
+		splashFx(inst, 3.5, 0, .2)
+		
+		if math.random() <= (inst.fishRareLootChance - 0.5) then
+			local fishRareLootGen = randomFishRareLootGen() --Finds a rare random fishLoot
+			if fishRareLootGen ~= nil then
+				inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
+				inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
+				inst.fishLootFinal = fishRareLootGen
+			end
+		end
 	
 	--Other Fishing Source
 	else
 		--Adds a neat splash effect
-		splashFx(inst)
+		splashFx(inst, 0, 0, 0)
 		
 		if math.random() <= inst.fishLootChance then
 			local fishLootGen = randomFishLootGen() --Finds a common random fishLoot
@@ -100,12 +104,6 @@ local function onfishcatch(inst)
 				inst.components.fishingrod.caughtfish = SpawnPrefab(fishRareLootGen)
 				inst.fishLootFinal = fishRareLootGen
 			end
-			
-		--elseif math.random() <= inst.fishVeryRareLootChance then
-			--local fishVeryRareLootGen = "skitemtroupplefishking" --Very rare Troupple King summon
-			--inst.components.fishingrod.target.components.fishable:RemoveFish(inst.components.fishingrod.caughtfish)
-			--inst.components.fishingrod.caughtfish = SpawnPrefab(fishVeryRareLootGen)
-			--inst.fishLootFinal = fishVeryRareLootGen
 		end
 	end
 end
@@ -131,7 +129,6 @@ local function onfished(inst)
 				rotatetotarget(troupplefish, owner)
 				--troupplefish.Transform:SetRotation(180)
 				--rotatetotarget(dest, troupplefish)
-				
 				
 				inst.fishLootFinal = nil
 			end
@@ -210,9 +207,8 @@ local function fn()
 	inst.entity:SetPristine()
  
 	--Fishingrod Stuff
-	inst.fishLootChance = 0.99 --40% chance
-	inst.fishRareLootChance = 0.1 --10% chance
-	inst.fishVeryRareLootChance = 0.99 --1% chance
+	inst.fishLootChance = 0.4 --40% chance
+	inst.fishRareLootChance = 0.1 --10% chance, 5% chance at Troupple Pond
 	inst.fishLootFinal = nil
 	inst.fishHolster = nil
 	inst.fishOwner = nil
@@ -228,7 +224,6 @@ local function fn()
     inst.components.fishingrod:SetStrainTimes(0, 5)
 	inst:ListenForEvent("fishingcatch", onfishcatch)
     inst:ListenForEvent("fishingcollect", onfished)
-	
 	
     inst:AddComponent("inspectable")
     

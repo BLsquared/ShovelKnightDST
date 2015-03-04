@@ -10,10 +10,10 @@ local assets=
 prefabs = {
 }
 
-local function trouppleKingShake(inst)
+local function trouppleKingShake(inst, shakeTime)
 	if inst.kingHolder.prefab ~= nil then
 		for i, v in ipairs(AllPlayers) do
-			v:ShakeCamera(CAMERASHAKE.SIDE, 3, .05, .1, inst.kingHolder, 40)
+			v:ShakeCamera(CAMERASHAKE.SIDE, shakeTime, .05, .1, inst.kingHolder, 40)
 		end
 	end
 end
@@ -45,35 +45,57 @@ local function splashFx(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 end
 
+local function sayVoiceBox(inst, say)
+	if inst.voiceBoxKeeper.prefab ~= nil then
+		inst.voiceBoxKeeper.components.talker:Say(say)
+	end
+end
+
 local function gounderwater(inst)
 	splashBigFx(inst)
-	trouppleKingShake(inst)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	trouppleKingShake(inst, 4)
+	if inst.voiceBoxKeeper ~= nil then
+		inst.voiceBoxKeeper:Remove()
+	end
 	inst:Remove()
 end
 
+local function gounderwaterpre(inst)
+	inst.AnimState:PlayAnimation("idle", true)
+	inst:DoTaskInTime(1, gounderwater)
+end
+
 local function fishybehaviorcold(inst)
-	inst.components.talker:Say("Winter is coming, all citizens back under the water!")
+	sayVoiceBox(inst, "Winter is coming, all citizens back under the water!")
 	splashBigFx(inst)
-	inst:DoTaskInTime(3, gounderwater)
+	inst:DoTaskInTime(3, gounderwaterpre)
 end
 
 local function fishybehaviorfarewell(inst)
-	inst.components.talker:Say("Back to the deeps I go!")
+	sayVoiceBox(inst, "Back to the deeps I go!")
 	splashBigFx(inst)
-	inst:DoTaskInTime(3, gounderwater)
+	inst:DoTaskInTime(3, gounderwaterpre)
 end	
 
 local function fishybehaviorgreet(inst)
 	if inst.kingHolder.prefab ~= nil then --Stops the odd first load loop
+		inst.AnimState:PlayAnimation("idle")
+		inst.entity:Show()
+		sayVoiceBox(inst, "I am the great Troupple King!")
 		splashBigFx(inst)
-		trouppleKingShake(inst)
-		--inst.components.talker:Say("I am the great Troupple King!")
-		--inst:DoTaskInTime(3, fishybehaviorfarewell)
+		if inst.kingHolder.plantKeeper.prefab ~= nil then
+			inst.kingHolder.plantKeeper:PushEvent("splashWater")
+		end
 	end
 end
 
 local function onfishedup(inst)
-	inst:DoTaskInTime(1, fishybehaviorgreet)
+	trouppleKingShake(inst, 4)
+	splashBigFx(inst)
+	inst:DoTaskInTime(2, fishybehaviorgreet)
 end
 
 local function OnIsDay(inst, isday)
@@ -91,7 +113,9 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 	end
 	
 	if snowlevel > thresh then
-		inst:DoTaskInTime(3, fishybehaviorcold)
+		inst:DoTaskInTime(0.5, fishybehaviorcold)
+	else
+		inst:DoTaskInTime(0.5, onfishedup)
 	end
 end
 
@@ -107,11 +131,22 @@ local function hasEvent(inst)
 	end
 end
 
+local function createVoiceBox(inst)
+	local voiceBox = SpawnPrefab("skeventtroupplefish")
+	local posSpawn = inst:GetPosition()
+	voiceBox.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
+	voiceBox.Transform:SetScale(1.7, 1.7, 1.7)
+	voiceBox.entity:Hide()
+	inst.voiceBoxKeeper = voiceBox
+end
+
 local function onload(inst, data, newents)
 	if inst.kingHolder.prefab ~= nil then
 		hasEvent(inst)
 	end
+	createVoiceBox(inst)
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
+	
 end
 
 local function ontradeforgold(inst, item)
@@ -121,9 +156,10 @@ local function ontradeforgold(inst, item)
         --local nug = SpawnPrefab("goldnugget")
         --local pt = Vector3(inst.Transform:GetWorldPosition()) + Vector3(0, 4.5, 0)
         
-       -- nug.Transform:SetPosition(pt:Get())
+        --nug.Transform:SetPosition(pt:Get())
         --local down = TheCamera:GetDownVec()
         --local angle = math.atan2(down.z, down.x) + (math.random() * 60 - 30) * DEGREES
+        --local angle = (math.random() * 60 - 30 - TUNING.CAM_ROT - 90) / 180 * PI
         --local sp = math.random() * 4 + 2
         --nug.Physics:SetVel(sp * math.cos(angle), math.random() * 2 + 8, sp * math.sin(angle))
     --end
@@ -135,8 +171,8 @@ local function OnGetItemFromPlayer(inst, giver, item)
         --inst.AnimState:PushAnimation("happy")
         --inst.AnimState:PushAnimation("idle", true)
         inst:DoTaskInTime(20/30, ontradeforgold, item)
-        --inst:DoTaskInTime(1.5, onplayhappysound)
-        --inst.happy = true
+       -- inst:DoTaskInTime(1.5, onplayhappysound)
+       -- inst.happy = true
         --if inst.endhappytask ~= nil then
             --inst.endhappytask:Cancel()
         --end
@@ -145,6 +181,7 @@ local function OnGetItemFromPlayer(inst, giver, item)
 end
 
 local function OnRefuseItem(inst, giver, item)
+	sayVoiceBox(inst, "No thanks!")
 	--inst.SoundEmitter:PlaySound("dontstarve/pig/PigKingReject")
     --inst.AnimState:PlayAnimation("unimpressed")
 	--inst.AnimState:PushAnimation("idle", true)
@@ -166,7 +203,6 @@ local function fn()
 	inst.Transform:SetScale(5, 5, 5)
 	
 	MakeObstaclePhysics(inst, 4.8, .5)
-	--MakeInventoryPhysics(inst)
 	
 	inst:AddTag("largecreature")
 	
@@ -192,14 +228,10 @@ local function fn()
 	--Used for angry at fishing
 	inst.catcher = ""
 	
+	--Voice Box
+	inst.voiceBoxKeeper = ""
+	
 	inst.persists = false
-	
-	inst:AddComponent("talker")
-	
-    inst:AddComponent("inventoryitem")
-	inst.components.inventoryitem.canbepickedup = false
-    inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemtroupplefish.xml"
-	inst.components.inventoryitem.imagename = "skitemtroupplefish"
      
 	inst:AddComponent("inspectable")
 	

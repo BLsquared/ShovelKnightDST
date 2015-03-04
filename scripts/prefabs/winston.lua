@@ -59,8 +59,8 @@ end
 
 --11 Relics
 local relicList = {
-	"skrelicfishingrod", "skrelictroupplechalice", --"log", "goldnugget", "livinglog", "turkeydinner",
-	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion", "tophat",
+	"skrelicfishingrod", --"log", "goldnugget", "livinglog", "turkeydinner",
+	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion",
 }
 
 --Random vaulable loot list

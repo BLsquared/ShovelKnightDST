@@ -133,6 +133,20 @@ local function OnIsDay(inst, isday)
     --end
 end
 
+local function calmPond(inst)
+	inst.AnimState:PushAnimation("idle_mos", true)
+end
+
+local function startSplash(inst)
+	inst.AnimState:PlayAnimation("splash_mos", true)
+	inst:DoTaskInTime(1, calmPond)
+end
+
+local function startBubble(inst)
+	inst.AnimState:PlayAnimation("bubble_mos", true)
+	inst:DoTaskInTime(4, calmPond)
+end
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -192,6 +206,9 @@ local function fn()
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
 	
 	inst.OnLoad = onload
+	
+	inst:ListenForEvent("bubbleWater", startBubble)
+	inst:ListenForEvent("splashWater", startSplash)
 	
 	inst:DoTaskInTime(0.2, onload)
 	

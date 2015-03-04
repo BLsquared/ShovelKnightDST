@@ -8,6 +8,7 @@ PrefabFiles = {
 	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
 	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail", "skfxtrouppletree_orbglow",
 	"skfxtroupplechalice_red", "skfxtroupplechalice_blue", "skfxtroupplechalice_yellow", "skfxichor_red", "skfxichor_blue", "skfxichor_yellow",
+	"skeventtroupplefish",
 }
 
 Assets = {
