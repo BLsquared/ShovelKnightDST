@@ -142,7 +142,6 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 --Fix Health Penalty From Resurrection
 local function HealthPostInit(self)
 	if self.prefab == winston then
-		--print("I'm Shovel Knight! Now fix my Health!")
 		local OldRecalculatePenalty = self.RecalculatePenalty
 		local function RecalculatePenalty(self, forceupdatewidget)
 			local mult = GLOBAL.TUNING.REVIVE_HEALTH_PENALTY_AS_MULTIPLE_OF_EFFIGY
@@ -178,7 +177,6 @@ SKUSERELIC.fn = function(act)
 			if relicItem.prefab == "skrelicfishingrod" or relicItem.prefab == "skrelictroupplechalice"
 				or relicItem.prefab == "skrelictroupplechalicered" or relicItem.prefab == "skrelictroupplechaliceblue" or relicItem.prefab == "skrelictroupplechaliceyellow" then
 				relicItem.components.useableitem:StartUsingItem()
-				--act.target.components.talker:Say("Relic key was pressed")
 			end
 		end
 	end

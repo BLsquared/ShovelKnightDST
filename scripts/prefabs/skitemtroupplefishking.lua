@@ -10,6 +10,34 @@ local assets=
 prefabs = {
 }
 
+local function OnNewTarget(inst, data)
+	inst.components.talker:Say("Hello!")
+    --if inst:HasTag("werepig") then
+        --inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude:HasTag("werepig") end, MAX_TARGET_SHARES)
+    --end
+end
+
+local function NormalRetargetFn(inst)
+    return FindEntity(inst, 6,
+        function(guy)
+            if not guy.LightWatcher or guy.LightWatcher:IsInLight() then
+                return not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) and not 
+                (guy:HasTag("abigail"))
+            end
+        end,
+        {"player", "_health"} -- see entityreplica.lua
+        )
+end
+
+local function NormalKeepTargetFn(inst, target)
+    --give up on dead guys, or guys in the dark, or werepigs
+	inst.components.talker:Say("Target is "..inst:GetDistanceSqToInst(target))
+    return inst.components.combat:CanTarget(target)
+			and inst:GetDistanceSqToInst(target) < 32
+			and (not target.LightWatcher or target.LightWatcher:IsInLight())
+			and not (target.sg and target.sg:HasStateTag("transform") )
+end
+
 local function trouppleKingShake(inst, shakeTime)
 	if inst.kingHolder.prefab ~= nil then
 		for i, v in ipairs(AllPlayers) do
@@ -45,21 +73,12 @@ local function splashFx(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 end
 
-local function sayVoiceBox(inst, say)
-	if inst.voiceBoxKeeper.prefab ~= nil then
-		inst.voiceBoxKeeper.components.talker:Say(say)
-	end
-end
-
 local function gounderwater(inst)
 	splashBigFx(inst)
 	if inst.kingHolder.plantKeeper.prefab ~= nil then
 		inst.kingHolder.plantKeeper:PushEvent("splashWater")
 	end
 	trouppleKingShake(inst, 4)
-	if inst.voiceBoxKeeper ~= nil then
-		inst.voiceBoxKeeper:Remove()
-	end
 	inst:Remove()
 end
 
@@ -69,13 +88,13 @@ local function gounderwaterpre(inst)
 end
 
 local function fishybehaviorcold(inst)
-	sayVoiceBox(inst, "Winter is coming, all citizens back under the water!")
+	inst.components.talker:Say("Winter is coming, all citizens back under the water!")
 	splashBigFx(inst)
 	inst:DoTaskInTime(3, gounderwaterpre)
 end
 
 local function fishybehaviorfarewell(inst)
-	sayVoiceBox(inst, "Back to the deeps I go!")
+	inst.components.talker:Say("Back to the depths I go!")
 	splashBigFx(inst)
 	inst:DoTaskInTime(3, gounderwaterpre)
 end	
@@ -84,7 +103,7 @@ local function fishybehaviorgreet(inst)
 	if inst.kingHolder.prefab ~= nil then --Stops the odd first load loop
 		inst.AnimState:PlayAnimation("idle")
 		inst.entity:Show()
-		sayVoiceBox(inst, "I am the great Troupple King!")
+		inst.components.talker:Say("I am the great Troupple King!")
 		splashBigFx(inst)
 		if inst.kingHolder.plantKeeper.prefab ~= nil then
 			inst.kingHolder.plantKeeper:PushEvent("splashWater")
@@ -131,20 +150,10 @@ local function hasEvent(inst)
 	end
 end
 
-local function createVoiceBox(inst)
-	local voiceBox = SpawnPrefab("skeventtroupplefish")
-	local posSpawn = inst:GetPosition()
-	voiceBox.Transform:SetPosition(posSpawn.x, posSpawn.y, posSpawn.z)
-	voiceBox.Transform:SetScale(1.7, 1.7, 1.7)
-	voiceBox.entity:Hide()
-	inst.voiceBoxKeeper = voiceBox
-end
-
 local function onload(inst, data, newents)
 	if inst.kingHolder.prefab ~= nil then
 		hasEvent(inst)
 	end
-	createVoiceBox(inst)
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
 	
 end
@@ -167,25 +176,12 @@ end
 
 local function OnGetItemFromPlayer(inst, giver, item)
     if item.components.tradable.goldvalue > 0 then
-        --inst.AnimState:PlayAnimation("cointoss")
-        --inst.AnimState:PushAnimation("happy")
-        --inst.AnimState:PushAnimation("idle", true)
         inst:DoTaskInTime(20/30, ontradeforgold, item)
-       -- inst:DoTaskInTime(1.5, onplayhappysound)
-       -- inst.happy = true
-        --if inst.endhappytask ~= nil then
-            --inst.endhappytask:Cancel()
-        --end
-        --inst.endhappytask = inst:DoTaskInTime(5, onendhappytask)
     end
 end
 
 local function OnRefuseItem(inst, giver, item)
-	sayVoiceBox(inst, "No thanks!")
-	--inst.SoundEmitter:PlaySound("dontstarve/pig/PigKingReject")
-    --inst.AnimState:PlayAnimation("unimpressed")
-	--inst.AnimState:PushAnimation("idle", true)
-	--inst.happy = false
+	inst.components.talker:Say("No thanks!")
 end
 
 local function AcceptTest(inst, item)
@@ -193,7 +189,6 @@ local function AcceptTest(inst, item)
 end
 
 local function fn()
- 
     local inst = CreateEntity()
     local trans = inst.entity:AddTransform()
     local anim = inst.entity:AddAnimState()
@@ -228,12 +223,17 @@ local function fn()
 	--Used for angry at fishing
 	inst.catcher = ""
 	
-	--Voice Box
-	inst.voiceBoxKeeper = ""
-	
 	inst.persists = false
-     
+    
+	inst:AddComponent("talker")
+	inst.components.talker.offset = Vector3(0,-140,0)
+	
 	inst:AddComponent("inspectable")
+	
+	inst:AddComponent("combat")
+	inst.components.combat:SetKeepTargetFunction(NormalKeepTargetFn)
+	inst.components.combat:SetRetargetFunction(3, NormalRetargetFn)
+    inst.components.combat:SetTarget(nil)
 	
 	inst:AddComponent("trader")
 	inst.components.trader:SetAcceptTest(AcceptTest)
@@ -244,6 +244,8 @@ local function fn()
 	inst:WatchWorldState("isday", OnIsDay)
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
 	inst.OnLoad = onload
+	
+	inst:ListenForEvent("newcombattarget", OnNewTarget)
 	
 	inst:DoTaskInTime(0.2, onload)
 	

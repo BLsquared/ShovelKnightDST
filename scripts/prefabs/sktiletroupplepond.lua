@@ -158,7 +158,6 @@ local function fn()
 	
 	--Troupple King
 	inst.kingEvent = 0
-	--inst.kingLimit = 0
 	inst.kingKeeper = ""
 	
 	inst.frozen = false
