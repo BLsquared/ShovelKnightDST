@@ -19,6 +19,9 @@ local function onpreload(inst, data)
 		if data.plant ~= nil then
 			inst.plant = data.plant
 		end
+		if data.kingIchor ~= nil then
+			inst.kingIchor = data.kingIchor
+		end
 		if data.kingEvent ~= nil then
 			inst.kingEvent = data.kingEvent
 		end
@@ -28,6 +31,7 @@ end
 local function onsave(inst, data)
 	data.orb = inst.orb >= 0 and inst.orb or nil
 	data.plant = inst.plant > 0 and inst.plant or nil
+	data.kingIchor = inst.kingIchor >= -1 and inst.kingIchor or nil
 	data.kingEvent = inst.kingEvent >= 0 and inst.kingEvent or nil
 end
 
@@ -56,6 +60,9 @@ local function OnIsDay(inst, isday)
 			inst.kingKeeper = king
 			king.kingHolder = inst
 			king.snowThresh = inst.snowThresh
+			if inst.kingIchor == -1 then -- Refills Chalice, Reset is -1
+				inst.kingIchor = 3
+			end
 		end
 	end
 end
@@ -150,15 +157,16 @@ local function fn()
 	
 	--Orb Stuff
 	inst.orb = 0
-	inst.orbKeeper = ""
+	inst.orbKeeper = "" --Stores Troupple Tree
 	
 	--Plant Stuff
 	inst.plant = 0
-	inst.plantKeeper = ""
+	inst.plantKeeper = "" --Stores Troupple Pond Border
 	
 	--Troupple King
-	inst.kingEvent = 0
-	inst.kingKeeper = ""
+	inst.kingIchor = -1 --Troupple Chalice Refills
+	inst.kingEvent = 0 --Dance event
+	inst.kingKeeper = "" --Stores Troupple King
 	
 	inst.frozen = false
 	inst.snowThresh = nil

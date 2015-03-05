@@ -31,6 +31,17 @@ Catch Rate: 40%
 Bio:
 Troupple Fish can be fished up using the Fishing Rod Relic. They will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory.
 
+===
+Troupple King
+Prefab: skitemtroupplefishking
+Location: Troupple Pond
+
+Bio:
+Troupple King is the ruler of the Troupple Kingdom.
+
+Daily: He will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory. 3 times per day
+
+Annual: During the yearly Troupple Dance at the Troupple Pond, the Troupple King will deliever a special chest with 3 Filled Troupple Chalices in which 1 may be picked.
 ================================================
 World Gen
 ================================================

@@ -10,32 +10,13 @@ local assets=
 prefabs = {
 }
 
-local function OnNewTarget(inst, data)
-	inst.components.talker:Say("Hello!")
-    --if inst:HasTag("werepig") then
-        --inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude:HasTag("werepig") end, MAX_TARGET_SHARES)
-    --end
-end
+--Random ichor Loot list
+local ichorLootList = {
+	"red", "blue", "yellow",
+}
 
-local function NormalRetargetFn(inst)
-    return FindEntity(inst, 6,
-        function(guy)
-            if not guy.LightWatcher or guy.LightWatcher:IsInLight() then
-                return not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) and not 
-                (guy:HasTag("abigail"))
-            end
-        end,
-        {"player", "_health"} -- see entityreplica.lua
-        )
-end
-
-local function NormalKeepTargetFn(inst, target)
-    --give up on dead guys, or guys in the dark, or werepigs
-	inst.components.talker:Say("Target is "..inst:GetDistanceSqToInst(target))
-    return inst.components.combat:CanTarget(target)
-			and inst:GetDistanceSqToInst(target) < 32
-			and (not target.LightWatcher or target.LightWatcher:IsInLight())
-			and not (target.sg and target.sg:HasStateTag("transform") )
+local function randomIchorLootGen()
+	return ichorLootList[math.random(#ichorLootList)]
 end
 
 local function trouppleKingShake(inst, shakeTime)
@@ -73,10 +54,152 @@ local function splashFx(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/frog/splash")
 end
 
+local function ontalk(inst, script)
+	splashBigFx(inst)
+end
+
+local function clearTrouppleChaliceData(inst)
+	inst.catcherChaliceSlot = nil
+	inst.catcherTrouppleChalice = nil
+	inst.finalguard = ""
+	inst.finalguardChaliceSlot = nil
+	inst.finalguardTrouppleChalice = nil
+	inst.eESM = ""
+	inst.eESMChaliceSlot = nil
+	inst.eESMTrouppleChalice = nil
+	inst.activeitem = ""
+	inst.activeitemChalice = nil
+	inst.relicChalice = nil
+	inst.relicLocation = nil
+	inst.ichorColor = "red" --Default
+end
+
+local function createIchorProjectile(inst, target)
+	inst.ichorColor = randomIchorLootGen()
+	local ichorShot = CreateEntity()
+	ichorShot.name = "Ichor"
+	ichorShot.entity:AddTransform()
+	ichorShot:AddComponent("weapon")
+	ichorShot.components.weapon:SetDamage(TUNING.SPAT_PHLEGM_DAMAGE)
+	ichorShot.components.weapon:SetRange(TUNING.SPAT_PHLEGM_ATTACKRANGE)
+	ichorShot.components.weapon:SetProjectile("spat_bomb")
+	ichorShot:AddComponent("inventoryitem")
+	ichorShot.persists = false
+	ichorShot.components.inventoryitem:SetOnDroppedFn(inst.Remove)
+	
+	local proj = SpawnPrefab("skfxichor_"..inst.ichorColor)--Name of the projectile
+	if proj then
+		if proj.components.projectile then
+			proj.owner = inst --Saves player to Projectile
+			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
+			proj.components.projectile:Throw(ichorShot, target, inst)
+			inst.SoundEmitter:PlaySound("dontstarve/creatures/spat/spit")
+		end
+	end
+end
+
+local function getPlayerChalice(inst, itemName, owner)
+	--Checks if Active Item
+    if owner.components.inventory.activeitem and owner.components.inventory.activeitem.prefab == itemName then
+        inst.activeitemChalice = owner.components.inventory.activeitem
+    end
+	--Checks if Troupple Chalice is in Relic Slot
+	if owner.components.inventory.equipslots[EQUIPSLOTS.HEAD] ~= nil then
+		local relicItem = owner.components.inventory.equipslots[EQUIPSLOTS.HEAD]
+		if relicItem.prefab == itemName then
+			inst.relicChalice = relicItem
+		end
+	end
+	--Checks for Final Guard
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if containerItem.prefab == "skarmorfinalguard" then
+			inst.finalguard = containerItem
+			for k, v in pairs(inst.finalguard.components.container.slots) do
+				if v and v.prefab == itemName then
+					inst.finalguardChaliceSlot = k
+					inst.finalguardTrouppleChalice = v
+					break
+				end
+			end
+		end
+	end
+	--Checks Main inventory
+	for k, v in pairs(owner.components.inventory.itemslots) do
+        if v and v.prefab == itemName then
+                inst.catcherChaliceSlot = k
+				inst.catcherTrouppleChalice = v
+				break
+        end
+    end
+	--Checks for Extra Equip Slots Mod Compatiblity
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BACK] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BACK]
+		inst.eESM = containerItem
+		for k, v in pairs(inst.eESM.components.container.slots) do
+			if v and v.prefab == itemName then
+				inst.eESMChaliceSlot = k
+				inst.eESMTrouppleChalice = v
+				break
+			end
+		end
+	end
+end
+
+local function getPlayerChalicePre(inst, itemName, owner)
+	local chaliceCount = 0
+	--Checks if Active Item
+    if owner.components.inventory.activeitem and owner.components.inventory.activeitem.prefab == itemName then
+        chaliceCount = chaliceCount + 1
+    end
+	--Checks if Troupple Chalice is in Relic Slot
+	if owner.components.inventory.equipslots[EQUIPSLOTS.HEAD] ~= nil then
+		local relicItem = owner.components.inventory.equipslots[EQUIPSLOTS.HEAD]
+		if relicItem.prefab == itemName then
+			chaliceCount = chaliceCount + 1
+		end
+	end
+	--Checks for Final Guard
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BODY]
+		if containerItem.prefab == "skarmorfinalguard" then
+			inst.finalguard = containerItem
+			for k, v in pairs(inst.finalguard.components.container.slots) do
+				if v and v.prefab == itemName then
+					chaliceCount = chaliceCount + 1
+					--break
+				end
+			end
+		end
+	end
+	--Checks Main inventory
+	for k, v in pairs(owner.components.inventory.itemslots) do
+        if v and v.prefab == itemName then
+                chaliceCount = chaliceCount + 1
+				--break
+        end
+    end
+	--Checks for Extra Equip Slots Mod Compatiblity
+	if owner.components.inventory.equipslots[EQUIPSLOTS.BACK] ~= nil then
+		local containerItem = owner.components.inventory.equipslots[EQUIPSLOTS.BACK]
+		inst.eESM = containerItem
+		for k, v in pairs(inst.eESM.components.container.slots) do
+			if v and v.prefab == itemName then
+				chaliceCount = chaliceCount + 1
+				--break
+			end
+		end
+	end
+	return chaliceCount
+end
+
 local function gounderwater(inst)
 	splashBigFx(inst)
 	if inst.kingHolder.plantKeeper.prefab ~= nil then
 		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	if inst.kingHolder.prefab ~= nil then
+		inst.kingHolder.kingIchor = -1
 	end
 	trouppleKingShake(inst, 4)
 	inst:Remove()
@@ -89,22 +212,27 @@ end
 
 local function fishybehaviorcold(inst)
 	inst.components.talker:Say("Winter is coming, all citizens back under the water!")
-	splashBigFx(inst)
 	inst:DoTaskInTime(3, gounderwaterpre)
 end
 
 local function fishybehaviorfarewell(inst)
 	inst.components.talker:Say("Back to the depths I go!")
-	splashBigFx(inst)
 	inst:DoTaskInTime(3, gounderwaterpre)
 end	
+
+local function fishybehaviorcomebacktomorrow(inst)
+	inst.components.talker:Say("Come back tomorrow Moral for another Ichor blessing!")
+end
+
+local function fishybehaviorcomeagain(inst)
+	inst.components.talker:Say("Come back with another Troupple Chalice Moral for an Ichor blessing!")
+end
 
 local function fishybehaviorgreet(inst)
 	if inst.kingHolder.prefab ~= nil then --Stops the odd first load loop
 		inst.AnimState:PlayAnimation("idle")
 		inst.entity:Show()
 		inst.components.talker:Say("I am the great Troupple King!")
-		splashBigFx(inst)
 		if inst.kingHolder.plantKeeper.prefab ~= nil then
 			inst.kingHolder.plantKeeper:PushEvent("splashWater")
 		end
@@ -115,6 +243,273 @@ local function onfishedup(inst)
 	trouppleKingShake(inst, 4)
 	splashBigFx(inst)
 	inst:DoTaskInTime(2, fishybehaviorgreet)
+end
+
+--============================
+local function fishybehaviorfillchalice3(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishking")
+    inst.AnimState:PlayAnimation("idle")
+	if inst.relicLocation == 1 then
+		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 2 then
+		inst.relicChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:Equip(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 3 then
+		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.finalguard.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.finalguardChaliceSlot)
+	end
+	if inst.relicLocation == 4 then
+		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.catcherChaliceSlot)
+	end
+	if inst.relicLocation == 5 then
+		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.eESM.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.eESMChaliceSlot)
+	end
+	--Clear stuff
+	clearTrouppleChaliceData(inst)
+	inst.chaliceCount = inst.chaliceCount - 1
+	inst.kingHolder.kingIchor = inst.kingHolder.kingIchor - 1
+	inst.isBusy = false
+	inst:DoTaskInTime(1, fishybehaviorcomebacktomorrow)
+end
+
+local function fishybehaviorspitichor3(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishkinglay")
+    inst.AnimState:PlayAnimation("dead", true)
+	splashFx(inst)
+	createIchorProjectile(inst, inst.target)
+	inst:DoTaskInTime(0.5, fishybehaviorfillchalice3)
+end
+
+local function fishybehaviorinspect3(inst)
+	--Check for Chalice
+	getPlayerChalice(inst, "skrelictroupplechalice", inst.target)
+	
+	--For While active Item
+	if inst.activeitemChalice ~= nil then
+		inst.relicLocation = 1
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor3)
+	--For Troupple Chalice in Relic Slot
+	elseif inst.relicChalice ~= nil then
+		inst.relicLocation = 2
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor3)
+	--For Final Guard
+	elseif inst.finalguardTrouppleChalice ~= nil then
+		inst.relicLocation = 3
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor3)
+	--For Main Inventory
+	elseif inst.catcherTrouppleChalice ~= nil then
+		inst.relicLocation = 4
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor3)
+	--For Extra Equip Slots Mod
+	elseif
+		inst.eESMTrouppleChalice ~= nil then
+		inst.relicLocation = 5
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor3)
+	--Says Farewell
+	else
+		inst.isBusy = false
+	end
+end
+
+local function fishybehaviorfillchalice2(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishking")
+    inst.AnimState:PlayAnimation("idle")
+	if inst.relicLocation == 1 then
+		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 2 then
+		inst.relicChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:Equip(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 3 then
+		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.finalguard.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.finalguardChaliceSlot)
+	end
+	if inst.relicLocation == 4 then
+		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.catcherChaliceSlot)
+	end
+	if inst.relicLocation == 5 then
+		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.eESM.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.eESMChaliceSlot)
+	end
+	--Clear stuff
+	clearTrouppleChaliceData(inst)
+	
+	inst.chaliceCount = inst.chaliceCount - 1
+	inst.kingHolder.kingIchor = inst.kingHolder.kingIchor - 1
+	if inst.kingHolder.kingIchor > 0 and inst.chaliceCount > 0 then
+		inst:DoTaskInTime(1, fishybehaviorinspect3)
+	elseif inst.kingHolder.kingIchor > 0 then
+		inst.isBusy = false
+		inst:DoTaskInTime(1, fishybehaviorcomeagain)
+	else
+		inst.isBusy = false
+		inst:DoTaskInTime(1, fishybehaviorcomebacktomorrow)
+	end
+end
+
+local function fishybehaviorspitichor2(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishkinglay")
+    inst.AnimState:PlayAnimation("dead", true)
+	splashFx(inst)
+	createIchorProjectile(inst, inst.target)
+	inst:DoTaskInTime(0.5, fishybehaviorfillchalice2)
+end
+
+local function fishybehaviorinspect2(inst)
+	--Check for Chalice
+	getPlayerChalice(inst, "skrelictroupplechalice", inst.target)
+	
+	--For While active Item
+	if inst.activeitemChalice ~= nil then
+		inst.relicLocation = 1
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor2)
+	--For Troupple Chalice in Relic Slot
+	elseif inst.relicChalice ~= nil then
+		inst.relicLocation = 2
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor2)
+	--For Final Guard
+	elseif inst.finalguardTrouppleChalice ~= nil then
+		inst.relicLocation = 3
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor2)
+	--For Main Inventory
+	elseif inst.catcherTrouppleChalice ~= nil then
+		inst.relicLocation = 4
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor2)
+	--For Extra Equip Slots Mod
+	elseif
+		inst.eESMTrouppleChalice ~= nil then
+		inst.relicLocation = 5
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor2)
+	--Says Farewell
+	else
+		inst.isBusy = false
+	end
+end
+
+local function fishybehaviorfillchalice(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishking")
+    inst.AnimState:PlayAnimation("idle")
+	if inst.relicLocation == 1 then
+		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 2 then
+		inst.relicChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:Equip(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
+	end
+	if inst.relicLocation == 3 then
+		inst.finalguardTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.finalguard.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.finalguardChaliceSlot)
+	end
+	if inst.relicLocation == 4 then
+		inst.catcherTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.target.components.inventory:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.catcherChaliceSlot)
+	end
+	if inst.relicLocation == 5 then
+		inst.eESMTrouppleChalice.components.inventoryitem:RemoveFromOwner(true)
+		inst.eESM.components.container:GiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor), inst.eESMChaliceSlot)
+	end
+	--Clear stuff
+	clearTrouppleChaliceData(inst)
+	
+	inst.chaliceCount = inst.chaliceCount - 1
+	inst.kingHolder.kingIchor = inst.kingHolder.kingIchor - 1
+	if inst.kingHolder.kingIchor > 0 and inst.chaliceCount > 0 then
+		inst:DoTaskInTime(1, fishybehaviorinspect2)
+	elseif inst.kingHolder.kingIchor > 0 then
+		inst.isBusy = false
+		inst:DoTaskInTime(1, fishybehaviorcomeagain)
+	else
+		inst.isBusy = false
+		inst:DoTaskInTime(1, fishybehaviorcomebacktomorrow)
+	end
+end
+
+local function fishybehaviorspitichor(inst)
+	inst.AnimState:SetBank("fish")
+	inst.AnimState:SetBuild("skitemtroupplefishkinglay")
+    inst.AnimState:PlayAnimation("dead", true)
+	splashFx(inst)
+	createIchorProjectile(inst, inst.target)
+	inst:DoTaskInTime(0.5, fishybehaviorfillchalice)
+end
+
+local function fishybehaviorinspect(inst)
+	--Check for Chalice
+	getPlayerChalice(inst, "skrelictroupplechalice", inst.target)
+	
+	--For While active Item
+	if inst.activeitemChalice ~= nil then
+		inst.relicLocation = 1
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor)
+	--For Troupple Chalice in Relic Slot
+	elseif inst.relicChalice ~= nil then
+		inst.relicLocation = 2
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor)
+	--For Final Guard
+	elseif inst.finalguardTrouppleChalice ~= nil then
+		inst.relicLocation = 3
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor)
+	--For Main Inventory
+	elseif inst.catcherTrouppleChalice ~= nil then
+		inst.relicLocation = 4
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor)
+	--For Extra Equip Slots Mod
+	elseif
+		inst.eESMTrouppleChalice ~= nil then
+		inst.relicLocation = 5
+		inst:DoTaskInTime(0.5, fishybehaviorspitichor)
+	--Says Farewell
+	else
+		inst.isBusy = false
+	end
+end
+--===============================
+
+local function fishybehaviorfillchalicemulti(inst)
+	inst.components.talker:Say("That's pronounced Eye-core.")
+	inst:DoTaskInTime(3, fishybehaviorinspect)
+end
+
+local function fishybehaviorichorcount(inst)
+	if inst.lostTarget == false then
+		if inst.chaliceCount > inst.kingHolder.kingIchor then
+			inst.components.talker:Say("I can fill "..inst.kingHolder.kingIchor.." with magical Ichor.")
+			inst:DoTaskInTime(3, fishybehaviorfillchalicemulti)
+		else
+			inst.components.talker:Say("I can fill all with magical Ichor.")
+			inst:DoTaskInTime(3, fishybehaviorfillchalicemulti)
+		end
+	else
+		inst.components.talker:Say("Oh... it seems your to busy for my blessing.?!")
+		inst.isBusy = false
+	end
+end
+
+local function fishybehaviorinspectpre(inst)
+	inst.chaliceCount = getPlayerChalicePre(inst, "skrelictroupplechalice", inst.target)
+	if inst.chaliceCount ~= nil and inst.chaliceCount > 0 then
+		if inst.chaliceCount > 1 then
+			inst.components.talker:Say("I sense many Troupple Chalices!")
+			inst:DoTaskInTime(3, fishybehaviorichorcount)
+		else
+			inst.components.talker:Say("I sense a Troupple Chalice!")
+			inst:DoTaskInTime(3, fishybehaviorichorcount)
+		end
+	end
 end
 
 local function OnIsDay(inst, isday)
@@ -155,37 +550,55 @@ local function onload(inst, data, newents)
 		hasEvent(inst)
 	end
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
-	
 end
 
-local function ontradeforgold(inst, item)
-    --inst.SoundEmitter:PlaySound("dontstarve/pig/PigKingThrowGold")
-    
-    --for k = 1, item.components.tradable.goldvalue do
-        --local nug = SpawnPrefab("goldnugget")
-        --local pt = Vector3(inst.Transform:GetWorldPosition()) + Vector3(0, 4.5, 0)
-        
-        --nug.Transform:SetPosition(pt:Get())
-        --local down = TheCamera:GetDownVec()
-        --local angle = math.atan2(down.z, down.x) + (math.random() * 60 - 30) * DEGREES
-        --local angle = (math.random() * 60 - 30 - TUNING.CAM_ROT - 90) / 180 * PI
-        --local sp = math.random() * 4 + 2
-        --nug.Physics:SetVel(sp * math.cos(angle), math.random() * 2 + 8, sp * math.sin(angle))
-    --end
+local function OnLostTarget(inst)
+	inst.lostTarget = true
 end
 
-local function OnGetItemFromPlayer(inst, giver, item)
-    if item.components.tradable.goldvalue > 0 then
-        inst:DoTaskInTime(20/30, ontradeforgold, item)
-    end
+local function OnNewTarget(inst, data)
+	if data.target ~= nil then
+		if inst.isBusy == false then
+			inst.target = data.target
+			inst.lostTarget = false
+			if inst.target.prefab == "winston" then
+				if inst.kingHolder ~= nil then
+					if inst.kingHolder.kingIchor > 0 then
+						inst.components.talker:Say("Greetings Shovel Knight!")
+						inst.isBusy = true
+						inst:DoTaskInTime(3, fishybehaviorinspectpre)
+					else
+						--Get random quotes, includes come back tomorrow for Ichor.
+						inst.components.talker:Say("Hello "..inst.target.prefab.."!")
+					end
+				end
+			else
+				--Get random quotes
+				inst.components.talker:Say("Hello!")
+			end
+		end
+	end
 end
 
-local function OnRefuseItem(inst, giver, item)
-	inst.components.talker:Say("No thanks!")
+local function NormalRetargetFn(inst)
+    return FindEntity(inst, 6,
+        function(guy)
+            if not guy.LightWatcher or guy.LightWatcher:IsInLight() then
+                return not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) and not 
+                (guy:HasTag("abigail"))
+            end
+        end,
+        {"player", "_health"} -- see entityreplica.lua
+        )
 end
 
-local function AcceptTest(inst, item)
-    return item.components.tradable.goldvalue > 0
+local function NormalKeepTargetFn(inst, target)
+    --give up on dead guys, or guys in the dark, or werepigs
+	--inst.components.talker:Say("Target is "..inst:GetDistanceSqToInst(target))
+    return inst.components.combat:CanTarget(target)
+			and inst:GetDistanceSqToInst(target) < 32
+			and (not target.LightWatcher or target.LightWatcher:IsInLight())
+			and not (target.sg and target.sg:HasStateTag("transform") )
 end
 
 local function fn()
@@ -204,8 +617,6 @@ local function fn()
 	anim:SetBank("fish")
     anim:SetBuild("skitemtroupplefishking")
     anim:PlayAnimation("idle")
-	--anim:SetBuild("skitemtroupplefishkinglay")
-    --anim:PlayAnimation("dead", true)
 	
 	if not TheWorld.ismastersim then
         return inst
@@ -217,28 +628,46 @@ local function fn()
 	inst.build = "skitemtroupplefishking"
 	
 	inst.kingHolder = ""
+	inst.isBusy = false
 	inst.frozen = false
 	inst.snowThresh = nil
 	
-	--Used for angry at fishing
+	--Needed for finding the Chalice
 	inst.catcher = ""
+	inst.catcherChaliceSlot = nil
+	inst.catcherTrouppleChalice = nil
+	inst.finalguard = ""
+	inst.finalguardChaliceSlot = nil
+	inst.finalguardTrouppleChalice = nil
+	inst.eESM = ""
+	inst.eESMChaliceSlot = nil
+	inst.eESMTrouppleChalice = nil
+	inst.activeitem = ""
+	inst.activeitemChalice = nil
+	inst.relicChalice = nil
+	inst.relicLocation = nil
+	inst.ichorColor = "red" --Default
+	inst.target = nil
+	inst.lostTarget = false
+	inst.chaliceCount = nil
 	
 	inst.persists = false
     
 	inst:AddComponent("talker")
 	inst.components.talker.offset = Vector3(0,-140,0)
+	inst.components.talker.ontalk = ontalk
 	
 	inst:AddComponent("inspectable")
+	
+	inst:AddComponent("inventoryitem")
+	inst.components.inventoryitem.canbepickedup = false
+    inst.components.inventoryitem.atlasname = "images/inventoryimages/skitemtroupplefish.xml"
+	inst.components.inventoryitem.imagename = "skitemtroupplefish"
 	
 	inst:AddComponent("combat")
 	inst.components.combat:SetKeepTargetFunction(NormalKeepTargetFn)
 	inst.components.combat:SetRetargetFunction(3, NormalRetargetFn)
     inst.components.combat:SetTarget(nil)
-	
-	inst:AddComponent("trader")
-	inst.components.trader:SetAcceptTest(AcceptTest)
-    inst.components.trader.onaccept = OnGetItemFromPlayer
-    inst.components.trader.onrefuse = OnRefuseItem
 	
 	inst.dayspawn = true
 	inst:WatchWorldState("isday", OnIsDay)
@@ -246,6 +675,7 @@ local function fn()
 	inst.OnLoad = onload
 	
 	inst:ListenForEvent("newcombattarget", OnNewTarget)
+	inst:ListenForEvent("losttarget", OnLostTarget)
 	
 	inst:DoTaskInTime(0.2, onload)
 	
