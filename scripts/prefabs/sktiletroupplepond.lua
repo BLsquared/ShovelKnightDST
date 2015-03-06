@@ -11,6 +11,21 @@ local prefabs =
 	"skitemmusicsheet",
 }
 
+local function onupdate(inst, dt)
+	if inst.kingKeeper.prefab ~= nil then
+		inst.fishPrev = inst.fishCurrent
+		inst.fishCurrent = inst.components.fishable.fishleft
+		if inst.fishCurrent < inst.fishPrev then
+			inst.kingKeeper:PushEvent("angryking")
+		end
+	else
+		if inst.kingClock_Task ~= nil then
+			inst.kingClock_Task:Cancel()
+			inst.kingClock_Task = nil
+		end
+	end
+end
+
 local function onpreload(inst, data)
     if data ~= nil then
         if data.orb ~= nil then
@@ -22,6 +37,9 @@ local function onpreload(inst, data)
 		if data.kingIchor ~= nil then
 			inst.kingIchor = data.kingIchor
 		end
+		if data.kingIchorReset ~= nil then
+			inst.kingIchorReset = data.kingIchorReset
+		end
 		if data.kingEvent ~= nil then
 			inst.kingEvent = data.kingEvent
 		end
@@ -31,7 +49,8 @@ end
 local function onsave(inst, data)
 	data.orb = inst.orb >= 0 and inst.orb or nil
 	data.plant = inst.plant > 0 and inst.plant or nil
-	data.kingIchor = inst.kingIchor >= -1 and inst.kingIchor or nil
+	data.kingIchor = inst.kingIchor >= 0 and inst.kingIchor or nil
+	data.kingIchorReset = inst.kingIchorReset >= 0 and inst.kingIchorReset or nil
 	data.kingEvent = inst.kingEvent >= 0 and inst.kingEvent or nil
 end
 
@@ -60,9 +79,11 @@ local function OnIsDay(inst, isday)
 			inst.kingKeeper = king
 			king.kingHolder = inst
 			king.snowThresh = inst.snowThresh
-			if inst.kingIchor == -1 then -- Refills Chalice, Reset is -1
+			if inst.kingIchorReset <= 0 then -- Refills Chalice, Reset is at 0
+				inst.kingIchorReset = 3
 				inst.kingIchor = 3
 			end
+			inst.kingClock_Task = inst:DoPeriodicTask(1, onupdate, nil, 1)
 		end
 	end
 end
@@ -76,7 +97,8 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 		inst.frozen = true
 		inst.AnimState:PlayAnimation("frozen")
 		inst.components.fishable:Freeze()
-
+		inst.kingIchorReset = 0
+		
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
         inst.Physics:ClearCollisionMask()
         inst.Physics:CollidesWith(COLLISION.WORLD)
@@ -155,6 +177,10 @@ local function fn()
 
 	inst.Physics:SetActive(false)
 	
+	--Fish stuff
+	inst.fishPrev = 0
+	inst.fishCurrent = 0
+	
 	--Orb Stuff
 	inst.orb = 0
 	inst.orbKeeper = "" --Stores Troupple Tree
@@ -164,9 +190,11 @@ local function fn()
 	inst.plantKeeper = "" --Stores Troupple Pond Border
 	
 	--Troupple King
-	inst.kingIchor = -1 --Troupple Chalice Refills
+	inst.kingIchor = 0 --Troupple Chalice Refills
+	inst.kingIchorReset = 0 --Hits 3 days, resets kingIchor
 	inst.kingEvent = 0 --Dance event
 	inst.kingKeeper = "" --Stores Troupple King
+	inst.kingClock_Task = nil
 	
 	inst.frozen = false
 	inst.snowThresh = nil

@@ -10,9 +10,6 @@ local assets =
 	--Asset("ANIM", "anim/tree_leaf_fx_green.zip"), --partical
 	
     Asset("ANIM", "anim/dust_fx.zip"),
-	
-	Asset("ATLAS", "images/map_icons/skweaponshovelbladebasic.xml"),
-	Asset("IMAGE", "images/map_icons/skweaponshovelbladebasic.tex"),
 }
 
 local prefabs =
@@ -232,8 +229,6 @@ local function fn()
 	inst.entity:AddNetwork()
 
 	MakeObstaclePhysics(inst, .25)
-
-	inst.MiniMapEntity:SetIcon("skweaponshovelbladebasic.tex")
 
     inst.AnimState:SetBuild("skstructuretreetrouppletrunk") --Main Base
 	inst.AnimState:SetBank("tree_leaf_monster") --4 legged

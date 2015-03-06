@@ -10,10 +10,18 @@ local assets=
 prefabs = {
 }
 
+local quoteList = {
+	"red", "blue", "yellow",
+}
+
 --Random ichor Loot list
 local ichorLootList = {
 	"red", "blue", "yellow",
 }
+
+local function randomQuoteGen()
+	return quoteList[math.random(#quoteList)]
+end
 
 local function randomIchorLootGen()
 	return ichorLootList[math.random(#ichorLootList)]
@@ -90,6 +98,7 @@ local function createIchorProjectile(inst, target)
 	local proj = SpawnPrefab("skfxichor_"..inst.ichorColor)--Name of the projectile
 	if proj then
 		if proj.components.projectile then
+			proj.Transform:SetScale(3, 3, 3)
 			proj.owner = inst --Saves player to Projectile
 			proj.Transform:SetPosition(inst.Transform:GetWorldPosition())
 			proj.components.projectile:Throw(ichorShot, target, inst)
@@ -199,7 +208,7 @@ local function gounderwater(inst)
 		inst.kingHolder.plantKeeper:PushEvent("splashWater")
 	end
 	if inst.kingHolder.prefab ~= nil then
-		inst.kingHolder.kingIchor = -1
+		inst.kingHolder.kingIchorReset = inst.kingHolder.kingIchorReset - 1
 	end
 	trouppleKingShake(inst, 4)
 	inst:Remove()
@@ -221,11 +230,40 @@ local function fishybehaviorfarewell(inst)
 end	
 
 local function fishybehaviorcomebacktomorrow(inst)
-	inst.components.talker:Say("Come back tomorrow Moral for another Ichor blessing!")
+	if inst.kingHolder.kingIchorReset == 1 then
+		inst.components.talker:Say("Come back tomorrow Moral for another Ichor blessing!")
+	else
+		inst.components.talker:Say("Come back in "..inst.kingHolder.kingIchorReset.." days Moral for another Ichor blessing!")
+	end
 end
 
 local function fishybehaviorcomeagain(inst)
 	inst.components.talker:Say("Come back with another Troupple Chalice Moral for an Ichor blessing!")
+end
+
+local function fishybehaviorquotes(inst)
+	if inst.target.prefab == "winston" then
+		if inst.kingHolder ~= nil then
+			if math.random() <= .35 then
+				if inst.kingHolder.kingIchor > 0 then
+					fishybehaviorcomeagain(inst)
+					return
+				else
+					fishybehaviorcomebacktomorrow(inst)
+					return
+				end
+			end
+		end
+	end
+	inst.components.talker:Say(randomQuoteGen())
+end
+
+local function fishybehaviorangry(inst)
+	inst.components.talker:Say("What do you think you're doing mortal!?")
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
 end
 
 local function fishybehaviorgreet(inst)
@@ -506,7 +544,6 @@ local function fishybehaviorichorcount(inst)
 end
 
 local function fishybehaviorinspectpre(inst)
-	inst.chaliceCount = getPlayerChalicePre(inst, "skrelictroupplechalice", inst.target)
 	if inst.chaliceCount ~= nil and inst.chaliceCount > 0 then
 		if inst.chaliceCount > 1 then
 			inst.components.talker:Say("I sense many Troupple Chalices!")
@@ -568,19 +605,21 @@ local function OnNewTarget(inst, data)
 			inst.target = data.target
 			inst.lostTarget = false
 			if inst.target.prefab == "winston" then
+				inst.components.talker:Say("Greetings Shovel Knight!")
 				if inst.kingHolder ~= nil then
-					if inst.kingHolder.kingIchor > 0 then
-						inst.components.talker:Say("Greetings Shovel Knight!")
+					local chaliceCountTemp = getPlayerChalicePre(inst, "skrelictroupplechalice", inst.target)
+					if inst.kingHolder.kingIchor > 0 and chaliceCountTemp > 0 then
 						inst.isBusy = true
+						inst.chaliceCount = chaliceCountTemp
 						inst:DoTaskInTime(3, fishybehaviorinspectpre)
 					else
-						--Get random quotes, includes come back tomorrow for Ichor.
-						inst.components.talker:Say("Hello "..inst.target.prefab.."!")
+						inst:DoTaskInTime(3, fishybehaviorquotes)
 					end
 				end
 			else
 				--Get random quotes
 				inst.components.talker:Say("Hello!")
+				inst:DoTaskInTime(3, fishybehaviorquotes)
 			end
 		end
 	end
@@ -680,6 +719,7 @@ local function fn()
 	inst:WatchWorldState("snowlevel", OnSnowLevel)
 	inst.OnLoad = onload
 	
+	inst:ListenForEvent("angryking", fishybehaviorangry)
 	inst:ListenForEvent("newcombattarget", OnNewTarget)
 	inst:ListenForEvent("losttarget", OnLostTarget)
 	

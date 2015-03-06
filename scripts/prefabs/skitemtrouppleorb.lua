@@ -70,7 +70,7 @@ local function fn()
 	
 	inst:AddComponent("health")
 	inst.components.health:SetMaxHealth(1)
-	--inst.components.health.murdersound = "dontstarve/creatures/eyeplant/eye_central_hurt"
+	inst.components.health.murdersound = "dontstarve/common/gem_shatter"
 	
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetLoot(loot)

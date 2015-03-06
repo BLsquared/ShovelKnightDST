@@ -39,7 +39,7 @@ Location: Troupple Pond
 Bio:
 Troupple King is the ruler of the Troupple Kingdom.
 
-Daily: He will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory. 3 times per day
+Every 3 Days: He will bless Shovel Knight with Ichor (red, blue, and yellow) if there is an Empty Troupple Chalice in the inventory. 3 Refills
 
 Annual: During the yearly Troupple Dance at the Troupple Pond, the Troupple King will deliever a special chest with 3 Filled Troupple Chalices in which 1 may be picked.
 ================================================
@@ -89,7 +89,7 @@ Prefab: "skitemmusicsheet"
 Use: Worth gold nugget x5 when given to the Pig King.
 
 Not Craftable
-Found by: 10% chance when fishing with the Fishing Rod -Relic
+Found by: 10% chance when fishing at a pond with the Fishing Rod -Relic, 5% at the Troupple Pond.
 
 ===
 Troupple Apple:
@@ -110,6 +110,13 @@ Food Eaten: Restores 20 Health, 12.5 Hunger, 5 Sanity
 Not Craftable
 Found by: Cooking a Troupple Apple.
 
+===
+Troupple Orb:
+Prefab: "skitemtrouppleorb"
+Open: Contains a Leafy Meat x1 and Lightbulb x1
+
+Not Craftable
+Found by: Grown by the Troupple Tree.
 ================================================
 Shovelblade Equippment
 ================================================
