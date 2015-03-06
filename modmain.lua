@@ -2,7 +2,7 @@ PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
 	"skstructuresigntroupple", "skstructuretreetroupple",
 	"sktiletroupplepond", "sktiletroupplepondborder", 
-	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet", "skitemtrouppleapple",
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet", "skitemtrouppleorb", "skitemtrouppleapple",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",

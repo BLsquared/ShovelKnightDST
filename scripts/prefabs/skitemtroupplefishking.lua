@@ -250,6 +250,7 @@ local function fishybehaviorfillchalice3(inst)
 	inst.AnimState:SetBank("fish")
 	inst.AnimState:SetBuild("skitemtroupplefishking")
     inst.AnimState:PlayAnimation("idle")
+	trouppleKingShake(inst, 3)
 	if inst.relicLocation == 1 then
 		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
@@ -322,6 +323,7 @@ local function fishybehaviorfillchalice2(inst)
 	inst.AnimState:SetBank("fish")
 	inst.AnimState:SetBuild("skitemtroupplefishking")
     inst.AnimState:PlayAnimation("idle")
+	trouppleKingShake(inst, 3)
 	if inst.relicLocation == 1 then
 		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
@@ -402,6 +404,7 @@ local function fishybehaviorfillchalice(inst)
 	inst.AnimState:SetBank("fish")
 	inst.AnimState:SetBuild("skitemtroupplefishking")
     inst.AnimState:PlayAnimation("idle")
+	trouppleKingShake(inst, 3)
 	if inst.relicLocation == 1 then
 		inst.activeitemChalice.components.inventoryitem:RemoveFromOwner(true)
 		inst.target.components.inventory:SetActiveItem(SpawnPrefab("skrelictroupplechalice"..inst.ichorColor))
@@ -486,7 +489,10 @@ end
 
 local function fishybehaviorichorcount(inst)
 	if inst.lostTarget == false then
-		if inst.chaliceCount > inst.kingHolder.kingIchor then
+		if inst.chaliceCount == 1 then
+			inst.components.talker:Say("I can fill it with magical Ichor.")
+			inst:DoTaskInTime(3, fishybehaviorfillchalicemulti)
+		elseif inst.chaliceCount > inst.kingHolder.kingIchor then
 			inst.components.talker:Say("I can fill "..inst.kingHolder.kingIchor.." with magical Ichor.")
 			inst:DoTaskInTime(3, fishybehaviorfillchalicemulti)
 		else
@@ -596,7 +602,7 @@ local function NormalKeepTargetFn(inst, target)
     --give up on dead guys, or guys in the dark, or werepigs
 	--inst.components.talker:Say("Target is "..inst:GetDistanceSqToInst(target))
     return inst.components.combat:CanTarget(target)
-			and inst:GetDistanceSqToInst(target) < 32
+			and inst:GetDistanceSqToInst(target) < 45
 			and (not target.LightWatcher or target.LightWatcher:IsInLight())
 			and not (target.sg and target.sg:HasStateTag("transform") )
 end
