@@ -263,6 +263,7 @@ local function fishybehaviorangry(inst)
 	trouppleKingShake(inst, 4)
 	if inst.kingHolder.plantKeeper.prefab ~= nil then
 		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+		inst.kingHolder.plantKeeper:PushEvent("spawnChest")
 	end
 end
 
@@ -725,7 +726,7 @@ local function fn()
 	
 	inst:DoTaskInTime(0.2, onload)
 	
-	MakeHauntableLaunch(inst)
+	MakeHauntablePanic(inst)
 		
     return inst
 end

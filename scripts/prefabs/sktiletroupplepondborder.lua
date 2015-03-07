@@ -147,6 +147,40 @@ local function startBubble(inst)
 	inst:DoTaskInTime(4, calmPond)
 end
 
+local function spawnChestLoot(inst, chest)
+	local rot = SpawnPrefab("spoiled_food")
+	local rot2 = SpawnPrefab("spoiled_food")
+	local rot3 = SpawnPrefab("spoiled_food")
+	local rot4 = SpawnPrefab("spoiled_food")
+	local rot5 = SpawnPrefab("spoiled_food")
+	local rot6 = SpawnPrefab("spoiled_food")
+	local chaliceRed = SpawnPrefab("skrelictroupplechalicered")
+	local chaliceBlue = SpawnPrefab("skrelictroupplechaliceblue")
+	local chaliceYellow = SpawnPrefab("skrelictroupplechaliceyellow")
+	
+	chest.components.container:GiveItem(rot, 1)
+	chest.components.container:GiveItem(rot2, 2)
+	chest.components.container:GiveItem(rot3, 3)
+	chest.components.container:GiveItem(chaliceRed, 4)
+	chest.components.container:GiveItem(chaliceBlue, 5)
+	chest.components.container:GiveItem(chaliceYellow, 6)
+	chest.components.container:GiveItem(rot4, 7)
+	chest.components.container:GiveItem(rot5, 8)
+	chest.components.container:GiveItem(rot6, 9)
+end
+
+local function spawnChest(inst)
+	if inst.plantHolder.kingKeeper.prefab ~= nil then
+		inst.plantHolder.kingKeeper.components.talker:Say("Please choose an Ichor filled Chalice!")
+	end
+	local chest = SpawnPrefab("skstructurechesttroupple")
+	local posSpawn = inst:GetPosition()
+	chest.Transform:SetPosition(posSpawn.x + 9.5, posSpawn.y, posSpawn.z - 4.5)
+	inst.chestKeeper = chest
+	chest.chestHolder = inst
+	spawnChestLoot(inst, chest)
+end
+
 local function fn()
 	local inst = CreateEntity()
 
@@ -186,6 +220,7 @@ local function fn()
 	--inst.components.childspawner:StartRegen()
 
 	inst.plantHolder = ""
+	inst.chestKeeper = ""
 	
 	inst.frozen = false
 	inst.snowThresh = nil
@@ -209,6 +244,7 @@ local function fn()
 	
 	inst:ListenForEvent("bubbleWater", startBubble)
 	inst:ListenForEvent("splashWater", startSplash)
+	inst:ListenForEvent("spawnChest", spawnChest)
 	
 	inst:DoTaskInTime(0.2, onload)
 	

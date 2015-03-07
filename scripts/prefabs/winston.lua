@@ -281,13 +281,15 @@ local function startovercharge(inst, duration)
 end
 
 local function onrespawned(inst)
-	if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
-		inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
-		inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
-		inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
-		--Special Gold Glow
-		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY].prefab == "skarmorornateplate" then
-			inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+	if not inst:HasTag("playerghost") then
+		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
+			inst.AnimState:SetBuild(inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorName)
+			inst.components.locomotor.walkspeed = (TUNING.WILSON_WALK_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+			inst.components.locomotor.runspeed = (TUNING.WILSON_RUN_SPEED * inst.components.inventory.equipslots[EQUIPSLOTS.BODY].armorMovement)
+			--Special Gold Glow
+			if inst.components.inventory.equipslots[EQUIPSLOTS.BODY].prefab == "skarmorornateplate" then
+				inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+			end
 		end
 	end
 end

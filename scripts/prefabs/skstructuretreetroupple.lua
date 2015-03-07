@@ -265,6 +265,8 @@ local function fn()
 	
 	inst:ListenForEvent("growOrb", hasOrb)
 	
+	MakeHauntablePanic(inst)
+	
 	inst:DoTaskInTime(0.2, onload)
 	
 	return inst
