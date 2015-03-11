@@ -11,7 +11,11 @@ prefabs = {
 }
 
 local quoteList = {
-	"red", "blue", "yellow",
+	"Who has awakened me?!", "Mortal! Dost thou need aid?"
+}
+
+local quoteByeList = {
+	"The Troupple King lives to serve!", "Beest thou not a stranger!"
 }
 
 --Random ichor Loot list
@@ -21,6 +25,10 @@ local ichorLootList = {
 
 local function randomQuoteGen()
 	return quoteList[math.random(#quoteList)]
+end
+
+local function randomQuoteByeGen()
+	return quoteByeList[math.random(#quoteByeList)]
 end
 
 local function randomIchorLootGen()
@@ -64,6 +72,14 @@ end
 
 local function ontalk(inst, script)
 	splashBigFx(inst)
+end
+
+function rotatetotarget(inst, dest)
+	local current = Vector3(dest.Transform:GetWorldPosition() )
+	local wanttogo = Vector3(inst.Transform:GetWorldPosition() )
+	local direction = (wanttogo - current ):GetNormalized()
+    local angle = math.acos(direction:Dot(Vector3(1, 0, 0) ) ) / DEGREES
+    inst.Transform:SetRotation(angle)
 end
 
 local function clearTrouppleChaliceData(inst)
@@ -258,13 +274,274 @@ local function fishybehaviorquotes(inst)
 	inst.components.talker:Say(randomQuoteGen())
 end
 
+local function fishybehaviorquotesbye(inst)
+	inst.components.talker:Say(randomQuoteByeGen())
+end
+
 local function fishybehaviorangry(inst)
 	inst.components.talker:Say("What do you think you're doing mortal!?")
 	trouppleKingShake(inst, 4)
+end
+
+local function fishybehaviordancestop(inst)
+	inst.kingHolder:AddTag("fishable")
+	inst.isBusy = false
 	if inst.kingHolder.plantKeeper.prefab ~= nil then
 		inst.kingHolder.plantKeeper:PushEvent("splashWater")
 		inst.kingHolder.plantKeeper:PushEvent("spawnChest")
 	end
+end
+
+local function fishybehaviordancestoppre(inst)
+	inst.components.talker:Say("Dancing is sorta my thing...")
+	if inst.kingHolder.orbKeeper.prefab ~= nil then
+		inst.kingHolder.orbKeeper:PushEvent("danceEnd")
+	end
+	inst:DoTaskInTime(4, fishybehaviordancestop)
+end
+
+local function fishybehaviordance9(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("bubbleWater")
+	end
+	inst.kingHolder.orbKeeper:PushEvent("danceFishSkip", { amount = 6 })
+	inst:DoTaskInTime(5, fishybehaviordancestoppre)
+end
+
+local function fishybehaviordance8pst(inst)
+	--Part 8 Pst
+	--King left
+	inst.AnimState:PlayAnimation("idle")
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("bubbleWater")
+	end
+	inst:DoTaskInTime(1, fishybehaviordance9)
+end
+
+local function fishybehaviordance8pre(inst)
+	--Past 8 pre
+	--King left
+	inst.AnimState:PlayAnimation("idle", true)
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	inst.fishTotalCount = 1
+	inst:DoTaskInTime(2, fishybehaviordance8pst)
+end
+
+local function fishybehaviordance7(inst)
+	--Part 3 part 2
+	--King Left
+	if inst.fishTotalCount == 0 then
+		inst:DoTaskInTime(2, fishybehaviordance8pre)
+	else
+		local fishamount = math.random(0,2)
+		inst.kingHolder.orbKeeper:PushEvent("danceFishFly", { amount = 1 })
+		if inst.fishTotalCount >= 11 then
+			inst.fishTotalCount = -10
+			inst:DoTaskInTime(3, fishybehaviordance7)
+		elseif inst.fishTotalCount <= 10 and inst.fishTotalCount > 0 then
+			inst.fishTotalCount = inst.fishTotalCount + fishamount
+			inst:DoTaskInTime(0.4, fishybehaviordance7)
+		elseif inst.fishTotalCount >= -1 then
+			inst.fishTotalCount = 0
+			inst:DoTaskInTime(1, fishybehaviordance7)
+		elseif inst.fishTotalCount >= inst.fishTotalCount -11 and inst.fishTotalCount < -1 then
+			inst.fishTotalCount = inst.fishTotalCount + fishamount
+			inst:DoTaskInTime(0.4, fishybehaviordance7)
+		end
+	end
+end
+
+local function fishybehaviordance6(inst)
+	--Part 3 part 1
+	--King Left
+	if inst.fishTotalCount == 0 then
+		inst.fishTotalCount = 1
+		inst:DoTaskInTime(2, fishybehaviordance7)
+	else
+		local fishamount = math.random(0,2)
+		inst.kingHolder.orbKeeper:PushEvent("danceFishFly", { amount = 1 })
+		if inst.fishTotalCount >= 11 then
+			inst.fishTotalCount = -10
+			inst:DoTaskInTime(4, fishybehaviordance6)
+		elseif inst.fishTotalCount <= 10 and inst.fishTotalCount > 0 then
+			inst.fishTotalCount = inst.fishTotalCount + fishamount
+			inst:DoTaskInTime(0.5, fishybehaviordance6)
+		elseif inst.fishTotalCount >= -1 then
+			inst.fishTotalCount = 0
+			inst:DoTaskInTime(1, fishybehaviordance6)
+		elseif inst.fishTotalCount >= inst.fishTotalCount -11 and inst.fishTotalCount < -1 then
+			inst.fishTotalCount = inst.fishTotalCount + fishamount
+			inst:DoTaskInTime(0.5, fishybehaviordance6)
+		end
+	end
+end
+
+local function fishybehaviordance5pst(inst)
+	--Part 2 Pst
+	inst.AnimState:PlayAnimation("idle")
+	--===
+	rotatetotarget(inst, inst.kingHolder.signKeeper)
+	local posSpawn = inst:GetPosition()
+	inst.Transform:SetPosition(posSpawn.x + 2, posSpawn.y, posSpawn.z - 2)
+	inst.Transform:SetTwoFaced()
+	--===
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	inst:DoTaskInTime(2, fishybehaviordance6)
+end
+
+local function fishybehaviordance5pre(inst)
+	--Part 2 Pre
+	inst.AnimState:PlayAnimation("idle", true)
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	inst.fishTotalCount = 1
+	inst:DoTaskInTime(2, fishybehaviordance5pst)
+end
+
+local function fishybehaviordance4(inst)
+	--Part 2
+	--King Right
+	local fishamount = math.random(1,6)
+	local eventType = math.random(1,2)
+	if eventType == 1 then
+		inst.kingHolder.orbKeeper:PushEvent("danceFishSkip", { amount = fishamount })
+		if inst.fishTotalCount <= 20 then
+			inst.fishTotalCount = inst.fishTotalCount + 4
+			inst:DoTaskInTime(4, fishybehaviordance4)
+		else
+			inst:DoTaskInTime(4, fishybehaviordance5pre)
+		end
+	else
+		inst.kingHolder.orbKeeper:PushEvent("danceFishFly", { amount = fishamount })
+		if inst.fishTotalCount <= 20 then
+			if fishamount == 1 then
+				inst.fishTotalCount = inst.fishTotalCount + 1
+				inst:DoTaskInTime(1, fishybehaviordance4)
+			else
+				inst.fishTotalCount = inst.fishTotalCount + 3
+				inst:DoTaskInTime(2, fishybehaviordance4)
+			end
+		else
+			inst:DoTaskInTime(4, fishybehaviordance5pre)
+		end
+	end
+end
+
+local function fishybehaviordance3pst(inst)
+	--Part 2 Pst
+	inst.AnimState:PlayAnimation("idle")
+	--===
+	inst.Transform:SetFourFaced()
+	rotatetotarget(inst, inst.kingHolder.orbKeeper)
+	local posSpawn = inst:GetPosition()
+	inst.Transform:SetPosition(posSpawn.x - 2, posSpawn.y, posSpawn.z + 2)
+	--===
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	inst:DoTaskInTime(2, fishybehaviordance4)
+end
+
+local function fishybehaviordance3pre(inst)
+	--Part 2 Pre
+	inst.AnimState:PlayAnimation("idle", true)
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	inst.fishTotalCount = 0
+	inst:DoTaskInTime(2, fishybehaviordance3pst)
+end
+
+local function fishybehaviordance2(inst)
+	--Part 1
+	--King Left
+	local fishamount = math.random(1,6)
+	local eventType = math.random(1,2)
+	if eventType == 1 then
+		inst.kingHolder.orbKeeper:PushEvent("danceFishSkip", { amount = fishamount })
+		if inst.fishTotalCount <= 20 then
+			inst.fishTotalCount = inst.fishTotalCount + 4
+			inst:DoTaskInTime(4, fishybehaviordance2)
+		else
+			inst:DoTaskInTime(4, fishybehaviordance3pre)
+		end
+	else
+		inst.kingHolder.orbKeeper:PushEvent("danceFishFly", { amount = fishamount })
+		if inst.fishTotalCount <= 20 then
+			if fishamount == 1 then
+				inst.fishTotalCount = inst.fishTotalCount + 1
+				inst:DoTaskInTime(1, fishybehaviordance2)
+			else
+				inst.fishTotalCount = inst.fishTotalCount + 3
+				inst:DoTaskInTime(2, fishybehaviordance2)
+			end
+		else
+			inst:DoTaskInTime(4, fishybehaviordance3pre)
+		end
+	end
+end
+
+local function fishybehaviordance(inst)
+	inst.AnimState:PlayAnimation("idle")
+	splashBigFx(inst)
+	trouppleKingShake(inst, 4)
+	if inst.kingHolder.plantKeeper.prefab ~= nil then
+		inst.kingHolder.plantKeeper:PushEvent("splashWater")
+	end
+	if inst.kingHolder.orbKeeper.prefab ~= nil then
+		inst.kingHolder.orbKeeper:PushEvent("danceStart")
+	end
+	inst:DoTaskInTime(3, fishybehaviordance2)
+end
+
+local function fishybehaviordancebegin(inst)
+	if inst.lostTarget == false then
+		inst.components.talker:Say("Let us begin!")
+		inst.kingHolder:RemoveTag("fishable")
+		inst:DoTaskInTime(3, fishybehaviordance)
+	else
+		inst.components.talker:Say("Thou wouldst be wise to waste not the Troupple King's time, Mortal!")
+		inst.isBusy = false
+	end
+end
+
+local function fishybehaviordancestart(inst)
+	inst.components.talker:Say("Ah, the ritual dance of my people, a spectacle few mortals behold.")
+	inst:DoTaskInTime(4, fishybehaviordancebegin)
+end
+
+local function fishybehaviordancefirstbegin(inst)
+	if inst.lostTarget == false then
+		inst.components.talker:Say("The ceremony shall commence!")
+		inst.kingHolder:RemoveTag("fishable")
+		inst:DoTaskInTime(3, fishybehaviordance)
+	else
+		inst.components.talker:Say("Thou wouldst be wise to waste not the Troupple King's time, Mortal!")
+		inst.isBusy = false
+	end
+end
+
+local function fishybehaviordancefirststart(inst)
+	inst.components.talker:Say("Subjects! A new initiate joins us!")
+	inst:DoTaskInTime(3, fishybehaviordancefirstbegin)
 end
 
 local function fishybehaviorgreet(inst)
@@ -539,7 +816,7 @@ local function fishybehaviorichorcount(inst)
 			inst:DoTaskInTime(3, fishybehaviorfillchalicemulti)
 		end
 	else
-		inst.components.talker:Say("Oh... it seems your to busy for my blessing.?!")
+		inst.components.talker:Say("Thou wouldst be wise to waste not the Troupple King's time, Mortal!")
 		inst.isBusy = false
 	end
 end
@@ -577,50 +854,44 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 	end
 end
 
-local function hasEvent(inst)
-	if inst.kingHolder.kingEvent == 1 then
-		--inst:AddComponent("workable")
-		--inst.components.workable:SetWorkAction(ACTIONS.CHOP)
-		--inst.components.workable:SetOnWorkCallback(chop_tree)
-		--inst.components.workable:SetOnFinishCallback(chop_down_tree)
-		--inst.AnimState:OverrideSymbol("eye", "skstructuretreetroupplefeature", "eye") --Orb thing
-	else
-
-	end
-end
-
 local function onload(inst, data, newents)
-	if inst.kingHolder.prefab ~= nil then
-		hasEvent(inst)
-	end
 	OnSnowLevel(inst, TheWorld.state.snowlevel)
 end
 
 local function OnLostTarget(inst)
 	inst.lostTarget = true
+	if inst.isBusy == false then
+		inst:DoTaskInTime(2, fishybehaviorquotesbye)
+	end
 end
 
 local function OnNewTarget(inst, data)
 	if data.target ~= nil then
 		if inst.isBusy == false then
 			inst.target = data.target
-			inst.lostTarget = false
+			inst.lostTarget = false --Just in case
 			if inst.target.prefab == "winston" then
-				inst.components.talker:Say("Greetings Shovel Knight!")
 				if inst.kingHolder ~= nil then
 					local chaliceCountTemp = getPlayerChalicePre(inst, "skrelictroupplechalice", inst.target)
-					if inst.kingHolder.kingIchor > 0 and chaliceCountTemp > 0 then
+					--Dance Event
+					if inst.kingHolder.kingEventFirst == 0 then
+						inst.isBusy = true
+						inst:DoTaskInTime(1, fishybehaviordancefirststart)
+					elseif inst.kingHolder.kingEvent == 1 then
+						inst.isBusy = true
+						inst:DoTaskInTime(1, fishybehaviordancestart)
+					--Refill Chalice Event
+					elseif inst.kingHolder.kingIchor > 0 and chaliceCountTemp > 0 then
 						inst.isBusy = true
 						inst.chaliceCount = chaliceCountTemp
-						inst:DoTaskInTime(3, fishybehaviorinspectpre)
+						inst:DoTaskInTime(1, fishybehaviorinspectpre)
 					else
-						inst:DoTaskInTime(3, fishybehaviorquotes)
+						inst:DoTaskInTime(1, fishybehaviorquotes)
 					end
 				end
 			else
 				--Get random quotes
-				inst.components.talker:Say("Hello!")
-				inst:DoTaskInTime(3, fishybehaviorquotes)
+				inst:DoTaskInTime(1, fishybehaviorquotes)
 			end
 		end
 	end
@@ -630,8 +901,12 @@ local function NormalRetargetFn(inst)
     return FindEntity(inst, 6,
         function(guy)
             if not guy.LightWatcher or guy.LightWatcher:IsInLight() then
-                return not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) and not 
-                (guy:HasTag("abigail"))
+				if inst.lostTarget == true then
+					inst.lostTarget = false
+				else
+					return not guy.components.health:IsDead() and inst.components.combat:CanTarget(guy) and not 
+					(guy:HasTag("abigail"))
+				end
             end
         end,
         {"player", "_health"} -- see entityreplica.lua
@@ -641,6 +916,7 @@ end
 local function NormalKeepTargetFn(inst, target)
     --give up on dead guys, or guys in the dark, or werepigs
 	--inst.components.talker:Say("Target is "..inst:GetDistanceSqToInst(target))
+	--inst.components.talker:Say(""..TheWorld.state.temperature)
     return inst.components.combat:CanTarget(target)
 			and inst:GetDistanceSqToInst(target) < 45
 			and (not target.LightWatcher or target.LightWatcher:IsInLight())
@@ -677,6 +953,9 @@ local function fn()
 	inst.isBusy = false
 	inst.frozen = false
 	inst.snowThresh = nil
+	
+	--Needed for dancing
+	inst.fishTotalCount = 0
 	
 	--Needed for finding the Chalice
 	inst.catcher = ""
@@ -721,6 +1000,8 @@ local function fn()
 	inst.OnLoad = onload
 	
 	inst:ListenForEvent("angryking", fishybehaviorangry)
+	--inst:ListenForEvent("dancestartking", fishybehaviordancestartpre)
+	--inst:ListenForEvent("dancestopking", fishybehaviordancestop)
 	inst:ListenForEvent("newcombattarget", OnNewTarget)
 	inst:ListenForEvent("losttarget", OnLostTarget)
 	

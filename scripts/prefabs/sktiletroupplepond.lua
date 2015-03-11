@@ -13,10 +13,17 @@ local prefabs =
 
 local function onupdate(inst, dt)
 	if inst.kingKeeper.prefab ~= nil then
+		--Angry King
 		inst.fishPrev = inst.fishCurrent
 		inst.fishCurrent = inst.components.fishable.fishleft
 		if inst.fishCurrent < inst.fishPrev then
 			inst.kingKeeper:PushEvent("angryking")
+		end
+		--Troupple Dance
+		if TheWorld.state.temperature >= 30 and inst.kingEvent == -1 then --Reset troupple dance, Reset is at -1
+			inst.kingEvent = 1
+		elseif TheWorld.state.temperature < 30 and inst.kingEvent ~= 0 then
+			inst.kingEvent = -1
 		end
 	else
 		if inst.kingClock_Task ~= nil then
@@ -40,6 +47,9 @@ local function onpreload(inst, data)
 		if data.kingIchorReset ~= nil then
 			inst.kingIchorReset = data.kingIchorReset
 		end
+		if data.kingEventFirst ~= nil then
+			inst.kingEventFirst = data.kingEventFirst
+		end
 		if data.kingEvent ~= nil then
 			inst.kingEvent = data.kingEvent
 		end
@@ -51,6 +61,7 @@ local function onsave(inst, data)
 	data.plant = inst.plant > 0 and inst.plant or nil
 	data.kingIchor = inst.kingIchor >= 0 and inst.kingIchor or nil
 	data.kingIchorReset = inst.kingIchorReset >= 0 and inst.kingIchorReset or nil
+	data.kingEventFirst = inst.kingEventFirst > 0 and inst.kingEventFirst or nil
 	data.kingEvent = inst.kingEvent >= 0 and inst.kingEvent or nil
 end
 
@@ -59,12 +70,6 @@ local function OnIsDay(inst, isday)
         inst.orb = 1
 		if inst.orbKeeper.prefab ~= nil then
 			inst.orbKeeper:PushEvent("growOrb")
-		end
-    end
-	if not TheWorld.state.iswinter and inst.kingEvent == 0 then
-        inst.kingEvent = 1
-		if inst.kingKeeper.prefab ~= nil then
-			inst.kingKeeper:PushEvent("raiseKing")
 		end
     end
 	--Make Troupple King
@@ -79,10 +84,12 @@ local function OnIsDay(inst, isday)
 			inst.kingKeeper = king
 			king.kingHolder = inst
 			king.snowThresh = inst.snowThresh
+			--Ichor fill event
 			if inst.kingIchorReset <= 0 then -- Refills Chalice, Reset is at 0
 				inst.kingIchorReset = 3
 				inst.kingIchor = 3
 			end
+			--Angry King event
 			inst.kingClock_Task = inst:DoPeriodicTask(1, onupdate, nil, 1)
 		end
 	end
@@ -98,6 +105,7 @@ local function OnSnowLevel(inst, snowlevel, thresh)
 		inst.AnimState:PlayAnimation("frozen")
 		inst.components.fishable:Freeze()
 		inst.kingIchorReset = 0
+		inst.kingEvent = -1
 		
         inst.Physics:SetCollisionGroup(COLLISION.OBSTACLES)
         inst.Physics:ClearCollisionMask()
@@ -144,7 +152,7 @@ local function spawnBorder(inst)
 	local sign = SpawnPrefab("skstructuresigntroupple")
 	local posSpawn3 = inst:GetPosition()
 	sign.Transform:SetPosition(posSpawn3.x + 4.3, posSpawn3.y, posSpawn3.z - 3.3)
-	
+	inst.signKeeper = sign
 	inst:DoTaskInTime(0.3, onload)
 end
 
@@ -185,6 +193,9 @@ local function fn()
 	inst.orb = 0
 	inst.orbKeeper = "" --Stores Troupple Tree
 	
+	--Sing Stuff
+	inst.signKeeper = "" --Stores Troupple Sign
+	
 	--Plant Stuff
 	inst.plant = 0
 	inst.plantKeeper = "" --Stores Troupple Pond Border
@@ -192,6 +203,7 @@ local function fn()
 	--Troupple King
 	inst.kingIchor = 0 --Troupple Chalice Refills
 	inst.kingIchorReset = 0 --Hits 3 days, resets kingIchor
+	inst.kingEventFirst = 0 --Very first Dance
 	inst.kingEvent = 0 --Dance event
 	inst.kingKeeper = "" --Stores Troupple King
 	inst.kingClock_Task = nil

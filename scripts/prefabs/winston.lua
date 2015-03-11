@@ -41,7 +41,7 @@ local assets = {
 }
 local prefabs = {}
 local start_inv = {
-	"skweaponshovelbladebasic", "cane", "skrelicfishingrod", "skarmorornateplate",
+	"skweaponshovelbladebasic", --"cane", "skrelicfishingrod", "skarmorornateplate",
 }
 
 local function OnRelicKeyPressed(inst, data)
@@ -57,7 +57,7 @@ local function OnRelicKeyPressed(inst, data)
     end
 end
 
---11 Relics
+--11 Relics, Troupple only from Troupple King
 local relicList = {
 	"skrelicfishingrod", --"log", "goldnugget", "livinglog", "turkeydinner",
 	--"blue_cap", "green_cap", "skitemmealticket", "skitemmanapotion",

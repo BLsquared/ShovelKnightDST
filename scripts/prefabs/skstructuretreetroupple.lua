@@ -3,7 +3,8 @@
 local assets =
 {
 	Asset("ANIM", "anim/skstructuretreetroupplerequired.zip"), --Bank: tree_leaf_monster
-	Asset("ANIM", "anim/skstructuretreetrouppleleaf.zip"), --green top
+	Asset("ANIM", "anim/skstructuretreetrouppleleaf.zip"), --troupple fish top
+	Asset("ANIM", "anim/skstructuretreetrouppleleafgreen.zip"), --green top
     Asset("ANIM", "anim/skstructuretreetrouppletrunk.zip"), --trunk build (winter leaves build)
 	Asset("ANIM", "anim/skstructuretreetroupplefeature.zip"), --is the Legs
 	
@@ -41,14 +42,13 @@ local prefabs =
         --}
 --end
 
-
 local function createTrouppleLoot(lootPrefab, target)
 	if lootPrefab then
 		local loot = SpawnPrefab(lootPrefab)
 		local theta = math.random() * 2 * PI
 		local pt = Point(target.Transform:GetWorldPosition())
 		loot.Transform:SetPosition(pt.x,pt.y,pt.z)
-				 
+		
 		if loot.Physics then
 			local angle = math.random()*2*PI
 			loot.Physics:SetVel(2*math.cos(angle), 10, 2*math.sin(angle))
@@ -76,32 +76,6 @@ local function createTrouppleLoot(lootPrefab, target)
 	end
 end
 
-local function OnSnowLevel(inst, snowlevel, thresh)
-	thresh = thresh or .02
-	
-	if inst.snowThresh ~= nil and inst.snowThresh > snowlevel then
-		snowlevel = inst.snowThresh
-		inst.snowThresh = nil
-	end
-	
-	if snowlevel > thresh and not inst.frozen then
-		inst.frozen = true
-		inst.AnimState:PlayAnimation("sway_agro_pre") --4 legged
-		inst.AnimState:PlayAnimation("idle_loop_agro") --4 legged
-		inst.AnimState:ClearOverrideSymbol("swap_leaves")
-		inst.AnimState:OverrideSymbol("swap_leaves", "", "swap_leaves") --Top color
-		inst.SoundEmitter:PlaySound("dontstarve/forest/treeWilt")
-
-	elseif snowlevel < thresh and inst.frozen then
-		inst.frozen = false
-		inst.AnimState:PlayAnimation("sway_agro_pst") --4 legged
-		inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
-		inst.AnimState:ClearOverrideSymbol("swap_leaves")
-		inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleaf", "swap_leaves") --Top color
-		inst.SoundEmitter:PlaySound("dontstarve/forest/treeGrow")
-	end
-end
-
 local function SpawnLeafFX(inst, waittime, chop)
     if waittime then
         inst:DoTaskInTime(waittime, function(inst, chop) SpawnLeafFX(inst, nil, chop) end)
@@ -116,6 +90,141 @@ local function SpawnLeafFX(inst, waittime, chop)
         if chop then y = y + (math.random()*2) end --Randomize height a bit for chop FX
         fx.Transform:SetPosition(x,y,z)
     end
+end
+
+local function dancefishskip(inst, data)
+	if data.amount ~= nil then
+		for k = 1, data.amount, 1 do
+			createTrouppleLoot("skeventtroupplefishskip", inst)
+		end
+	end
+end
+
+local function dancefishfly(inst, data)
+	if data.amount ~= nil then
+		for k = 1, data.amount, 1 do
+			createTrouppleLoot("skeventtroupplefishfly", inst)
+		end
+	end
+end
+
+local function danceEnd3(inst)
+	inst.AnimState:PlayAnimation("sway_agro_pre") --4 legged
+	inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleaf", "swap_leaves") --Top color
+	SpawnLeafFX(inst, nil, true)
+end
+
+local function danceEnd2(inst)
+	for k = 0, 5, 1 do
+		createTrouppleLoot("skeventtroupplefishgrow", inst)
+	end
+	inst:DoTaskInTime(0.5, danceEnd3)
+end
+
+local function danceEnd(inst)
+	inst.AnimState:PlayAnimation("idle_loop_agro", true) --4 legged
+	inst:DoTaskInTime(0.4, danceEnd2)
+end
+
+local function danceStart3(inst)
+	inst.AnimState:PlayAnimation("chop_tall_monster", true)
+end
+
+local function danceStart2(inst)
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleafgreen", "swap_leaves") --Top color
+	inst.AnimState:PlayAnimation("idle_loop_agro", true) --4 legged
+	for k = 0, 5, 1 do
+		createTrouppleLoot("skeventtroupplefishfall", inst)
+	end
+	inst:DoTaskInTime(1, danceStart3)
+end
+
+local function danceStart(inst)
+	inst.AnimState:PlayAnimation("sway_loop_agro") --4 legged
+	inst:DoTaskInTime(1.2, danceStart2)
+end
+
+local function danceStartPre(inst)
+	inst:DoTaskInTime(0.4, danceStart)
+end
+
+--===============================
+local function springStart4(inst)
+	inst.AnimState:PlayAnimation("sway_agro_pre") --4 legged
+	inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleaf", "swap_leaves") --Top color
+	SpawnLeafFX(inst, nil, true)
+end
+
+local function springStart3(inst)
+	for k = 0, 5, 1 do
+		createTrouppleLoot("skeventtroupplefishgrow", inst)
+	end
+	inst:DoTaskInTime(0.5, springStart4)
+end
+
+local function springStart2(inst)
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleafgreen", "swap_leaves") --Top color
+	SpawnLeafFX(inst, nil, true)
+	inst:DoTaskInTime(0.2, springStart3)
+end
+
+local function springStart(inst)
+	inst.AnimState:PlayAnimation("sway_agro_pst") --4 legged
+	inst.AnimState:PushAnimation("idle_loop_agro", true) --4 legged
+	inst.SoundEmitter:PlaySound("dontstarve/forest/treeGrow")
+	inst:DoTaskInTime(0.2, springStart2)
+end
+
+local function winterStart4(inst)
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "", "swap_leaves") --Top color
+	SpawnLeafFX(inst, nil, true)
+end
+
+local function winterStart3(inst)
+	inst.AnimState:PlayAnimation("sway_agro_pst")
+	inst.SoundEmitter:PlaySound("dontstarve/forest/treeWilt")
+	inst:DoTaskInTime(0.2, winterStart4)
+end
+
+local function winterStart2(inst)
+	inst.AnimState:ClearOverrideSymbol("swap_leaves")
+	inst.AnimState:OverrideSymbol("swap_leaves", "skstructuretreetrouppleleafgreen", "swap_leaves") --Top color
+	inst.AnimState:PlayAnimation("idle_loop_agro", true) --4 legged
+	for k = 0, 5, 1 do
+		createTrouppleLoot("skeventtroupplefishfall", inst)
+	end
+	inst:DoTaskInTime(1.2, winterStart3)
+end
+
+local function winterStart(inst)
+	inst.AnimState:PlayAnimation("sway_loop_agro") --4 legged
+	inst:DoTaskInTime(1.2, winterStart2)
+end
+--===============================
+
+local function OnSnowLevel(inst, snowlevel, thresh)
+	thresh = thresh or .02
+	
+	if inst.snowThresh ~= nil and inst.snowThresh > snowlevel then
+		snowlevel = inst.snowThresh
+		inst.snowThresh = nil
+	end
+	
+	if snowlevel > thresh and not inst.frozen then
+		inst.frozen = true
+		winterStart(inst)
+
+	elseif snowlevel < thresh and inst.frozen then
+		inst.frozen = false
+		springStart(inst)
+	end
 end
 
 local function chop_tree(inst, chopper, chops)
@@ -264,6 +373,10 @@ local function fn()
 	inst.OnLoad = onload
 	
 	inst:ListenForEvent("growOrb", hasOrb)
+	inst:ListenForEvent("danceStart", danceStartPre)
+	inst:ListenForEvent("danceEnd", danceEnd)
+	inst:ListenForEvent("danceFishSkip", dancefishskip)
+	inst:ListenForEvent("danceFishFly", dancefishfly)
 	
 	MakeHauntablePanic(inst)
 	

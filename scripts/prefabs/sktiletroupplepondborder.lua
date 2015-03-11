@@ -171,7 +171,7 @@ end
 
 local function spawnChest(inst)
 	if inst.plantHolder.kingKeeper.prefab ~= nil then
-		inst.plantHolder.kingKeeper.components.talker:Say("Please choose an Ichor filled Chalice!")
+		inst.plantHolder.kingKeeper.components.talker:Say("Choose your Ichor Wisely...")
 	end
 	local chest = SpawnPrefab("skstructurechesttroupple")
 	local posSpawn = inst:GetPosition()
@@ -179,6 +179,13 @@ local function spawnChest(inst)
 	inst.chestKeeper = chest
 	chest.chestHolder = inst
 	spawnChestLoot(inst, chest)
+	
+	if inst.plantHolder.kingEventFirst == 0 then
+		inst.plantHolder.kingEventFirst = 1
+	else
+		inst.plantHolder.kingEvent = 0
+	end
+	
 end
 
 local function fn()

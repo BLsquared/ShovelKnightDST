@@ -25,21 +25,6 @@ local function onclose(inst)
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_close")		
 end 
 
-local function onhammered(inst, worker)
-	inst.components.lootdropper:DropLoot()
-	inst.components.container:DropEverything()
-	SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
-	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")	
-	inst:Remove()
-end
-
-local function onhit(inst, worker)
-	inst.AnimState:PlayAnimation("hit")
-	inst.components.container:DropEverything()
-	inst.AnimState:PushAnimation("closed", false)
-	inst.components.container:Close()
-end
-
 local function onbuilt(inst)
 	inst.AnimState:PlayAnimation("place")
 	inst.AnimState:PushAnimation("closed", false)
@@ -47,6 +32,8 @@ end
 
 local function destroyChest(inst)
 	inst.components.container:DestroyContents()
+	SpawnPrefab("collapse_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
+	inst.SoundEmitter:PlaySound("dontstarve/common/destroy_wood")	
 	inst:DoTaskInTime(0.2, inst.Remove)
 end
 
@@ -81,7 +68,7 @@ local function fn()
 		
 	inst.AnimState:SetBank("chest")
 	inst.AnimState:SetBuild("skstructurechest")
-	inst.AnimState:PlayAnimation("closed")
+	inst.AnimState:PlayAnimation("place")
 
 	MakeSnowCoveredPristine(inst)
 
@@ -102,7 +89,6 @@ local function fn()
 	inst.components.container.onopenfn = onopen
 	inst.components.container.onclosefn = onclose
 
-	inst:ListenForEvent("onbuilt", onbuilt)
 	inst:ListenForEvent("itemlose", onitemlose)
 	
 	MakeSnowCovered(inst)
