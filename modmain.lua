@@ -1,11 +1,14 @@
 PrefabFiles = {
 	"winston", "skitemtroupplefish", "skitemtroupplefishking",
-	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet",
+	"skstructuresigntroupple", "skstructuretreetroupple", "skstructurechesttroupple",
+	"sktiletroupplepond", "sktiletroupplepondborder", 
+	"skitemmealticket", "skitemmanapotion", "skitemfishingrod", "skitemmusicsheet", "skitemtrouppleorb", "skitemtrouppleapple",
 	"skweaponshovelbladebasic","skweaponshovelbladechargehandle", "skweaponshovelbladetrenchblade", "skweaponshovelbladedropspark",
 	"skarmorstalwartplate", "skarmorfinalguard", "skarmorconjurerscoat", "skarmordynamomail", "skarmormailofmomentum", "skarmorornateplate",
 	"skrelicfishingrod", "skrelictroupplechalice", "skrelictroupplechalicered", "skrelictroupplechaliceblue", "skrelictroupplechaliceyellow",
-	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail",
+	"skfxchargehandle_shatter", "skfxdropspark_wave", "skfxornateplate_glitter", "skfxornateplate_trail", "skfxtrouppletree_orbglow",
 	"skfxtroupplechalice_red", "skfxtroupplechalice_blue", "skfxtroupplechalice_yellow", "skfxichor_red", "skfxichor_blue", "skfxichor_yellow",
+	"skeventtroupplefish",
 }
 
 Assets = {
@@ -44,6 +47,14 @@ Assets = {
 	
 	Asset( "IMAGE", "images/map_icons/skarmorstalwartplate.tex" ),
 	Asset( "ATLAS", "images/map_icons/skarmorstalwartplate.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/sktiletroupplepond.tex" ),
+	Asset( "ATLAS", "images/map_icons/sktiletroupplepond.xml" ),
+	Asset( "IMAGE", "images/map_icons/sktiletroupplepondfrozen.tex" ),
+	Asset( "ATLAS", "images/map_icons/sktiletroupplepondfrozen.xml" ),
+	
+	Asset( "IMAGE", "images/map_icons/skstructurechesttroupple.tex" ),
+	Asset( "ATLAS", "images/map_icons/skstructurechesttroupple.xml" ),
 }
 
 RemapSoundEvent( "dontstarve/characters/winston/shovelbladeequipped", "winston/characters/winston/shovelbladeequipped" )
@@ -64,11 +75,11 @@ local TECH = GLOBAL.TECH
 --Dedicated server Recipes
 local recipes = 
 {
-	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmorornateplate", {Ingredient("goldnugget", 12), Ingredient("fireflies", 6), Ingredient("lightbulb", 1)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skarmormailofmomentum", {Ingredient("redgem", 2), Ingredient("nightmarefuel", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skarmordynamomail", {Ingredient("bluegem", 2), Ingredient("moonrocknugget", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skarmorconjurerscoat", {Ingredient("purplegem", 2), Ingredient("silk", 6)}, RECIPETABS.WAR, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
-	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
+	Recipe("skarmorfinalguard", {Ingredient("redgem", 2), Ingredient("tentaclespots", 6), Ingredient("mosquitosack", 1)}, RECIPETABS.WAR, {SCIENCE = 2, MAGIC = 0, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skweaponshovelbladedropspark", {Ingredient("skweaponshovelbladetrenchblade", 1, "images/inventoryimages/skweaponshovelbladetrenchblade.xml"), Ingredient("walrus_tusk", 2), Ingredient("nightmarefuel", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 3, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skweaponshovelbladetrenchblade", {Ingredient("skweaponshovelbladechargehandle", 1, "images/inventoryimages/skweaponshovelbladechargehandle.xml"), Ingredient("tentaclespike", 1), Ingredient("moonrocknugget", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
 	Recipe("skweaponshovelbladechargehandle", {Ingredient("skweaponshovelbladebasic", 1, "images/inventoryimages/skweaponshovelbladebasic.xml"), Ingredient("houndstooth", 4), Ingredient("livinglog", 4)}, RECIPETABS.REFINE, {SCIENCE = 0, MAGIC = 2, ANCIENT = 0}, nil, nil, nil, nil),
@@ -118,6 +129,9 @@ STRINGS.RECIPE_DESC.SKARMORDYNAMOMAIL = "Increase Shovelblade Upgrade powers!"
 STRINGS.RECIPE_DESC.SKARMORMAILOFMOMENTUM = "Heavily plated, Can't be slowed!"
 STRINGS.RECIPE_DESC.SKARMORORNATEPLATE = "Flashy! Acrobatic! Useless!"
 
+--Food
+AddIngredientValues({"skitemtrouppleapple"}, {fish=1, fruit=1})
+
 local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 	GLOBAL.ACTIONS.PICKUP.fn = function(act)
 		if act.doer.prefab == "winston" and act.target and act.target.components.equippable and act.target.components.inventoryitem and act.target.components.armor and not act.target:IsInLimbo() then
@@ -131,7 +145,6 @@ local old_ACTIONPICKUP = GLOBAL.ACTIONS.PICKUP.fn
 --Fix Health Penalty From Resurrection
 local function HealthPostInit(self)
 	if self.prefab == winston then
-		--print("I'm Shovel Knight! Now fix my Health!")
 		local OldRecalculatePenalty = self.RecalculatePenalty
 		local function RecalculatePenalty(self, forceupdatewidget)
 			local mult = GLOBAL.TUNING.REVIVE_HEALTH_PENALTY_AS_MULTIPLE_OF_EFFIGY
@@ -167,7 +180,6 @@ SKUSERELIC.fn = function(act)
 			if relicItem.prefab == "skrelicfishingrod" or relicItem.prefab == "skrelictroupplechalice"
 				or relicItem.prefab == "skrelictroupplechalicered" or relicItem.prefab == "skrelictroupplechaliceblue" or relicItem.prefab == "skrelictroupplechaliceyellow" then
 				relicItem.components.useableitem:StartUsingItem()
-				--act.target.components.talker:Say("Relic key was pressed")
 			end
 		end
 	end
@@ -184,6 +196,9 @@ AddMinimapAtlas("images/map_icons/skweaponshovelbladechargehandle.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladetrenchblade.xml")
 AddMinimapAtlas("images/map_icons/skweaponshovelbladedropspark.xml")
 AddMinimapAtlas("images/map_icons/skarmorstalwartplate.xml")
+AddMinimapAtlas("images/map_icons/sktiletroupplepond.xml")
+AddMinimapAtlas("images/map_icons/sktiletroupplepondfrozen.xml")
+AddMinimapAtlas("images/map_icons/skstructurechesttroupple.xml")
 
 AddModCharacter("winston", "MALE")
 

@@ -202,6 +202,7 @@ local function fn()
     local sound = inst.entity:AddSoundEmitter()
 	
 	inst.Transform:SetFourFaced()
+	inst.Transform:SetScale(.8, .8, .8)
 	
 	MakeInventoryPhysics(inst)
 	

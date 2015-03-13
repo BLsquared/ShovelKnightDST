@@ -3,6 +3,10 @@ Need to figure out a way to destory Bonfires for rare chance at loots.
 
 Add a Rare special Item to all of the Armor crafting
 Final Guard: "mosquitosack"
+conjurers coat:
+dynamo mail:
+mail of momentum: 
+Ornate Plate: "lightbulb"
 
 
 Add the: Bag of Spoils item
