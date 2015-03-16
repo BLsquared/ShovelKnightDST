@@ -668,12 +668,15 @@ local master_postinit = function(inst)
 	
 	local old_GetAttacked = inst.components.combat.GetAttacked 
 		inst.components.combat.GetAttacked = function(self,attacker, damage, weapon)
-		damage = 15
+		--damage = 15
 		if inst.components.inventory.equipslots[EQUIPSLOTS.BODY] ~= nil then
 			local item = inst.components.inventory.equipslots[EQUIPSLOTS.BODY]
 			if item.prefab == "skarmorstalwartplate" or item.prefab == "skarmorfinalguard" or item.prefab == "skarmorconjurerscoat"
 				or item.prefab == "skarmordynamomail" or item.prefab == "skarmormailofmomentum" or item.prefab == "skarmorornateplate" then
-				damage = item.armorProtection --Saved on the Shovel Knight Armor
+
+				if damage > item.armorProtection then
+					damage = item.armorProtection --Saved on the Shovel Knight Armor
+				end
 				
 				--Apply Non-Freeze and Non-Sleep MailofMomentum Armor Perk
 				if item.prefab == "skarmormailofmomentum" then
@@ -683,9 +686,6 @@ local master_postinit = function(inst)
 					if inst.components.grogginess then
 						inst.components.grogginess:ComeTo()
 					end
-					--if inst.components.pinnable then
-						--inst.components.pinnable:Unstick()
-					--end
 				end
 			end
 		end

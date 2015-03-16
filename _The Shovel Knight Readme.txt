@@ -190,6 +190,7 @@ Armor Equippment
 *Shovel Knight armor does not drop upon death*
 *Shovel Knight armor effects remain while ghost*
 *Shovel Knight armor can cap a damaging attack based on its Damage Taken Amount, lower damage will still be normal*
+
 ===
 Stalwart Plate
 Prefab: "skarmorstalwartplate"

@@ -1,8 +1,8 @@
 -- This information tells other players more about the mod
-name = "Shovel Knight [Troupple Pond]"
+name = "Shovel Knight [Flare Wand]"
 description = "A character for Don't Starve Together, who wields a Shovelblade!"
 author = "BLsquared & Jade_KnightBlazer"
-version = "0.20.0"
+version = "0.21.0"
 
 -- This is the URL name of the mod's thread on the forum; the part after the ? and before the first & in the url
 forumthread = "/files/file/1035-character-shovel-knight-the-blue-burrower/"
