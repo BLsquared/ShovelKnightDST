@@ -12,12 +12,6 @@ local assets =
 local function onopen(inst) 
 	inst.AnimState:PlayAnimation("open") 
 	inst.SoundEmitter:PlaySound("dontstarve/wilson/chest_open")
-	
-	--if inst.chestHolder.prefab ~= nil then
-		--if inst.chestHolder.plantHolder.kingKeeper.prefab ~= nil then
-			--inst.chestHolder.plantHolder.kingKeeper.components.talker:Say("Please pick one!")
-		--end
-	--end
 end 
 
 local function onclose(inst) 
@@ -43,11 +37,6 @@ local function onitemlose(inst, data)
 			inst:DoTaskInTime(0.2, destroyChest)
 		end
 	end
-		--if inst.chestHolder.prefab ~= nil then
-			--if inst.chestHolder.plantHolder.kingKeeper.prefab ~= nil then
-				--inst.chestHolder.plantHolder.kingKeeper.components.talker:Say()
-			--end
-		--end
 end
 
 local function fn()

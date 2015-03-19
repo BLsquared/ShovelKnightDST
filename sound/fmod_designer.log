@@ -3,3 +3,28 @@ Warning: QPainter::setPen: Painter not active
 Warning: QPainter::setBrush: Painter not active
 Warning: QPainter::setRenderHint: Painter must be active to set rendering hints
 Warning: QPainter::setPen: Painter not active
+Debug: 
+Building project 'winston'...
+Debug: Caching waveform details...
+Debug: sounds\winston_chargehandlecharged.mp3
+Debug: sounds\winston_chargehandlerelease.mp3
+Debug: sounds\winston_dropspark.mp3
+Debug: sounds\winston_jump.mp3
+Debug: sounds\winston_shovelbladeequipped.mp3
+Debug: Building project C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\winston.fev...
+Debug: Unique sound definitions 1/5
+Debug: Retrieving waveform info...
+Debug: Retrieving reverb info...
+Debug: FEV file written ok
+Debug: Building 'winston_bank00.fsb'
+Debug: Building C:/Program Files (x86)/Steam/steamapps/common/Don't Starve Together Beta/mods/ShovelKnightDST/sound/winston_bank00.fsb.  Format = PCM (1:1)
+Debug: Info : Build Mode = FSBANK_BUILDMODE_SINGLE
+Debug: Info : Added C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\sounds\winston_chargehandlecharged.mp3  SRAM Usage 108 kb 
+Debug: Info : Added C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\sounds\winston_chargehandlerelease.mp3  SRAM Usage 229 kb 
+Debug: Info : Added C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\sounds\winston_dropspark.mp3  SRAM Usage 400 kb 
+Debug: Info : Added C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\sounds\winston_jump.mp3  SRAM Usage 450 kb 
+Debug: Info : Added C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together Beta\mods\ShovelKnightDST\sound\sounds\winston_shovelbladeequipped.mp3  SRAM Usage 918 kb 
+Debug: Info : FSB Compilation complete
+Debug: Done.
+
+Debug: 
